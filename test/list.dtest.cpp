@@ -4,9 +4,15 @@
 #include <forward_list>
 #include <list>
 
-setDependencies("list", { "exception" });
+module("list")
+.dependsOn({
+    "exception"
+});
 
-setDependencies("parallel::list", { "list" });
+module("parallel::list")
+.dependsOn({
+    "list"
+});
 
 namespace spl
 {
