@@ -4,6 +4,10 @@
 #include <forward_list>
 #include <list>
 
+setDependencies("list", { "exception" });
+
+setDependencies("parallel::list", { "list" });
+
 namespace spl
 {
 
@@ -54,7 +58,6 @@ using namespace spl;
 #define PERFORMANCE_MARGIN_MILLIS 10
 
 unit("list", "initializer-list")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>({ 1, 2, 3 });
 
@@ -70,7 +73,6 @@ unit("list", "initializer-list")
 });
 
 unit("list", "copy")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -90,7 +92,6 @@ unit("list", "copy")
 });
 
 unit("list", "move")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -125,7 +126,6 @@ unit("list", "move")
 });
 
 unit("list", "prepend")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -147,7 +147,6 @@ unit("list", "prepend")
 });
 
 unit("parallel::list", "prepend")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -170,7 +169,6 @@ unit("parallel::list", "prepend")
 });
 
 perf("list", "prepend(p)")
-.dependsOn("exception")
 .performanceMarginMillis(PERFORMANCE_MARGIN_MILLIS)
 .body([] {
     auto l = List<int>();
@@ -186,7 +184,6 @@ perf("list", "prepend(p)")
 });
 
 unit("list", "append")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -208,7 +205,6 @@ unit("list", "append")
 });
 
 unit("parallel::list", "append")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -231,7 +227,6 @@ unit("parallel::list", "append")
 });
 
 perf("list", "append(p)")
-.dependsOn("exception")
 .performanceMarginMillis(PERFORMANCE_MARGIN_MILLIS)
 .body([] {
     auto l = List<int>();
@@ -247,7 +242,6 @@ perf("list", "append(p)")
 });
 
 unit("list", "clear")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -268,7 +262,6 @@ unit("list", "clear")
 });
 
 unit("list", "insert")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -284,7 +277,6 @@ unit("list", "insert")
 });
 
 unit("parallel::list", "insert")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -307,7 +299,6 @@ unit("parallel::list", "insert")
 });
 
 unit("list", "insert-before-head")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -329,7 +320,6 @@ unit("list", "insert-before-head")
 });
 
 unit("parallel::list", "insert-before-head")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -352,7 +342,6 @@ unit("parallel::list", "insert-before-head")
 });
 
 unit("list", "insert-before-tail")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -374,7 +363,6 @@ unit("list", "insert-before-tail")
 });
 
 unit("parallel::list", "insert-before-tail")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -397,7 +385,6 @@ unit("parallel::list", "insert-before-tail")
 });
 
 unit("list", "insert-before-middle")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -422,7 +409,6 @@ unit("list", "insert-before-middle")
 });
 
 unit("parallel::list", "insert-before-middle")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -454,7 +440,6 @@ unit("parallel::list", "insert-before-middle")
 });
 
 unit("list", "insert-after-head")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -478,7 +463,6 @@ unit("list", "insert-after-head")
 });
 
 unit("parallel::list", "insert-after-head")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -503,7 +487,6 @@ unit("parallel::list", "insert-after-head")
 });
 
 unit("list", "insert-after-tail")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -525,7 +508,6 @@ unit("list", "insert-after-tail")
 });
 
 unit("list", "insert-after-middle")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -550,7 +532,6 @@ unit("list", "insert-after-middle")
 });
 
 unit("parallel::list", "insert-before-middle")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -582,7 +563,6 @@ unit("parallel::list", "insert-before-middle")
 });
 
 unit("list", "remove-head(new-iterator)")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -608,7 +588,6 @@ unit("list", "remove-head(new-iterator)")
 });
 
 unit("parallel::list", "remove-head(new-iterator)")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -635,7 +614,6 @@ unit("parallel::list", "remove-head(new-iterator)")
 });
 
 unit("list", "remove-head(same-iterator)")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -663,7 +641,6 @@ unit("list", "remove-head(same-iterator)")
 });
 
 unit("parallel::list", "remove-head(same-iterator)")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -692,7 +669,6 @@ unit("parallel::list", "remove-head(same-iterator)")
 });
 
 unit("list", "remove-middle")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -722,7 +698,6 @@ unit("list", "remove-middle")
 });
 
 unit("parallel::list", "remove-middle")
-.dependsOn({ "exception", "list" })
 .body([] {
     auto l = parallel::List<int>();
 
@@ -753,7 +728,6 @@ unit("parallel::list", "remove-middle")
 });
 
 unit("list", "foreach")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -767,7 +741,6 @@ unit("list", "foreach")
 });
 
 unit("list", "map")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
@@ -783,7 +756,6 @@ unit("list", "map")
 });
 
 unit("list", "reduce")
-.dependsOn("exception")
 .body([] {
     auto l = List<int>();
 
