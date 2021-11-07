@@ -13,3 +13,5 @@ jobs:
       run: make test-build-only
     - name: Run tests
       run: ./test/dtest/dtest-cxx17 test/build
+    - name: Dump results
+      run: cat dtest.log.json
