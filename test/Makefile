@@ -31,7 +31,7 @@ OBJ_FILES = $(SOURCES:%.dtest.cpp=$(BUILD_DIR)/%.dtest.so)
 
 ################################################################################
 
-all : $(OBJ_FILES)
+all : dtest $(OBJ_FILES)
 
 ifndef nodep
 include $(SOURCES:%.cpp=.dep/%.d)
