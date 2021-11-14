@@ -55,12 +55,13 @@ public:
     /**
      * @brief Maps the elements of this container using the given function.
      * 
+     * @tparam MappedType Type of the mapped container.
      * @param[in] mapper A mapping functor that transforms the elements.
      * @return A new container with the mapped elements.
      */
-    template <typename F>
+    template <typename MappedType = ContainerType, typename F>
     auto map(F mapper) const {
-        return ContainerType::create(
+        return MappedType::create(
             container().begin().map(mapper),
             container().end(),
             container().size()
@@ -107,7 +108,8 @@ public:
      * parameter.
      * @return A single value after applying the reducing function to all
      * elements.
-     */    template <typename Init, typename F>
+     */
+    template <typename Init, typename F>
     auto reduce(Init initialMapper, F reducer) const {
         using ref = decltype(*container().begin());
         using reduce_type = typename std::invoke_result_t<Init, ref>;

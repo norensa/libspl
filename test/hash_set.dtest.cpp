@@ -1,6 +1,7 @@
 #include <dtest.h>
 #include <hash_set.h>
 #include <unordered_set>
+#include <list.h>
 
 module("hash-set")
 .dependsOn({
@@ -297,6 +298,32 @@ unit("hash-set", "map")
     size_t count = 0;
     for (auto &x : s2) {
         assert(x.v <= TEST_SIZE);
+        ++count;
+    }
+    assert(count == TEST_SIZE);
+});
+
+unit("hash-set", "map-to-list")
+.dependsOn("list")
+.body([] {
+
+    HashSet<X> s;
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    assert(s.size() == TEST_SIZE);
+
+    auto l = s.map<List<X>>([] (const X &n) -> X {
+        return n;
+    });
+
+    assert(l.size() == TEST_SIZE);
+
+    size_t count = 0;
+    for (auto &x : l) {
+        assert(s.contains(x));
         ++count;
     }
     assert(count == TEST_SIZE);

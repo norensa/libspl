@@ -1,7 +1,7 @@
 #include <dtest.h>
-
 #include <hash_map.h>
 #include <unordered_map>
+#include <list.h>
 
 module("hash-map")
 .dependsOn({
@@ -310,6 +310,32 @@ unit("hash-map", "map")
     for (auto &x : m2) {
         assert(x.k.v <= TEST_SIZE);
         assert((x.k.v - 1) * 4 == x.v.v);
+        ++count;
+    }
+    assert(count == TEST_SIZE);
+});
+
+unit("hash-map", "map-to-list")
+.dependsOn("list")
+.body([] {
+
+    HashMap<X, X> m;
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, i * 2);
+    }
+
+    assert(m.size() == TEST_SIZE);
+
+    auto l = m.map<List<X>>([] (const MapNode<X, X> &n) -> X {
+        return n.k;
+    });
+
+    assert(l.size() == TEST_SIZE);
+
+    size_t count = 0;
+    for (auto &x : l) {
+        assert(m.contains(x));
         ++count;
     }
     assert(count == TEST_SIZE);
