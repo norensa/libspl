@@ -329,6 +329,30 @@ unit("hash-set", "map-to-list")
     assert(count == TEST_SIZE);
 });
 
+unit("hash-set", "to-list")
+.dependsOn("list")
+.body([] {
+
+    HashSet<X> s;
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    assert(s.size() == TEST_SIZE);
+
+    auto l = s.to<List<X>>();
+
+    assert(l.size() == TEST_SIZE);
+
+    size_t count = 0;
+    for (auto &x : l) {
+        assert(s.contains(x));
+        ++count;
+    }
+    assert(count == TEST_SIZE);
+});
+
 perf("hash-set", "put(p)")
 .performanceMarginMillis(PERFORMANCE_MARGIN_MILLIS)
 .body([] {

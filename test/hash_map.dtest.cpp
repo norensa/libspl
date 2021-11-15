@@ -341,6 +341,30 @@ unit("hash-map", "map-to-list")
     assert(count == TEST_SIZE);
 });
 
+unit("hash-map", "to-list")
+.dependsOn("list")
+.body([] {
+
+    HashMap<X, X> m;
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, i * 2);
+    }
+
+    assert(m.size() == TEST_SIZE);
+
+    auto l = m.to<List<MapNode<X, X>>>();
+
+    assert(l.size() == TEST_SIZE);
+
+    size_t count = 0;
+    for (auto &x : l) {
+        assert(m.contains(x.k));
+        ++count;
+    }
+    assert(count == TEST_SIZE);
+});
+
 perf("hash-map", "put(p)")
 .performanceMarginMillis(PERFORMANCE_MARGIN_MILLIS)
 .body([] {

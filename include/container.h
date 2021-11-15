@@ -69,6 +69,22 @@ public:
     }
 
     /**
+     * @brief Creates a new container of the indicated type and copies the
+     * elements of this container into it.
+     * 
+     * @tparam T Type of the new container.
+     * @return A new container with the copied elements.
+     */
+    template <typename T>
+    auto to() const {
+        return T::create(
+            container().begin(),
+            container().end(),
+            container().size()
+        );
+    }
+
+    /**
      * @brief Reduces the elements of this container to a single value.
      * 
      * @param[in] reducer A reducing functor that combines two elements into
