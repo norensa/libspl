@@ -457,7 +457,12 @@ protected:
             _table = _ht->_table;
             _size = _ht->_controller.tableSize;
 
-            while (_i < _size && ! _table[_i].occupied()) ++_i;
+            if (ht->_size == 0) {
+                _i = _size;
+            }
+            else {
+                while (_i < _size && ! _table[_i].occupied()) ++_i;
+            }
         }
 
         HashTableIterator(const HashTableIterator &rhs)
