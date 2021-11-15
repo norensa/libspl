@@ -98,7 +98,7 @@ public:
     { }
 
     HashMap(HashMap &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -139,7 +139,7 @@ public:
     HashMap(Sequence &&seq)
     :   base(seq.size())
     {
-        putAll(move(seq));
+        putAll(std::move(seq));
     }
 
     /**
@@ -222,7 +222,7 @@ public:
     }
 
     HashMap & operator=(HashMap &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -390,10 +390,10 @@ public:
         size_t h = _hash(k);
         size_t i = _findOrGetFreeIndex(h, k);
         if (_table[i].occupied()) {
-            _table[i].storage.n.v = move(v);
+            _table[i].storage.n.v = std::move(v);
         }
         else {
-            _table[i].set(h, { k, move(v) });
+            _table[i].set(h, { k, std::move(v) });
             ++_size;
         }
         return *this;
@@ -413,7 +413,7 @@ public:
             _table[i].storage.n.v = v;
         }
         else {
-            _table[i].set(h, { move(k), v });
+            _table[i].set(h, { std::move(k), v });
             ++_size;
         }
         return *this;
@@ -430,10 +430,10 @@ public:
         size_t h = _hash(k);
         size_t i = _findOrGetFreeIndex(h, k);
         if (_table[i].occupied()) {
-            _table[i].storage.n.v = move(v);
+            _table[i].storage.n.v = std::move(v);
         }
         else {
-            _table[i].set(h, { move(k), move(v) });
+            _table[i].set(h, { std::move(k), std::move(v) });
             ++_size;
         }
         return *this;
@@ -478,7 +478,7 @@ public:
         auto it = seq.begin();
         auto end = seq.end();
         while (it != end) {
-            put(move((*it).k), move((*it).v));
+            put(std::move((*it).k), std::move((*it).v));
             ++it;
         }
         return *this;
@@ -513,7 +513,7 @@ public:
         size_t h = _hash(k);
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
-            _table[i].set(h, { move(k), Val() });
+            _table[i].set(h, { std::move(k), Val() });
         }
         return _table[i].storage.n.v;
     }
@@ -586,7 +586,7 @@ public:
         size_t h = _hash(k);
         size_t i = _findIndex(h, k);
         if (i == __NPOS) throw ElementNotFoundError();
-        Val retval = move(_table[i].storage.n.v);
+        Val retval = std::move(_table[i].storage.n.v);
         _table[i].release();
         --_size;
         return retval;
@@ -604,7 +604,7 @@ public:
         size_t h = _hash(k);
         size_t i = _findIndex(h, k);
         if (i == __NPOS) throw ElementNotFoundError();
-        storage_node retval = move(_table[i].storage.n);
+        storage_node retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         return retval;
@@ -732,7 +732,7 @@ public:
     { }
 
     HashMap(HashMap &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -773,7 +773,7 @@ public:
     HashMap(Sequence &&seq)
     :   base(seq.size())
     {
-        putAll(move(seq));
+        putAll(std::move(seq));
     }
 
     /**
@@ -856,7 +856,7 @@ public:
     }
 
     HashMap & operator=(HashMap &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -1047,10 +1047,10 @@ public:
         _controller.enter();
         size_t i = _findOrGetFreeIndex(h, k);
         if (_table[i].occupied()) {
-            _table[i].storage.n.v = move(v);
+            _table[i].storage.n.v = std::move(v);
         }
         else {
-            _table[i].set(h, { k, move(v) });
+            _table[i].set(h, { k, std::move(v) });
             ++_size;
         }
         _controller.exit();
@@ -1072,7 +1072,7 @@ public:
             _table[i].storage.n.v = v;
         }
         else {
-            _table[i].set(h, { move(k), v });
+            _table[i].set(h, { std::move(k), v });
             ++_size;
         }
         _controller.exit();
@@ -1091,10 +1091,10 @@ public:
         _controller.enter();
         size_t i = _findOrGetFreeIndex(h, k);
         if (_table[i].occupied()) {
-            _table[i].storage.n.v = move(v);
+            _table[i].storage.n.v = std::move(v);
         }
         else {
-            _table[i].set(h, { move(k), move(v) });
+            _table[i].set(h, { std::move(k), std::move(v) });
             ++_size;
         }
         _controller.exit();
@@ -1140,7 +1140,7 @@ public:
         auto it = seq.begin();
         auto end = seq.end();
         while (it != end) {
-            put(move((*it).k), move((*it).v));
+            put(std::move((*it).k), std::move((*it).v));
             ++it;
         }
         return *this;
@@ -1177,7 +1177,7 @@ public:
         size_t h = _hash(k);
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
-            _table[i].set(h, { move(k), Val() });
+            _table[i].set(h, { std::move(k), Val() });
         }
         return _table[i].storage.n.v;
     }
@@ -1312,7 +1312,7 @@ public:
             _controller.exit();
             throw ElementNotFoundError();
         }
-        Val retval = move(_table[i].storage.n.v);
+        Val retval = std::move(_table[i].storage.n.v);
         _table[i].release();
         --_size;
         _controller.exit();
@@ -1339,7 +1339,7 @@ public:
             _controller.exit();
             throw ElementNotFoundError();
         }
-        Val retval = move(_table[i].storage.n.v);
+        Val retval = std::move(_table[i].storage.n.v);
         _table[i].release();
         --_size;
         _controller.unlock();
@@ -1363,7 +1363,7 @@ public:
             _controller.exit();
             throw ElementNotFoundError();
         }
-        storage_node retval = move(_table[i].storage.n);
+        storage_node retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         _controller.exit();
@@ -1390,7 +1390,7 @@ public:
             _controller.exit();
             throw ElementNotFoundError();
         }
-        storage_node retval = move(_table[i].storage.n);
+        storage_node retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         _controller.unlock();
@@ -1569,7 +1569,7 @@ public:
     { }
 
     HashMultiMap(HashMultiMap &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -1610,7 +1610,7 @@ public:
     HashMultiMap(Sequence &&seq)
     :   base(seq.size())
     {
-        putAll(move(seq));
+        putAll(std::move(seq));
     }
 
     /**
@@ -1693,7 +1693,7 @@ public:
     }
 
     HashMultiMap & operator=(HashMultiMap &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -1855,7 +1855,7 @@ public:
     HashMultiMap & put(const Key &k, Val &&v) {
         size_t h = _hash(k);
         size_t i = _getFreeIndex(h, k);
-        _table[i].set(h, { k, move(v) });
+        _table[i].set(h, { k, std::move(v) });
         ++_size;
         return *this;
     }
@@ -1870,7 +1870,7 @@ public:
     HashMultiMap & put(Key &&k, const Val &v) {
         size_t h = _hash(k);
         size_t i = _getFreeIndex(h);
-        _table[i].set(h, { move(k), v });
+        _table[i].set(h, { std::move(k), v });
         ++_size;
         return *this;
     }
@@ -1885,7 +1885,7 @@ public:
     HashMultiMap & put(Key &&k, Val &&v) {
         size_t h = _hash(k);
         size_t i = _getFreeIndex(h);
-        _table[i].set(h, { move(k), move(v) });
+        _table[i].set(h, { std::move(k), std::move(v) });
         ++_size;
         return *this;
     }
@@ -1929,7 +1929,7 @@ public:
         auto it = seq.begin();
         auto end = seq.end();
         while (it != end) {
-            put(move((*it).k), move((*it).v));
+            put(std::move((*it).k), std::move((*it).v));
             ++it;
         }
         return *this;
@@ -1995,7 +1995,7 @@ public:
         size_t h = _hash(k);
         size_t i = _findIndex(h, k);
         if (i == __NPOS) throw ElementNotFoundError();
-        Val retval = move(_table[i].storage.n.v);
+        Val retval = std::move(_table[i].storage.n.v);
         _table[i].release();
         --_size;
         return retval;
@@ -2014,7 +2014,7 @@ public:
         size_t h = _hash(k);
         size_t i = _findIndex(h, k);
         if (i == __NPOS) throw ElementNotFoundError();
-        storage_node retval = move(_table[i].storage.n);
+        storage_node retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         return retval;
@@ -2143,7 +2143,7 @@ public:
     { }
 
     HashMultiMap(HashMultiMap &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -2184,7 +2184,7 @@ public:
     HashMultiMap(Sequence &&seq)
     :   base(seq.size())
     {
-        putAll(move(seq));
+        putAll(std::move(seq));
     }
 
     /**
@@ -2267,7 +2267,7 @@ public:
     }
 
     HashMultiMap & operator=(HashMultiMap &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -2452,7 +2452,7 @@ public:
         size_t h = _hash(k);
         _controller.enter();
         size_t i = _getFreeIndex(h);
-        _table[i].set(h, { k, move(v) });
+        _table[i].set(h, { k, std::move(v) });
         ++_size;
         _controller.exit();
         return *this;
@@ -2469,7 +2469,7 @@ public:
         size_t h = _hash(k);
         _controller.enter();
         size_t i = _getFreeIndex(h);
-        _table[i].set(h, { move(k), v });
+        _table[i].set(h, { std::move(k), v });
         ++_size;
         _controller.exit();
         return *this;
@@ -2486,7 +2486,7 @@ public:
         size_t h = _hash(k);
         _controller.enter();
         size_t i = _getFreeIndex(h);
-        _table[i].set(h, { move(k), move(v) });
+        _table[i].set(h, { std::move(k), std::move(v) });
         ++_size;
         _controller.exit();
         return *this;
@@ -2531,7 +2531,7 @@ public:
         auto it = seq.begin();
         auto end = seq.end();
         while (it != end) {
-            put(move((*it).k), move((*it).v));
+            put(std::move((*it).k), std::move((*it).v));
             ++it;
         }
         return *this;
@@ -2661,7 +2661,7 @@ public:
         _controller.enter();
         size_t i = _findIndex(h, k);
         if (i != __NPOS) {
-            Val retval = move(_table[i].storage.n.v);
+            Val retval = std::move(_table[i].storage.n.v);
             _table[i].release();
             --_size;
             _controller.exit();
@@ -2688,7 +2688,7 @@ public:
         _controller.lock();
         size_t i = _findIndex(h, k);
         if (i != __NPOS) {
-            Val retval = move(_table[i].storage.n.v);
+            Val retval = std::move(_table[i].storage.n.v);
             _table[i].release();
             --_size;
             _controller.unlock();
@@ -2714,7 +2714,7 @@ public:
         _controller.enter();
         size_t i = _findIndex(h, k);
         if (i != __NPOS) {
-            storage_node retval = move(_table[i].storage.n);
+            storage_node retval = std::move(_table[i].storage.n);
             _table[i].release();
             --_size;
             _controller.exit();
@@ -2741,7 +2741,7 @@ public:
         _controller.lock();
         size_t i = _findIndex(h, k);
         if (i != __NPOS) {
-            storage_node retval = move(_table[i].storage.n);
+            storage_node retval = std::move(_table[i].storage.n);
             _table[i].release();
             --_size;
             _controller.unlock();

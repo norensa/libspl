@@ -110,7 +110,7 @@ unit("list", "move")
     assert(l.size() == TEST_SIZE);
     assert(l.begin() != l.end());
 
-    auto l2 = move(l);
+    auto l2 = std::move(l);
 
     assert(l.empty());
     assert(! l.nonEmpty());

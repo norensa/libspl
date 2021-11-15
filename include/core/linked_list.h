@@ -12,8 +12,6 @@
 
 namespace spl {
 
-using std::move;
-
 namespace __LinkedList {
 
 template <typename T>
@@ -36,7 +34,7 @@ struct SinglyLinkedNode {
 
     SinglyLinkedNode(T &&rhs)
     :   next(nullptr),
-        data(move(rhs))
+        data(std::move(rhs))
     { }
 
     SinglyLinkedNode(const node &rhs) = delete;
@@ -98,7 +96,7 @@ struct AtomicSinglyLinkedNode {
 
     AtomicSinglyLinkedNode(T &&rhs)
     :   next(nullptr),
-        data(move(rhs))
+        data(std::move(rhs))
     { }
 
     AtomicSinglyLinkedNode(const node &rhs) = delete;
@@ -279,7 +277,7 @@ protected:
     }
 
     static node * _mkNode(T &&data) {
-        return new node(move(data));
+        return new node(std::move(data));
     }
 
     template <typename Begin, typename End>
@@ -314,12 +312,12 @@ protected:
         }
         else {
             auto it = begin;
-            node *n = _mkNode(move(*it));
+            node *n = _mkNode(std::move(*it));
             _head = n;
             ++it;
             size_t sz = 1;
             for (node *p = n; it != end; ++it, p = n) {
-                n = _mkNode(move(*it));
+                n = _mkNode(std::move(*it));
                 node::insert(n, p->next);
                 ++sz;
             }
@@ -499,7 +497,7 @@ public:
             it._prev == nullptr ? _head : it._prev->next,
             _tail
         );
-        T data = move(node->data);
+        T data = std::move(node->data);
         delete node;
         return data;
     }
@@ -512,7 +510,7 @@ public:
             n = node::removeFront(_head, _tail);
         } while(n == nullptr);
 
-        T data = move(n->data);
+        T data = std::move(n->data);
         delete n;
         --_size;
         return data;

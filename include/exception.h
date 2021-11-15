@@ -13,8 +13,6 @@
 
 namespace spl {
 
-using std::move;
-
 inline const char *__strerror(int err = errno) {
     return strerror(err);
 }
@@ -151,7 +149,7 @@ public:
 
     TraceableError(TraceableError &&rhs)
     :   Error(rhs._msg),
-        _callstack(move(rhs._callstack)),
+        _callstack(std::move(rhs._callstack)),
         _type(rhs._type),
         _function(rhs._function),
         _file(rhs._file),
@@ -187,7 +185,7 @@ public:
             if (_msgPrepared) free((void *) _msg);
 
             _msg = rhs._msg;
-            _callstack = move(rhs._callstack);
+            _callstack = std::move(rhs._callstack);
             _type = rhs._type;
             _function = rhs._function;
             _file = rhs._file;

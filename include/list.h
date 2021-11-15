@@ -12,8 +12,6 @@
 
 namespace spl {
 
-using std::move;
-
 /**
  * @brief A singly-linked list.
  * 
@@ -51,7 +49,7 @@ public:
     { }
 
     List(List &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -80,7 +78,7 @@ public:
      */
     template <typename Sequence>
     List(Sequence &&seq)
-    :   base(move(seq))
+    :   base(std::move(seq))
     { }
 
     /**
@@ -145,7 +143,7 @@ public:
     }
 
     List & operator=(List &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -268,7 +266,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & prepend(T &&elem) {
-        base::prepend(_mkNode(move(elem)));
+        base::prepend(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -291,7 +289,7 @@ public:
      * @return A reference to the list for chaining.
      */
     friend List & operator>>(T &&elem, List &list) {
-        return list.prepend(move(elem));
+        return list.prepend(std::move(elem));
     }
 
     /**
@@ -312,7 +310,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & append(T &&elem) {
-        base::append(_mkNode(move(elem)));
+        base::append(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -334,7 +332,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & operator<<(T &&elem) {
-        base::append(_mkNode(move(elem)));
+        base::append(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -356,7 +354,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & insert(T &&elem) {
-        base::prepend(_mkNode(move(elem)));
+        base::prepend(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -382,7 +380,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & insertBefore(const Iterator &pos, T &&elem) {
-        base::insertBefore(pos, _mkNode(move(elem)));
+        base::insertBefore(pos, _mkNode(std::move(elem)));
         return *this;
     }
 
@@ -408,7 +406,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & insertAfter(const Iterator &pos, T &&elem) {
-        base::insertAfter(pos, _mkNode(move(elem)));
+        base::insertAfter(pos, _mkNode(std::move(elem)));
         return *this;
     }
 
@@ -499,7 +497,7 @@ public:
     { }
 
     List(List &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -528,7 +526,7 @@ public:
      */
     template <typename Sequence>
     List(Sequence &&seq)
-    :   base(move(seq))
+    :   base(std::move(seq))
     { }
 
     /**
@@ -593,7 +591,7 @@ public:
     }
 
     List & operator=(List &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -716,7 +714,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & prepend(T &&elem) {
-        base::prepend(_mkNode(move(elem)));
+        base::prepend(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -739,7 +737,7 @@ public:
      * @return A reference to the list for chaining.
      */
     friend List & operator>>(T &&elem, List &list) {
-        return list.prepend(move(elem));
+        return list.prepend(std::move(elem));
     }
 
     /**
@@ -760,7 +758,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & append(T &&elem) {
-        base::append(_mkNode(move(elem)));
+        base::append(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -782,7 +780,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & operator<<(T &&elem) {
-        base::append(_mkNode(move(elem)));
+        base::append(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -804,7 +802,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & insert(T &&elem) {
-        base::prepend(_mkNode(move(elem)));
+        base::prepend(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -830,7 +828,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & insertBefore(const Iterator &pos, T &&elem) {
-        base::insertBefore(pos, _mkNode(move(elem)));
+        base::insertBefore(pos, _mkNode(std::move(elem)));
         return *this;
     }
 
@@ -856,7 +854,7 @@ public:
      * @return A reference to this container for chaining.
      */
     List & insertAfter(const Iterator &pos, T &&elem) {
-        base::insertAfter(pos, _mkNode(move(elem)));
+        base::insertAfter(pos, _mkNode(std::move(elem)));
         return *this;
     }
 

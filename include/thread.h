@@ -13,8 +13,6 @@
 
 namespace spl {
 
-using std::move;
-
 /**
  * @brief An error to indicate that a thread cannot be joined.
  */
@@ -86,7 +84,7 @@ private:
         volatile bool running = false;
 
         Context(std::function<void()> &&func)
-        :   func(move(func))
+        :   func(std::move(func))
         { }
     };
     static thread_local Context *__ctx;

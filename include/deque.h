@@ -14,8 +14,6 @@
 
 namespace spl {
 
-using std::move;
-
 /**
  * @brief An exception used for timeout events on a dequeue operation.
 */
@@ -58,7 +56,7 @@ public:
     { }
 
     Deque(Deque &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -87,7 +85,7 @@ public:
      */
     template <typename Sequence>
     Deque(Sequence &&seq)
-    :   base(move(seq))
+    :   base(std::move(seq))
     { }
 
     /**
@@ -152,7 +150,7 @@ public:
     }
 
     Deque & operator=(Deque &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -275,7 +273,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & enqueueFront(T &&elem) {
-        base::prepend(_mkNode(move(elem)));
+        base::prepend(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -297,7 +295,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & enqueue(T &&elem) {
-        base::append(_mkNode(move(elem)));
+        base::append(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -319,7 +317,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & operator<<(T &&elem) {
-        base::append(_mkNode(move(elem)));
+        base::append(_mkNode(std::move(elem)));
         return *this;
     }
 
@@ -376,7 +374,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & insertBefore(const Iterator &pos, T &&elem) {
-        base::insertBefore(pos, _mkNode(move(elem)));
+        base::insertBefore(pos, _mkNode(std::move(elem)));
         return *this;
     }
 
@@ -402,7 +400,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & insertAfter(const Iterator &pos, T &&elem) {
-        base::insertAfter(pos, _mkNode(move(elem)));
+        base::insertAfter(pos, _mkNode(std::move(elem)));
         return *this;
     }
 
@@ -500,7 +498,7 @@ public:
     { }
 
     Deque(Deque &&rhs)
-    :   base(move(rhs)),
+    :   base(std::move(rhs)),
         _sem((int32_t) _size)
     { }
 
@@ -532,7 +530,7 @@ public:
      */
     template <typename Sequence>
     Deque(Sequence &&seq)
-    :   base(move(seq)),
+    :   base(std::move(seq)),
         _sem((int32_t) _size)
     { }
 
@@ -601,7 +599,7 @@ public:
     }
 
     Deque & operator=(Deque &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         _sem = (int32_t) _size;
         return *this;
     }
@@ -751,7 +749,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & enqueueFront(T &&elem) {
-        node *n = _mkNode(move(elem));
+        node *n = _mkNode(std::move(elem));
         _mtx.lock();
         base::prepend(n);
         _mtx.unlock();
@@ -781,7 +779,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & enqueue(T &&elem) {
-        node *n = _mkNode(move(elem));
+        node *n = _mkNode(std::move(elem));
         _mtx.lock();
         base::append(n);
         _mtx.unlock();
@@ -806,7 +804,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & operator<<(T &&elem) {
-        return enqueue(move(elem));
+        return enqueue(std::move(elem));
     }
 
     /**
@@ -933,7 +931,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & insertBefore(const Iterator &pos, T &&elem) {
-        base::insertBefore(pos, _mkNode(move(elem)));
+        base::insertBefore(pos, _mkNode(std::move(elem)));
         _sem.notify();
         return *this;
     }
@@ -961,7 +959,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Deque & insertAfter(const Iterator &pos, T &&elem) {
-        base::insertAfter(pos, _mkNode(move(elem)));
+        base::insertAfter(pos, _mkNode(std::move(elem)));
         _sem.notify();
         return *this;
     }

@@ -14,8 +14,6 @@
 
 namespace spl {
 
-using std::move;
-
 /**
  * @brief A sorted heap supporting O(log n) push and pop operations.
  * 
@@ -175,7 +173,7 @@ private:
     void _move(const Begin &begin, const End &end) {
         for (auto it = begin; it != end; ++it) {
             _expand();
-            new (_data + _size) T(move(*it));
+            new (_data + _size) T(std::move(*it));
             ++_size;
         }
         std::make_heap(_data, _data + _size, _comp);
@@ -420,7 +418,7 @@ public:
      */
     Heap & push(T &&elem) {
         _expand();
-        new (_data + _size) T(move(elem));
+        new (_data + _size) T(std::move(elem));
         ++_size;
         std::push_heap(_data, _data + _size, _comp);
         return *this;
@@ -443,7 +441,7 @@ public:
      * @return A reference to this container for chaining.
      */
     Heap & operator<<(T &&elem) {
-        return push(move(elem));
+        return push(std::move(elem));
     }
 
     /**
@@ -454,7 +452,7 @@ public:
     T pop() {
         std::pop_heap(_data, _data + _size, _comp);
         --_size;
-        T elem = move(_data[_size]);
+        T elem = std::move(_data[_size]);
         _data[_size].~T();
         _shrink();
         return elem;

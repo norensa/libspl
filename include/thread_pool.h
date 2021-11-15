@@ -17,8 +17,6 @@
 
 namespace spl {
 
-using std::move;
-
 /**
  * @brief Generic thread context class. This is used as the context object for
  * tasks running under a ThreadPool.
@@ -268,7 +266,7 @@ public:
      * @param t The task to enqueue.
      */
     void run(Task &&t) {
-        run(new Task(move(t)));
+        run(new Task(std::move(t)));
     }
 
     /**

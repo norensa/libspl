@@ -14,8 +14,6 @@
 
 namespace spl {
 
-using std::move;
-
 /**
  * @brief A node for map containers.
  * 
@@ -37,17 +35,17 @@ struct MapNode {
 
     MapNode(const Key &k, Val &&v)
     :   k(k),
-        v(move(v))
+        v(std::move(v))
     { }
 
     MapNode(Key &&k, const Val &v)
-    :   k(move(k)),
+    :   k(std::move(k)),
         v(v)
     { }
 
     MapNode(Key &&k, Val &&v)
-    :   k(move(k)),
-        v(move(v))
+    :   k(std::move(k)),
+        v(std::move(v))
     { }
 
     MapNode(const MapNode &) = default;
@@ -127,7 +125,7 @@ struct HashTableNode {
     }
 
     void set(size_t hash, storage_type &&node) {
-        new (&storage) storage_type(move(node));
+        new (&storage) storage_type(std::move(node));
         h = hash;
         status = OCCUPIED;
     }
@@ -214,7 +212,7 @@ struct AtomicHashTableNode {
     }
 
     void set(size_t hash, storage_type &&node) {
-        new (&storage) storage_type(move(node));
+        new (&storage) storage_type(std::move(node));
         h = hash;
         status.store(OCCUPIED, std::memory_order_release);
     }
@@ -373,7 +371,7 @@ struct ConcurrentHashTableController
     { }
 
     ConcurrentHashTableController(ConcurrentHashTableController &&rhs)
-    :   HashTableController(move(rhs))
+    :   HashTableController(std::move(rhs))
     { }
 
     ConcurrentHashTableController & operator=(const ConcurrentHashTableController &rhs) {
@@ -382,7 +380,7 @@ struct ConcurrentHashTableController
     }
 
     ConcurrentHashTableController & operator=(ConcurrentHashTableController &&rhs) {
-        HashTableController::operator=(move(rhs));
+        HashTableController::operator=(std::move(rhs));
         return *this;
     }
 
@@ -685,7 +683,7 @@ protected:
         for (size_t i = 0; i < oldTableSize; ++i) {
             if (old[i].occupied()) {
                 size_t j = _getFreeIndex_noResize(old[i].h);
-                _table[j].set(old[i].h, move(old[i].storage.n));
+                _table[j].set(old[i].h, std::move(old[i].storage.n));
                 old[i].release();
             }
         }

@@ -97,7 +97,7 @@ public:
     { }
 
     HashSet(HashSet &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -138,7 +138,7 @@ public:
     HashSet(Sequence &&seq)
     :   base(seq.size())
     {
-        putAll(move(seq));
+        putAll(std::move(seq));
     }
 
     /**
@@ -207,7 +207,7 @@ public:
     }
 
     HashSet & operator=(HashSet &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -356,7 +356,7 @@ public:
         size_t h = _hash(k);
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
-            _table[i].set(h, move(k));
+            _table[i].set(h, std::move(k));
             ++_size;
         }
         return *this;
@@ -401,7 +401,7 @@ public:
         auto it = seq.begin();
         auto end = seq.end();
         while (it != end) {
-            put(move(*it));
+            put(std::move(*it));
             ++it;
         }
         return *this;
@@ -460,7 +460,7 @@ public:
         size_t h = _hash(k);
         size_t i = _findIndex(h, k);
         if (i == __NPOS) throw ElementNotFoundError();
-        Key retval = move(_table[i].storage.n);
+        Key retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         return retval;
@@ -586,7 +586,7 @@ public:
     { }
 
     HashSet(HashSet &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -627,7 +627,7 @@ public:
     HashSet(Sequence &&seq)
     :   base(seq.size())
     {
-        putAll(move(seq));
+        putAll(std::move(seq));
     }
 
     /**
@@ -696,7 +696,7 @@ public:
     }
 
     HashSet & operator=(HashSet &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -857,7 +857,7 @@ public:
         _controller.enter();
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
-            _table[i].set(h, move(k));
+            _table[i].set(h, std::move(k));
             ++_size;
         }
         _controller.exit();
@@ -903,7 +903,7 @@ public:
         auto it = seq.begin();
         auto end = seq.end();
         while (it != end) {
-            put(move(*it));
+            put(std::move(*it));
             ++it;
         }
         return *this;
@@ -1023,7 +1023,7 @@ public:
             _controller.exit();
             throw ElementNotFoundError();
         }
-        Key retval = move(_table[i].storage.n);
+        Key retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         _controller.exit();
@@ -1050,7 +1050,7 @@ public:
             _controller.exit();
             throw ElementNotFoundError();
         }
-        Key retval = move(_table[i].storage.n);
+        Key retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         _controller.unlock();
@@ -1228,7 +1228,7 @@ public:
     { }
 
     HashMultiSet(HashMultiSet &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -1269,7 +1269,7 @@ public:
     HashMultiSet(Sequence &&seq)
     :   base(seq.size())
     {
-        putAll(move(seq));
+        putAll(std::move(seq));
     }
 
     /**
@@ -1338,7 +1338,7 @@ public:
     }
 
     HashMultiSet & operator=(HashMultiSet &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -1484,7 +1484,7 @@ public:
     HashMultiSet & put(Key &&k) {
         size_t h = _hash(k);
         size_t i = _getFreeIndex(h);
-        _table[i].set(h, move(k));
+        _table[i].set(h, std::move(k));
         ++_size;
         return *this;
     }
@@ -1528,7 +1528,7 @@ public:
         auto it = seq.begin();
         auto end = seq.end();
         while (it != end) {
-            put(move(*it));
+            put(std::move(*it));
             ++it;
         }
         return *this;
@@ -1593,7 +1593,7 @@ public:
         size_t h = _hash(k);
         size_t i = _findIndex(h, k);
         if (i == __NPOS) throw ElementNotFoundError();
-        Key retval = move(_table[i].storage.n);
+        Key retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         return retval;
@@ -1720,7 +1720,7 @@ public:
     { }
 
     HashMultiSet(HashMultiSet &&rhs)
-    :   base(move(rhs))
+    :   base(std::move(rhs))
     { }
 
     /**
@@ -1761,7 +1761,7 @@ public:
     HashMultiSet(Sequence &&seq)
     :   base(seq.size())
     {
-        putAll(move(seq));
+        putAll(std::move(seq));
     }
 
     /**
@@ -1830,7 +1830,7 @@ public:
     }
 
     HashMultiSet & operator=(HashMultiSet &&rhs) {
-        base::operator=(move(rhs));
+        base::operator=(std::move(rhs));
         return *this;
     }
 
@@ -1993,7 +1993,7 @@ public:
         size_t h = _hash(k);
         _controller.enter();
         size_t i = _getFreeIndex(h);
-        _table[i].set(h, move(k));
+        _table[i].set(h, std::move(k));
         ++_size;
         _controller.exit();
         return *this;
@@ -2038,7 +2038,7 @@ public:
         auto it = seq.begin();
         auto end = seq.end();
         while (it != end) {
-            put(move(*it));
+            put(std::move(*it));
             ++it;
         }
         return *this;
@@ -2171,7 +2171,7 @@ public:
             _controller.exit();
             throw ElementNotFoundError();
         }
-        Key retval = move(_table[i].storage.n);
+        Key retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         _controller.exit();
@@ -2199,7 +2199,7 @@ public:
             _controller.exit();
             throw ElementNotFoundError();
         }
-        Key retval = move(_table[i].storage.n);
+        Key retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
         _controller.unlock();

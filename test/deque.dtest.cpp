@@ -106,7 +106,7 @@ unit("deque", "move")
     assert(q.size() == TEST_SIZE);
     assert(q.begin() != q.end());
 
-    auto l2 = move(q);
+    auto l2 = std::move(q);
 
     assert(q.empty());
     assert(! q.nonEmpty());

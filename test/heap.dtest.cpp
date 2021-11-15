@@ -112,7 +112,7 @@ unit("heap", "move")
     assert(h.size() == TEST_SIZE);
     assert(h.begin() != h.end());
 
-    auto h2 = move(h);
+    auto h2 = std::move(h);
 
     assert(h.empty());
     assert(! h.nonEmpty());
