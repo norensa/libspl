@@ -9,6 +9,8 @@
 #include <atomic>
 #include <exception.h>
 #include <iterator.h>
+#include <serialization.h>
+#include <type_traits>
 
 namespace spl {
 
@@ -336,6 +338,51 @@ protected:
         _head = nullptr;
         _tail = nullptr;
         _size = 0;
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<SupportsSerialization<X>, int> = 0
+    >
+    void _serialize(OutputStreamSerializer &serializer) const {
+        serializer << static_cast<size_t>(_size);
+        for (const auto &elem : *this) {
+            serializer << elem;
+        }
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<! SupportsSerialization<X>, int> = 0
+    >
+    void _serialize(OutputStreamSerializer &serializer) const {
+        throw DynamicMessageError(
+            "Type '", typeid(T).name(), "' cannot be serialized."
+        );
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<SupportsSerialization<X> && std::is_constructible_v<X>, int> = 0
+    >
+    void _deserialize(InputStreamSerializer &serializer) {
+        size_t sz;
+        serializer >> sz;
+        for (size_t i = 0; i < sz; ++i) {
+            T elem;
+            serializer >> elem;
+            append(_mkNode(std::move(elem)));
+        }
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<! SupportsSerialization<X> || ! std::is_constructible_v<X>, int> = 0
+    >
+    void _deserialize(InputStreamSerializer &serializer) {
+        throw DynamicMessageError(
+            "Type '", typeid(T).name(), "' cannot be deserialized."
+        );
     }
 
 public:

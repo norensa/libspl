@@ -9,6 +9,7 @@
 
 #include <core/linked_list.h>
 #include <container.h>
+#include <serialization.h>
 
 namespace spl {
 
@@ -20,7 +21,8 @@ namespace spl {
 template <typename T>
 class List
 :   protected __LinkedList::ListBase<T, __LinkedList::SinglyLinkedNode<T>, size_t>,
-    public ForwardIterableContainer<List<T>>
+    public ForwardIterableContainer<List<T>>,
+    public Serializable
 {
 
     template <typename ListType> friend struct ListTester;
@@ -145,6 +147,14 @@ public:
     List & operator=(List &&rhs) {
         base::operator=(std::move(rhs));
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer);
     }
 
     /**
@@ -468,7 +478,8 @@ namespace parallel
 template <typename T>
 class List
 :   protected __LinkedList::ListBase<T, __LinkedList::AtomicSinglyLinkedNode<T>, std::atomic<size_t>>,
-    public ForwardIterableContainer<List<T>>
+    public ForwardIterableContainer<List<T>>,
+    public Serializable
 {
 
     template <typename ListType> friend struct ListTester;
@@ -593,6 +604,14 @@ public:
     List & operator=(List &&rhs) {
         base::operator=(std::move(rhs));
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer);
     }
 
     /**

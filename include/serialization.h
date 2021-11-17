@@ -830,4 +830,15 @@ public:
     }
 };
 
+template <typename T>
+inline constexpr bool SupportsTrivialSerialization = (
+    std::is_copy_assignable_v<T>
+);
+
+template <typename T>
+inline constexpr bool SupportsSerialization = (
+    SupportsTrivialSerialization<T>
+    || std::is_base_of_v<Serializable, std::remove_pointer_t<T>>
+);
+
 }   // namespace spl
