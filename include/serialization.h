@@ -120,6 +120,37 @@ public:
 };
 
 /**
+ * @brief Evaluates to true if T is trivially serializable. 
+ * 
+ * @tparam T The type to check.
+ */
+template <typename T>
+inline constexpr bool SupportsTrivialSerialization = (
+    std::is_copy_assignable_v<T>
+);
+
+/**
+ * @brief Evaluates to true if T implements custom serialization. 
+ * 
+ * @tparam T The type to check.
+ */
+template <typename T>
+inline constexpr bool SupportsCustomSerialization = (
+    std::is_base_of_v<Serializable, std::remove_pointer_t<T>>
+);
+
+/**
+ * @brief Evaluates to true if T is serializable. 
+ * 
+ * @tparam T The type to check.
+ */
+template <typename T>
+inline constexpr bool SupportsSerialization = (
+    SupportsTrivialSerialization<T>
+    || SupportsCustomSerialization<T>
+);
+
+/**
  * @brief A serializer used for writing objects to some underlying byte stream.
 */
 class OutputStreamSerializer {
@@ -233,7 +264,7 @@ public:
     template <
         typename T,
         std::enable_if_t<
-            ! std::is_base_of_v<Serializable, std::remove_pointer_t<T>>,
+            SupportsTrivialSerialization<T> && ! SupportsCustomSerialization<T>,
             int
         > = 0
     >
@@ -416,7 +447,7 @@ public:
     template <
         typename T,
         std::enable_if_t<
-            ! std::is_base_of_v<Serializable, std::remove_pointer_t<T>>,
+            SupportsTrivialSerialization<T> && ! SupportsCustomSerialization<T>,
             int
         > = 0
     >
@@ -562,7 +593,7 @@ public:
     template <
         typename T,
         std::enable_if_t<
-            ! std::is_base_of_v<Serializable, std::remove_pointer_t<T>>,
+            SupportsTrivialSerialization<T> && ! SupportsCustomSerialization<T>,
             int
         > = 0
     >
@@ -772,7 +803,7 @@ public:
     template <
         typename T,
         std::enable_if_t<
-            ! std::is_base_of_v<Serializable, std::remove_pointer_t<T>>,
+            SupportsTrivialSerialization<T> && ! SupportsCustomSerialization<T>,
             int
         > = 0
     >
@@ -829,16 +860,5 @@ public:
         return *this;
     }
 };
-
-template <typename T>
-inline constexpr bool SupportsTrivialSerialization = (
-    std::is_copy_assignable_v<T>
-);
-
-template <typename T>
-inline constexpr bool SupportsSerialization = (
-    SupportsTrivialSerialization<T>
-    || std::is_base_of_v<Serializable, std::remove_pointer_t<T>>
-);
 
 }   // namespace spl
