@@ -77,7 +77,7 @@ public:
      */
     template <typename T>
     auto to() const {
-        return T::create(
+        return T(
             container().begin(),
             container().end(),
             container().size()
