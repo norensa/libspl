@@ -11,6 +11,7 @@
 #include <container.h>
 #include <thread.h>
 #include <mutex>
+#include <serialization.h>
 
 namespace spl {
 
@@ -27,7 +28,8 @@ struct DequeueTimedout { };
 template <typename T>
 class Deque
 :   protected __LinkedList::ListBase<T, __LinkedList::SinglyLinkedNode<T>, size_t>,
-    public ForwardIterableContainer<Deque<T>>
+    public ForwardIterableContainer<Deque<T>>,
+    public Serializable
 {
 
     template <typename DequeType> friend struct DequeTester;
@@ -152,6 +154,14 @@ public:
     Deque & operator=(Deque &&rhs) {
         base::operator=(std::move(rhs));
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer);
     }
 
     /**
@@ -463,7 +473,8 @@ namespace parallel
 template <typename T>
 class Deque
 :   protected __LinkedList::ListBase<T, __LinkedList::SinglyLinkedNode<T>, size_t>,
-    public ForwardIterableContainer<Deque<T>>
+    public ForwardIterableContainer<Deque<T>>,
+    public Serializable
 {
 
     template <typename DequeType> friend struct DequeTester;
@@ -602,6 +613,14 @@ public:
         base::operator=(std::move(rhs));
         _sem = (int32_t) _size;
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer);
     }
 
     /**

@@ -156,3 +156,148 @@ unit("container-serialization", "parallel::list<serializable>")
         assert(x.deserialized());
     }
 });
+
+// deque ///////////////////////
+
+#include <deque.h>
+
+unit("container-serialization", "deque<int>")
+.dependsOn("deque")
+.body([] {
+    auto l = Deque<int>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        l.enqueue(dtest_random() * TEST_SIZE);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << l;
+    out.flush();
+
+    Deque<int> l2;
+    auto in = out.toInput();
+    in >> l2;
+
+    assert(l.size() == l2.size());
+
+    for (auto it1 = l.begin(), it2 = l2.begin(); it1 != l.end(); ++it1, ++it2) {
+        assert(*it1 == *it2);
+    }
+});
+
+unit("container-serialization", "deque<serializable>")
+.dependsOn("deque")
+.body([] {
+    auto l = Deque<StreamSerializable>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        l.enqueue(StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << l;
+    out.flush();
+
+    for (auto &x : l) {
+        assert(x.serialized());
+    }
+
+    Deque<StreamSerializable> l2;
+    auto in = out.toInput();
+    in >> l2;
+
+    assert(l.size() == l2.size());
+
+    for (auto &x : l2) {
+        assert(x.deserialized());
+    }
+});
+
+unit("container-serialization", "deque<non-serializable>")
+.dependsOn("deque")
+.expect(Status::FAIL)
+.body([] {
+    auto l = Deque<StreamSerializable_NotCopyAssignable>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        l.enqueue(StreamSerializable_NotCopyAssignable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << l;
+    err("Object should not be serialized");
+});
+
+unit("container-serialization", "deque<non-deserializable>")
+.dependsOn("deque")
+.expect(Status::FAIL)
+.body([] {
+    auto l = Deque<StreamSerializable_NotConstructible>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        l.enqueue(StreamSerializable_NotConstructible(0));
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << l;
+    out.flush();
+
+    Deque<StreamSerializable_NotConstructible> l2;
+    auto in = out.toInput();
+    in >> l2;
+    err("Object should not be deserialized");
+});
+
+unit("container-serialization", "parallel::deque<int>")
+.dependsOn("parallel::deque")
+.body([] {
+    auto l = parallel::Deque<int>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        l.enqueue(dtest_random() * TEST_SIZE);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << l;
+    out.flush();
+
+    parallel::Deque<int> l2;
+    auto in = out.toInput();
+    in >> l2;
+
+    assert(l.size() == l2.size());
+
+    for (auto it1 = l.begin(), it2 = l2.begin(); it1 != l.end(); ++it1, ++it2) {
+        assert(*it1 == *it2);
+    }
+});
+
+unit("container-serialization", "parallel::deque<serializable>")
+.dependsOn("parallel::deque")
+.body([] {
+    auto l = parallel::Deque<StreamSerializable>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        l.enqueue(StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << l;
+    out.flush();
+
+    for (auto &x : l) {
+        assert(x.serialized());
+    }
+
+    parallel::Deque<StreamSerializable> l2;
+    auto in = out.toInput();
+    in >> l2;
+
+    assert(l.size() == l2.size());
+
+    for (auto &x : l2) {
+        assert(x.deserialized());
+    }
+});
