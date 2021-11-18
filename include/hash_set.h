@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include <functional>       // std::equal_to
-
 #include <core/hash_table.h>
+#include <functional>       // std::equal_to
 #include <hash.h>
 #include <container.h>
 #include <exception.h>
+#include <serialization.h>
 
 namespace spl {
 
@@ -37,7 +37,8 @@ class HashSet
         __HashTable::HashTableController,
         size_t
     >,
-    public ForwardIterableContainer<HashSet<Key, KeyHash, KeyEqual>>
+    public ForwardIterableContainer<HashSet<Key, KeyHash, KeyEqual>>,
+    public Serializable
 {
 
     template <typename HashSetType> friend struct HashSetTester;
@@ -209,6 +210,14 @@ public:
     HashSet & operator=(HashSet &&rhs) {
         base::operator=(std::move(rhs));
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer, level);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer, level);
     }
 
     /**
@@ -526,7 +535,8 @@ class HashSet
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >,
-    public ForwardIterableContainer<HashSet<Key, KeyHash, KeyEqual>>
+    public ForwardIterableContainer<HashSet<Key, KeyHash, KeyEqual>>,
+    public Serializable
 {
 
     template <typename HashSetType> friend struct HashSetTester;
@@ -698,6 +708,14 @@ public:
     HashSet & operator=(HashSet &&rhs) {
         base::operator=(std::move(rhs));
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer, level);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer, level);
     }
 
     /**
@@ -1169,7 +1187,8 @@ class HashMultiSet
         __HashTable::HashTableController,
         size_t
     >,
-    public ForwardIterableContainer<HashMultiSet<Key, KeyHash, KeyEqual>>
+    public ForwardIterableContainer<HashMultiSet<Key, KeyHash, KeyEqual>>,
+    public Serializable
 {
 
     template <typename HashSetType> friend struct HashSetTester;
@@ -1342,6 +1361,14 @@ public:
         return *this;
     }
 
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer, level);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer, level);
+    }
+
     /**
      * @return The size of this container.
      */
@@ -1469,7 +1496,7 @@ public:
      */
     HashMultiSet & put(const Key &k) {
         size_t h = _hash(k);
-        size_t i = _getFreeIndex(h, k);
+        size_t i = _getFreeIndex(h);
         _table[i].set(h, k);
         ++_size;
         return *this;
@@ -1660,7 +1687,8 @@ class HashMultiSet
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >,
-    public ForwardIterableContainer<HashMultiSet<Key, KeyHash, KeyEqual>>
+    public ForwardIterableContainer<HashMultiSet<Key, KeyHash, KeyEqual>>,
+    public Serializable
 {
 
     template <typename HashSetType> friend struct HashSetTester;
@@ -1832,6 +1860,14 @@ public:
     HashMultiSet & operator=(HashMultiSet &&rhs) {
         base::operator=(std::move(rhs));
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer, level);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer, level);
     }
 
     /**

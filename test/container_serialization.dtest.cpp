@@ -648,3 +648,221 @@ unit("container-serialization", "parallel::hashmultimap<hashableserializable,ser
         assert(m2.get(n.k).deserialized());
     }
 });
+
+// hash-set ////////////////////
+
+#include <hash_set.h>
+
+unit("container-serialization", "hashset<int>")
+.dependsOn("hash-set")
+.body([] {
+    auto s = HashSet<int>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << s;
+    out.flush();
+
+    HashSet<int> s2;
+    auto in = out.toInput();
+    in >> s2;
+
+    assert(s.size() == s2.size());
+
+    for (auto &n : s) {
+        assert(s2.contains(n));
+    }
+});
+
+unit("container-serialization", "hashset<hashableserializable>")
+.dependsOn("hash-set")
+.body([] {
+    auto s = HashSet<HashableSerializableObj>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << s;
+    out.flush();
+
+    for (auto &x : s) {
+        assert(x.serialized);
+    }
+
+    HashSet<HashableSerializableObj> s2;
+    auto in = out.toInput();
+    in >> s2;
+
+    assert(s.size() == s2.size());
+
+    for (auto &n : s) {
+        assert(s2.contains(n));
+        assert(s2.get(n).deserialized);
+    }
+});
+
+unit("container-serialization", "parallel::hashset<int>")
+.dependsOn("parallel::hash-set")
+.body([] {
+    auto s = parallel::HashSet<int>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << s;
+    out.flush();
+
+    parallel::HashSet<int> s2;
+    auto in = out.toInput();
+    in >> s2;
+
+    assert(s.size() == s2.size());
+
+    for (auto &n : s) {
+        assert(s2.contains(n));
+    }
+});
+
+unit("container-serialization", "parallel::hashset<hashableserializable>")
+.dependsOn("parallel::hash-set")
+.body([] {
+    auto s = parallel::HashSet<HashableSerializableObj>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << s;
+    out.flush();
+
+    for (auto &x : s) {
+        assert(x.serialized);
+    }
+
+    parallel::HashSet<HashableSerializableObj> s2;
+    auto in = out.toInput();
+    in >> s2;
+
+    assert(s.size() == s2.size());
+
+    for (auto &n : s) {
+        assert(s2.contains(n));
+        assert(s2.get(n).deserialized);
+    }
+});
+
+unit("container-serialization", "hashmultiset<int>")
+.dependsOn("hash-multiset")
+.body([] {
+    auto s = HashMultiSet<int>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << s;
+    out.flush();
+
+    HashMultiSet<int> s2;
+    auto in = out.toInput();
+    in >> s2;
+
+    assert(s.size() == s2.size());
+
+    for (auto &n : s) {
+        assert(s2.contains(n));
+    }
+});
+
+unit("container-serialization", "hashmultiset<hashableserializable>")
+.dependsOn("hash-multiset")
+.body([] {
+    auto s = HashMultiSet<HashableSerializableObj>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << s;
+    out.flush();
+
+    for (auto &x : s) {
+        assert(x.serialized);
+    }
+
+    HashMultiSet<HashableSerializableObj> s2;
+    auto in = out.toInput();
+    in >> s2;
+
+    assert(s.size() == s2.size());
+
+    for (auto &n : s) {
+        assert(s2.contains(n));
+        assert(s2.get(n).deserialized);
+    }
+});
+
+unit("container-serialization", "parallel::hashmultiset<int>")
+.dependsOn("parallel::hash-multiset")
+.body([] {
+    auto s = parallel::HashMultiSet<int>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << s;
+    out.flush();
+
+    parallel::HashMultiSet<int> s2;
+    auto in = out.toInput();
+    in >> s2;
+
+    assert(s.size() == s2.size());
+
+    for (auto &n : s) {
+        assert(s2.contains(n));
+    }
+});
+
+unit("container-serialization", "parallel::hashmultiset<hashableserializable>")
+.dependsOn("parallel::hash-multiset")
+.body([] {
+    auto s = parallel::HashMultiSet<HashableSerializableObj>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        s.put(i);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << s;
+    out.flush();
+
+    for (auto &x : s) {
+        assert(x.serialized);
+    }
+
+    parallel::HashMultiSet<HashableSerializableObj> s2;
+    auto in = out.toInput();
+    in >> s2;
+
+    assert(s.size() == s2.size());
+
+    for (auto &n : s) {
+        assert(s2.contains(n));
+        assert(s2.get(n).deserialized);
+    }
+});
