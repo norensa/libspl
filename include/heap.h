@@ -11,6 +11,8 @@
 #include <type_traits>
 #include <container.h>
 #include <iterator.h>
+#include <serialization.h>
+#include <exception.h>
 
 namespace spl {
 
@@ -24,7 +26,8 @@ namespace spl {
  */
 template <typename T, typename comp = std::less<T>>
 class Heap
-:   public ForwardIterableContainer<Heap<T, comp>>
+:   public ForwardIterableContainer<Heap<T, comp>>,
+    public Serializable
 {
 private:
 
@@ -34,7 +37,6 @@ private:
     comp _comp;
 
     size_t _maxSize = 0;
-    size_t _memSize = 0;
     size_t _size = 0;
     T *_data = nullptr;
 
@@ -101,16 +103,14 @@ private:
             _maxSize = _maxSize >= LINEAR_INCREMENT_THRESHOLD
                 ? _maxSize + LINEAR_INCREMENT_THRESHOLD
                 : _maxSize * 2;
-            _memSize = _maxSize * sizeof(T);
-            _data = (T *) realloc(_data, _memSize);
+            _data = (T *) realloc((void *) _data, _maxSize * sizeof(T));
         }
     }
 
     void _shrink() {
         if (_size <= _maxSize / 2 && _maxSize > INITIAL_SIZE) {
             _maxSize = _maxSize / 2;
-            _memSize = _maxSize * sizeof(T);
-            _data = (T *) realloc(_data, _memSize);
+            _data = (T *) realloc((void *) _data, _maxSize * sizeof(T));
         }
     }
 
@@ -121,14 +121,12 @@ private:
                 ? _maxSize + LINEAR_INCREMENT_THRESHOLD
                 : _maxSize * 2;
         }
-        _memSize = _maxSize * sizeof(T);
         _size = 0;
-        _data = (T *) malloc(_memSize);
+        _data = (T *) malloc(_maxSize * sizeof(T));
     }
 
     void _invalidate() {
         _maxSize = 0;
-        _memSize = 0;
         _size = 0;
         _data = nullptr;
     }
@@ -144,9 +142,8 @@ private:
 
     void _copy(const Heap &rhs) {
         _maxSize = rhs._maxSize;
-        _memSize = rhs._memSize;
         _size = rhs._size;
-        _data = (T *) malloc(_memSize);
+        _data = (T *) malloc(_maxSize * sizeof(T));
         for (size_t i = 0; i < _size; ++i) {
             new (_data + i) T(rhs._data[i]);
         }
@@ -154,7 +151,6 @@ private:
 
     void _move(Heap &rhs) {
         _maxSize = rhs._maxSize;
-        _memSize = rhs._memSize;
         _size = rhs._size;
         _data = rhs._data;
     }
@@ -177,6 +173,83 @@ private:
             ++_size;
         }
         std::make_heap(_data, _data + _size, _comp);
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<
+            SupportsTrivialSerialization<X> && ! SupportsCustomSerialization<X>
+        , int> = 0
+    >
+    void _serialize(OutputStreamSerializer &serializer) const {
+        serializer << _maxSize << _size;
+        serializer.put(_data, sizeof(T) * _size);
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<
+            SupportsTrivialSerialization<X> && ! SupportsCustomSerialization<X>
+        , int> = 0
+    >
+    void _deserialize(InputStreamSerializer &serializer) {
+        _free();
+
+        serializer >> _maxSize;
+        _allocate(_maxSize);
+        serializer >> _size;
+        serializer.get(_data, sizeof(T) * _size);
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<
+            SupportsCustomSerialization<X>
+        , int> = 0
+    >
+    void _serialize(OutputStreamSerializer &serializer) const {
+        serializer << _maxSize << _size;
+        for (size_t i = 0; i < _size; ++i) {
+            serializer << _data[i];
+        }
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<
+            SupportsCustomSerialization<X> && std::is_constructible_v<X>
+        , int> = 0
+    >
+    void _deserialize(InputStreamSerializer &serializer) {
+        _free();
+
+        serializer >> _maxSize;
+        _allocate(_maxSize);
+        serializer >> _size;
+        for (size_t i = 0; i < _size; ++i) {
+            new (_data + i) T();
+            serializer >> _data[i];
+        }
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<! SupportsSerialization<X>, int> = 0
+    >
+    void _serialize(OutputStreamSerializer &serializer) const {
+        throw DynamicMessageError(
+            "Type '", typeid(T).name(), "' cannot be serialized."
+        );
+    }
+
+    template <
+        typename X = T,
+        std::enable_if_t<! SupportsSerialization<X> || ! std::is_constructible_v<X>, int> = 0
+    >
+    void _deserialize(InputStreamSerializer &serializer) {
+        throw DynamicMessageError(
+            "Type '", typeid(T).name(), "' cannot be deserialized."
+        );
     }
 
 public:
@@ -317,6 +390,14 @@ public:
             rhs._invalidate();
         }
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        _serialize(serializer);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        _deserialize(serializer);
     }
 
     /**

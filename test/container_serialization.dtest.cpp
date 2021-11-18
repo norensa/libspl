@@ -866,3 +866,59 @@ unit("container-serialization", "parallel::hashmultiset<hashableserializable>")
         assert(s2.get(n).deserialized);
     }
 });
+
+// heap ////////////////////////
+
+#include <heap.h>
+
+unit("container-serialization", "heap<int>")
+.dependsOn("heap")
+.body([] {
+    auto h = Heap<int>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        h.push(dtest_random() * TEST_SIZE);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << h;
+    out.flush();
+
+    Heap<int> h2;
+    auto in = out.toInput();
+    in >> h2;
+
+    assert(h.size() == h2.size());
+
+    for (auto it1 = h.begin(), it2 = h2.begin(); it1 != h.end(); ++it1, ++it2) {
+        assert(*it1 == *it2);
+    }
+});
+
+unit("container-serialization", "heap<serializable>")
+.dependsOn("heap")
+.body([] {
+    auto h = Heap<ComparableStreamSerializable>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        h.push(ComparableStreamSerializable(i));
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << h;
+    out.flush();
+
+    for (auto &x : h) {
+        assert(x.serialized());
+    }
+
+    Heap<ComparableStreamSerializable> h2;
+    auto in = out.toInput();
+    in >> h2;
+
+    assert(h.size() == h2.size());
+
+    for (auto &x : h2) {
+        assert(x.deserialized());
+    }
+});
