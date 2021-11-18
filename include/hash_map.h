@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include <functional>       // std::equal_to
-
 #include <core/hash_table.h>
+#include <functional>       // std::equal_to
 #include <hash.h>
 #include <container.h>
 #include <exception.h>
+#include <serialization.h>
 
 namespace spl {
 
@@ -39,7 +39,8 @@ class HashMap
         __HashTable::HashTableController,
         size_t
     >,
-    public ForwardIterableContainer<HashMap<Key, Val, KeyHash, KeyEqual>>
+    public ForwardIterableContainer<HashMap<Key, Val, KeyHash, KeyEqual>>,
+    public Serializable
 {
 
     template <typename HashMapType> friend struct HashMapTester;
@@ -224,6 +225,14 @@ public:
     HashMap & operator=(HashMap &&rhs) {
         base::operator=(std::move(rhs));
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer, level);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer, level);
     }
 
     /**
@@ -672,7 +681,8 @@ class HashMap
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >,
-    public ForwardIterableContainer<HashMap<Key, Val, KeyHash, KeyEqual>>
+    public ForwardIterableContainer<HashMap<Key, Val, KeyHash, KeyEqual>>,
+    public Serializable
 {
 
     template <typename HashMapType> friend struct HashMapTester;
@@ -858,6 +868,14 @@ public:
     HashMap & operator=(HashMap &&rhs) {
         base::operator=(std::move(rhs));
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer, level);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer, level);
     }
 
     /**
@@ -1510,7 +1528,8 @@ class HashMultiMap
         __HashTable::HashTableController,
         size_t
     >,
-    public ForwardIterableContainer<HashMultiMap<Key, Val, KeyHash, KeyEqual>>
+    public ForwardIterableContainer<HashMultiMap<Key, Val, KeyHash, KeyEqual>>,
+    public Serializable
 {
 
     template <typename HashMapType> friend struct HashMapTester;
@@ -1697,6 +1716,14 @@ public:
         return *this;
     }
 
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer, level);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer, level);
+    }
+
     /**
      * @return The size of this container.
      */
@@ -1839,7 +1866,7 @@ public:
      */
     HashMultiMap & put(const Key &k, const Val &v) {
         size_t h = _hash(k);
-        size_t i = _getFreeIndex(h, k);
+        size_t i = _getFreeIndex(h);
         _table[i].set(h, { k, v });
         ++_size;
         return *this;
@@ -1854,7 +1881,7 @@ public:
      */
     HashMultiMap & put(const Key &k, Val &&v) {
         size_t h = _hash(k);
-        size_t i = _getFreeIndex(h, k);
+        size_t i = _getFreeIndex(h);
         _table[i].set(h, { k, std::move(v) });
         ++_size;
         return *this;
@@ -2083,7 +2110,8 @@ class HashMultiMap
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >,
-    public ForwardIterableContainer<HashMultiMap<Key, Val, KeyHash, KeyEqual>>
+    public ForwardIterableContainer<HashMultiMap<Key, Val, KeyHash, KeyEqual>>,
+    public Serializable
 {
 
     template <typename HashMapType> friend struct HashMapTester;
@@ -2269,6 +2297,14 @@ public:
     HashMultiMap & operator=(HashMultiMap &&rhs) {
         base::operator=(std::move(rhs));
         return *this;
+    }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        base::_serialize(serializer, level);
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        base::_deserialize(serializer, level);
     }
 
     /**

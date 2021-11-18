@@ -9,10 +9,24 @@
 #include <mutex>
 #include <cstring>
 #include <cstdlib>
-
 #include <iterator.h>
+#include <serialization.h>
+#include <type_traits>
+#include <exception.h>
 
 namespace spl {
+
+namespace __HashTable {
+    template <
+        typename K,
+        typename node,
+        typename KeyHash,
+        typename NodeKeyEqual,
+        typename Controller,
+        typename size_type
+    >
+    class HashTable;
+}
 
 /**
  * @brief A node for map containers.
@@ -21,12 +35,40 @@ namespace spl {
  * @tparam Val The value type.
  */
 template <typename Key, typename Val>
-struct MapNode {
+class MapNode {
+
+    template <
+        typename K,
+        typename node,
+        typename KeyHash,
+        typename NodeKeyEqual,
+        typename Controller,
+        typename size_type
+    >
+    friend class __HashTable::HashTable;
+
+private:
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const {
+        serializer << k << v;
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) {
+        serializer >> *const_cast<Key *>(&k) >> v;
+    }
+
+public:
+
     using key_type = Key;
     using value_type = Val;
 
     const Key k;
     Val v;
+
+    MapNode()
+    :   k(),
+        v()
+    { }
 
     MapNode(const Key &k, const Val &v)
     :   k(k),
@@ -54,9 +96,27 @@ struct MapNode {
 
     ~MapNode() = default;
 
-    MapNode & operator=(const MapNode &) = delete;
+    MapNode & operator=(const MapNode &rhs) {
+        *const_cast<Key *>(&k) = rhs.k;
+        v = rhs.v;
+        return *this;
+    }
 
-    MapNode & operator=(MapNode &&) = delete;
+    MapNode & operator=(MapNode &&rhs) {
+        *const_cast<Key *>(&k) = std::move(rhs.k);
+        v = std::move(rhs.v);
+        return *this;
+    }
+};
+
+template <typename Key, typename Val>
+struct SupportsTrivialSerialization_t<MapNode<Key, Val>> {
+    static constexpr bool value = SupportsTrivialSerialization<Key> && SupportsTrivialSerialization<Val>;
+};
+
+template <typename Key, typename Val>
+struct SupportsCustomSerialization_t<MapNode<Key, Val>> {
+    static constexpr bool value = SupportsCustomSerialization<Key> || SupportsCustomSerialization<Val>;
 };
 
 namespace __HashTable {
@@ -157,7 +217,7 @@ struct AtomicHashTableNode {
     using storage_type = Node;
 
     size_t h;
-    std::atomic_uint8_t status;
+    std::atomic<uint8_t> status;
     union storage {
         alignas(storage_type) unsigned char buf[sizeof(storage_type)];
         storage_type n;
@@ -413,7 +473,7 @@ template <
     typename KeyHash,
     typename NodeKeyEqual,
     typename Controller,
-    typename size_type = size_t
+    typename size_type
 >
 class HashTable {
 protected:
@@ -728,6 +788,139 @@ protected:
         _controller = Controller();
         _table = nullptr;
         _size = 0;
+    }
+
+    template <
+        typename X = storage_node,
+        std::enable_if_t<
+            SupportsTrivialSerialization<X> && ! SupportsCustomSerialization<X>
+        , int> = 0
+    >
+    void _serialize(OutputStreamSerializer &serializer, SerializationLevel level) const {
+        _controller.enter();
+
+        size_t sz = static_cast<size_t>(_size);
+
+        serializer << _controller << sz;
+
+        if (level == SerializationLevel::PLAIN) {
+            serializer.put(_table, sizeof(node) * _controller.tableSize);
+        }
+        else {
+            for (size_t i = 0; i < _controller.tableSize && sz > 0; ++i) {
+                if (_table[i].occupied()) {
+                    serializer << _table[i].h;
+                    serializer << _table[i].storage.n;
+                    --sz;
+                }
+            }
+        }
+
+        _controller.exit();
+    }
+
+    template <
+        typename X = storage_node,
+        std::enable_if_t<
+            SupportsTrivialSerialization<X> && ! SupportsCustomSerialization<X>
+            && std::is_constructible_v<X>
+        , int> = 0
+    >
+    void _deserialize(InputStreamSerializer &serializer, SerializationLevel level) {
+        _freeNodes();
+        _dispose();
+
+        size_t sz;
+
+        serializer >> _controller >> sz;
+
+        _table = new node[_controller.tableSize];
+        _size = sz;
+
+        if (level == SerializationLevel::PLAIN) {
+            serializer.get(_table, sizeof(node) * _controller.tableSize);
+        }
+        else {
+            for (size_t i = 0; i < sz ; ++i) {
+                size_t h;
+                storage_node n;
+                serializer >> h;
+                serializer >> n;
+                size_t j = _getFreeIndex_noResize(h);
+                _table[j].set(h, std::move(n));
+            }
+        }
+    }
+
+    template <
+        typename X = storage_node,
+        std::enable_if_t<
+            SupportsCustomSerialization<X>
+        , int> = 0
+    >
+    void _serialize(OutputStreamSerializer &serializer, SerializationLevel level) const {
+        _controller.enter();
+
+        size_t sz = static_cast<size_t>(_size);
+
+        serializer << _controller << sz;
+
+        for (size_t i = 0; i < _controller.tableSize && sz > 0; ++i) {
+            if (_table[i].occupied()) {
+                serializer << _table[i].h;
+                _table[i].storage.n.writeObject(serializer, level);
+                --sz;
+            }
+        }
+
+        _controller.exit();
+    }
+
+    template <
+        typename X = storage_node,
+        std::enable_if_t<
+            SupportsCustomSerialization<X> && std::is_constructible_v<X>
+        , int> = 0
+    >
+    void _deserialize(InputStreamSerializer &serializer, SerializationLevel level) {
+        _freeNodes();
+        _dispose();
+
+        size_t sz;
+
+        serializer >> _controller >> sz;
+
+        _table = new node[_controller.tableSize];
+        _size = sz;
+
+        for (size_t i = 0; i < sz ; ++i) {
+            size_t h;
+            storage_node n;
+            serializer >> h;
+            n.readObject(serializer, level);
+            size_t j = _getFreeIndex_noResize(h);
+            _table[j].set(h, std::move(n));
+        }
+    }
+
+    template <
+        typename X = storage_node,
+        std::enable_if_t<! SupportsSerialization<X>, int> = 0
+    >
+    void _serialize(OutputStreamSerializer &serializer, SerializationLevel level) const {
+        throw DynamicMessageError(
+            "Type '", typeid(storage_node).name(), "' cannot be serialized."
+        );
+    }
+
+    template <
+        typename X = storage_node,
+        std::enable_if_t<! SupportsSerialization<X> || ! std::is_constructible_v<X>, int> = 0
+    >
+    void _deserialize(InputStreamSerializer &serializer, SerializationLevel level) {
+        throw DynamicMessageError(
+            "Type '", typeid(storage_node).name(), "' cannot be deserialized."
+        );
     }
 
 public:

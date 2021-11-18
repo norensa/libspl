@@ -1,5 +1,6 @@
 #include <hash.h>
 #include <traits.h>
+#include <serialization.h>
 
 using namespace spl;
 
@@ -61,5 +62,28 @@ struct HashableObj : Hashable {
 
     bool operator==(const HashableObj &rhs) const {
         return v == rhs.v;
+    }
+};
+
+struct HashableSerializableObj : HashableObj, Serializable {
+    bool serialized = false;
+    bool deserialized = false;
+
+    HashableSerializableObj() = default;
+
+    HashableSerializableObj(long v)
+    :   HashableObj(v)
+    { }
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        serializer << v;
+        const_cast<HashableSerializableObj *>(this)->serialized = true;
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) {
+        serializer >> v;
+        if (buf != nullptr) free(buf);
+        buf = malloc(1);
+        deserialized = true;
     }
 };

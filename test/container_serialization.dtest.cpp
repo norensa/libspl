@@ -301,3 +301,350 @@ unit("container-serialization", "parallel::deque<serializable>")
         assert(x.deserialized());
     }
 });
+
+// hash-map ////////////////////
+
+#include <hash_map.h>
+#include "test_hashable.cpp"
+
+unit("container-serialization", "hashmap<int,int>")
+.dependsOn("hash-map")
+.body([] {
+    auto m = HashMap<int, int>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, dtest_random() * TEST_SIZE);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    HashMap<int, int> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k) == n.v);
+    }
+});
+
+unit("container-serialization", "hashmap<int,serializable>")
+.dependsOn("hash-map")
+.body([] {
+    auto m = HashMap<int, StreamSerializable>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    for (auto &x : m) {
+        assert(x.v.serialized());
+    }
+
+    HashMap<int, StreamSerializable> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k).deserialized());
+    }
+});
+
+unit("container-serialization", "hashmap<hashableserializable,serializable>")
+.dependsOn("hash-map")
+.body([] {
+    auto m = HashMap<HashableSerializableObj, StreamSerializable>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    for (auto &x : m) {
+        assert(x.k.serialized);
+        assert(x.v.serialized());
+    }
+
+    HashMap<HashableSerializableObj, StreamSerializable> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k).deserialized());
+    }
+});
+
+unit("container-serialization", "parallel::hashmap<int,int>")
+.dependsOn("parallel::hash-map")
+.body([] {
+    auto m = parallel::HashMap<int, int>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, dtest_random() * TEST_SIZE);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    parallel::HashMap<int, int> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k) == n.v);
+    }
+});
+
+unit("container-serialization", "parallel::hashmap<int,serializable>")
+.dependsOn("parallel::hash-map")
+.body([] {
+    auto m = parallel::HashMap<int, StreamSerializable>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    for (auto &x : m) {
+        assert(x.v.serialized());
+    }
+
+    parallel::HashMap<int, StreamSerializable> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k).deserialized());
+    }
+});
+
+unit("container-serialization", "parallel::hashmap<hashableserializable,serializable>")
+.dependsOn("parallel::hash-map")
+.body([] {
+    auto m = parallel::HashMap<HashableSerializableObj, StreamSerializable>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    for (auto &x : m) {
+        assert(x.k.serialized);
+        assert(x.v.serialized());
+    }
+
+    parallel::HashMap<HashableSerializableObj, StreamSerializable> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k).deserialized());
+    }
+});
+
+unit("container-serialization", "hashmultimap<int,int>")
+.dependsOn("hash-multimap")
+.body([] {
+    auto m = HashMultiMap<int, int>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, dtest_random() * TEST_SIZE);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    HashMultiMap<int, int> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k) == n.v);
+    }
+});
+
+unit("container-serialization", "hashmultimap<int,serializable>")
+.dependsOn("hash-multimap")
+.body([] {
+    auto m = HashMultiMap<int, StreamSerializable>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    for (auto &x : m) {
+        assert(x.v.serialized());
+    }
+
+    HashMultiMap<int, StreamSerializable> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k).deserialized());
+    }
+});
+
+unit("container-serialization", "hashmultimap<hashableserializable,serializable>")
+.dependsOn("hash-multimap")
+.body([] {
+    auto m = HashMultiMap<HashableSerializableObj, StreamSerializable>();
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    for (auto &x : m) {
+        assert(x.k.serialized);
+        assert(x.v.serialized());
+    }
+
+    HashMultiMap<HashableSerializableObj, StreamSerializable> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k).deserialized());
+    }
+});
+
+unit("container-serialization", "parallel::hashmultimap<int,int>")
+.dependsOn("parallel::hash-multimap")
+.body([] {
+    auto m = parallel::HashMultiMap<int, int>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, dtest_random() * TEST_SIZE);
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    parallel::HashMultiMap<int, int> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k) == n.v);
+    }
+});
+
+unit("container-serialization", "parallel::hashmultimap<int,serializable>")
+.dependsOn("parallel::hash-multimap")
+.body([] {
+    auto m = parallel::HashMultiMap<int, StreamSerializable>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    for (auto &x : m) {
+        assert(x.v.serialized());
+    }
+
+    parallel::HashMultiMap<int, StreamSerializable> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k).deserialized());
+    }
+});
+
+unit("container-serialization", "parallel::hashmultimap<hashableserializable,serializable>")
+.dependsOn("parallel::hash-multimap")
+.body([] {
+    auto m = parallel::HashMultiMap<HashableSerializableObj, StreamSerializable>();
+
+    #pragma omp parallel for
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        m.put(i, StreamSerializable());
+    }
+
+    MemoryOutputStreamSerializer out;
+    out << m;
+    out.flush();
+
+    for (auto &x : m) {
+        assert(x.k.serialized);
+        assert(x.v.serialized());
+    }
+
+    parallel::HashMultiMap<HashableSerializableObj, StreamSerializable> m2;
+    auto in = out.toInput();
+    in >> m2;
+
+    assert(m.size() == m2.size());
+
+    for (auto &n : m) {
+        assert(m2.contains(n.k));
+        assert(m2.get(n.k).deserialized());
+    }
+});
