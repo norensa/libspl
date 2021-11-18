@@ -7,8 +7,6 @@
 
 #include <functional>
 #include <typeinfo>
-#include <hash_map.h>
-#include <exception.h>
 
 namespace spl {
 
@@ -19,7 +17,9 @@ class Factory {
 
 private:
 
-    static HashMap<size_t, void *> & _factory();
+    static void _put(size_t hashCode, void *factory);
+
+    static void * _get(size_t hashCode);
 
 public:
 
@@ -33,10 +33,7 @@ public:
         const std::type_info &type,
         const std::function<void *()> &factory
     ) {
-        if (_factory().contains(type.hash_code())) {
-            throw RuntimeError("Duplicate object hash codes detected");
-        }
-        _factory().put(type.hash_code(), new std::function(factory));
+        _put(type.hash_code(), new std::function(factory));
     }
 
     /**
@@ -52,10 +49,7 @@ public:
         const std::type_info &type,
         const std::function<void *(Args...)> &factory
     ) {
-        if (_factory().contains(type.hash_code())) {
-            throw RuntimeError("Duplicate object hash codes detected");
-        }
-        _factory().put(type.hash_code(), new std::function(factory));
+        _put(type.hash_code(), new std::function(factory));
     }
 
     /**
@@ -67,12 +61,9 @@ public:
      */
     template <typename T>
     static T * createObject(size_t hashCode) {
-        if (! _factory().contains(hashCode)) {
-            throw InvalidArgument("No registered factory for this object type");
-        }
         return static_cast<T *>(
             static_cast<std::function<void *()> *>(
-                _factory()[hashCode]
+                _get(hashCode)
             )->operator()()
         );
     }
@@ -87,12 +78,9 @@ public:
      */
     template <typename T, typename ...Args>
     static T * createObject(size_t hashCode, Args ...args) {
-        if (! _factory().contains(hashCode)) {
-            throw InvalidArgument("No registered factory for this object type");
-        }
         return static_cast<T *>(
             static_cast<std::function<void *(Args...)> *>(
-                _factory()[hashCode]
+                _get(hashCode)
             )->operator()(args...)
         );
     }
