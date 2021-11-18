@@ -2,6 +2,7 @@
 #include <hash_map.h>
 #include <unordered_map>
 #include <list.h>
+#include "test_hashable.cpp"
 
 module("hash-map")
 .dependsOn({
@@ -69,79 +70,18 @@ namespace parallel
 
 }
 
-struct X : Hashable {
-    long v;
-    void *buf;
-
-    X()
-    :   v(-1),
-        buf(nullptr)
-    { }
-
-    X(long v)
-    :   v(v),
-        buf(malloc(1))
-    { }
-
-    X(const X &r)
-    :   v(r.v),
-        buf(malloc(1))
-    { }
-
-    X(X &&r)
-    :   v(r.v),
-        buf(r.buf)
-    {
-        r.buf = nullptr;
-    }
-
-    ~X() {
-        if (buf != nullptr) {
-            free(buf);
-            buf = nullptr;
-        }
-    }
-
-    X & operator=(const X &r) {
-        if (this != &r) {
-            if (buf != nullptr) free(buf);
-            v = r.v;
-            buf = malloc(1);
-        }
-        return *this;
-    }
-
-    X & operator=(X &&r) {
-        if (this != &r) {
-            if (buf != nullptr) free(buf);
-            v = r.v;
-            buf = r.buf;
-            r.buf = nullptr;
-        }
-        return *this;
-    }
-
-    size_t hash() const {
-        return (size_t) v;
-    }
-
-    bool operator==(const X &rhs) const {
-        return v == rhs.v;
-    }
-};
-
 unit("hash-map", "initializer-list")
 .body([] {
 
-    HashMap<X, X> m({
+    HashMap<HashableObj, HashableObj> m({
         { 0, 0 },
         { 1, 2 },
         { 2, 4 }
     });
 
     assert(m.size() == 3);
-    assert((HashMapTester<HashMap<X, X>>::tableSize(m)) <= 2 * 3);
-    assert((HashMapTester<HashMap<X, X>>::bucketSize(m)) <= 2);
+    assert((HashMapTester<HashMap<HashableObj, HashableObj>>::tableSize(m)) <= 2 * 3);
+    assert((HashMapTester<HashMap<HashableObj, HashableObj>>::bucketSize(m)) <= 2);
 
     for (int i = 0; i < 3; ++i) {
         assert(m.get(i).v == i * 2);
@@ -160,15 +100,15 @@ unit("hash-map", "initializer-list")
 unit("hash-map", "unique-dense-keys")
 .body([] {
 
-    HashMap<X, X> m;
+    HashMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(i, i * 2);
     }
 
     assert(m.size() == TEST_SIZE);
-    assert((HashMapTester<HashMap<X, X>>::tableSize(m)) <= 2 * TEST_SIZE);
-    assert((HashMapTester<HashMap<X, X>>::bucketSize(m)) <= 2);
+    assert((HashMapTester<HashMap<HashableObj, HashableObj>>::tableSize(m)) <= 2 * TEST_SIZE);
+    assert((HashMapTester<HashMap<HashableObj, HashableObj>>::bucketSize(m)) <= 2);
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         assert(m.get(i).v == i * 2);
@@ -186,7 +126,7 @@ unit("hash-map", "unique-dense-keys")
 
 unit("parallel::hash-map", "unique-dense-keys")
 .body([] {
-    parallel::HashMap<X, X> m;
+    parallel::HashMap<HashableObj, HashableObj> m;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
@@ -194,7 +134,7 @@ unit("parallel::hash-map", "unique-dense-keys")
     }
 
     assert(m.size() == PARALLEL_TEST_SIZE);
-    assert((parallel::HashMapTester<parallel::HashMap<X, X>>::tableSize(m)) <= 2 * PARALLEL_TEST_SIZE);
+    assert((parallel::HashMapTester<parallel::HashMap<HashableObj, HashableObj>>::tableSize(m)) <= 2 * PARALLEL_TEST_SIZE);
 
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
         assert(m.get(i).v == i * 2);
@@ -213,7 +153,7 @@ unit("parallel::hash-map", "unique-dense-keys")
 unit("hash-map", "dense-keys")
 .body([] {
 
-    HashMap<X, X> m;
+    HashMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(dtest_random() * TEST_SIZE, i * 2);
@@ -230,7 +170,7 @@ unit("hash-map", "dense-keys")
 unit("hash-map", "sparse-keys")
 .body([] {
 
-    HashMap<X, X> m;
+    HashMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(dtest_random() * (TEST_SIZE * 1000), i * 2);
@@ -247,7 +187,7 @@ unit("hash-map", "sparse-keys")
 unit("hash-map", "colliding-keys")
 .body([] {
 
-    HashMap<X, X> m;
+    HashMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(dtest_random() * (TEST_SIZE / 10), i * 2);
@@ -265,7 +205,7 @@ unit("hash-map", "colliding-keys")
 unit("hash-map", "foreach")
 .body([] {
 
-    HashMap<X, X> m;
+    HashMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(i, i * 2);
@@ -274,7 +214,7 @@ unit("hash-map", "foreach")
     assert(m.size() == TEST_SIZE);
 
     size_t count = 0;
-    m.foreach([&count] (MapNode<X, X> &n) {
+    m.foreach([&count] (MapNode<HashableObj, HashableObj> &n) {
         assert(n.k.v < TEST_SIZE);
         assert(n.k.v * 2 == n.v.v);
         ++count;
@@ -285,7 +225,7 @@ unit("hash-map", "foreach")
 unit("hash-map", "map")
 .body([] {
 
-    HashMap<X, X> m;
+    HashMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(i, i * 2);
@@ -293,14 +233,14 @@ unit("hash-map", "map")
 
     assert(m.size() == TEST_SIZE);
 
-    auto m2 = m.map([] (const MapNode<X, X> &n) -> MapNode<X, X> {
+    auto m2 = m.map([] (const MapNode<HashableObj, HashableObj> &n) -> MapNode<HashableObj, HashableObj> {
         return { n.k.v + 1, n.v.v * 2 };
     });
 
     assert(m2.size() == TEST_SIZE);
 
-    assert((HashMapTester<HashMap<X, X>>::tableSize(m2)) <= (HashMapTester<HashMap<X, X>>::tableSize(m)));
-    assert((HashMapTester<HashMap<X, X>>::bucketSize(m2)) <= (HashMapTester<HashMap<X, X>>::bucketSize(m)));
+    assert((HashMapTester<HashMap<HashableObj, HashableObj>>::tableSize(m2)) <= (HashMapTester<HashMap<HashableObj, HashableObj>>::tableSize(m)));
+    assert((HashMapTester<HashMap<HashableObj, HashableObj>>::bucketSize(m2)) <= (HashMapTester<HashMap<HashableObj, HashableObj>>::bucketSize(m)));
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         assert(m2.get(i + 1).v == i * 4);
@@ -319,7 +259,7 @@ unit("hash-map", "map-to-list")
 .dependsOn("list")
 .body([] {
 
-    HashMap<X, X> m;
+    HashMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(i, i * 2);
@@ -327,7 +267,7 @@ unit("hash-map", "map-to-list")
 
     assert(m.size() == TEST_SIZE);
 
-    auto l = m.map<List<X>>([] (const MapNode<X, X> &n) -> X {
+    auto l = m.map<List<HashableObj>>([] (const MapNode<HashableObj, HashableObj> &n) -> HashableObj {
         return n.k;
     });
 
@@ -345,7 +285,7 @@ unit("hash-map", "to-list")
 .dependsOn("list")
 .body([] {
 
-    HashMap<X, X> m;
+    HashMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(i, i * 2);
@@ -353,7 +293,7 @@ unit("hash-map", "to-list")
 
     assert(m.size() == TEST_SIZE);
 
-    auto l = m.to<List<MapNode<X, X>>>();
+    auto l = m.to<List<MapNode<HashableObj, HashableObj>>>();
 
     assert(l.size() == TEST_SIZE);
 
@@ -387,15 +327,15 @@ perf("hash-map", "put(p)")
 unit("hash-multimap", "unique-dense-keys")
 .body([] {
 
-    HashMultiMap<X, X> m;
+    HashMultiMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(i, i * 2);
     }
 
     assert(m.size() == TEST_SIZE);
-    assert((HashMapTester<HashMultiMap<X, X>>::tableSize(m)) <= 2 * TEST_SIZE);
-    assert((HashMapTester<HashMultiMap<X, X>>::bucketSize(m)) <= 2);
+    assert((HashMapTester<HashMultiMap<HashableObj, HashableObj>>::tableSize(m)) <= 2 * TEST_SIZE);
+    assert((HashMapTester<HashMultiMap<HashableObj, HashableObj>>::bucketSize(m)) <= 2);
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         assert(m.get(i).v == i * 2);
@@ -413,7 +353,7 @@ unit("hash-multimap", "unique-dense-keys")
 unit("parallel::hash-multimap", "unique-dense-keys")
 .body([] {
 
-    parallel::HashMultiMap<X, X> m;
+    parallel::HashMultiMap<HashableObj, HashableObj> m;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
@@ -421,7 +361,7 @@ unit("parallel::hash-multimap", "unique-dense-keys")
     }
 
     assert(m.size() == PARALLEL_TEST_SIZE);
-    assert((parallel::HashMapTester<parallel::HashMultiMap<X, X>>::tableSize(m)) <= 2 * PARALLEL_TEST_SIZE);
+    assert((parallel::HashMapTester<parallel::HashMultiMap<HashableObj, HashableObj>>::tableSize(m)) <= 2 * PARALLEL_TEST_SIZE);
 
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
         assert(m.get(i).v == i * 2);
@@ -439,7 +379,7 @@ unit("parallel::hash-multimap", "unique-dense-keys")
 unit("hash-multimap", "dense-keys")
 .body([] {
 
-    HashMultiMap<X, X> m;
+    HashMultiMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(dtest_random() * TEST_SIZE, i * 2);
@@ -458,7 +398,7 @@ unit("hash-multimap", "dense-keys")
 unit("parallel::hash-multimap", "dense-keys")
 .body([] {
 
-    parallel::HashMultiMap<X, X> m;
+    parallel::HashMultiMap<HashableObj, HashableObj> m;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
@@ -478,7 +418,7 @@ unit("parallel::hash-multimap", "dense-keys")
 unit("hash-multimap", "sparse-keys")
 .body([] {
 
-    HashMultiMap<X, X> m;
+    HashMultiMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(dtest_random() * (TEST_SIZE * 1000), i * 2);
@@ -497,7 +437,7 @@ unit("hash-multimap", "sparse-keys")
 unit("parallel::hash-multimap", "sparse-keys")
 .body([] {
 
-    parallel::HashMultiMap<X, X> m;
+    parallel::HashMultiMap<HashableObj, HashableObj> m;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
@@ -517,7 +457,7 @@ unit("parallel::hash-multimap", "sparse-keys")
 unit("hash-multimap", "colliding-keys")
 .body([] {
 
-    HashMultiMap<X, X> m;
+    HashMultiMap<HashableObj, HashableObj> m;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         m.put(dtest_random() * (TEST_SIZE / 10), i * 2);
@@ -536,7 +476,7 @@ unit("hash-multimap", "colliding-keys")
 unit("parallel::hash-multimap", "colliding-keys")
 .body([] {
 
-    parallel::HashMultiMap<X, X> m;
+    parallel::HashMultiMap<HashableObj, HashableObj> m;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {

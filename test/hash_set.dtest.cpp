@@ -2,6 +2,7 @@
 #include <hash_set.h>
 #include <unordered_set>
 #include <list.h>
+#include "test_hashable.cpp"
 
 module("hash-set")
 .dependsOn({
@@ -69,75 +70,14 @@ namespace parallel
 
 }
 
-struct X : Hashable {
-    long v;
-    void *buf;
-
-    X()
-    :   v(-1),
-        buf(nullptr)
-    { }
-
-    X(long v)
-    :   v(v),
-        buf(malloc(1))
-    { }
-
-    X(const X &r)
-    :   v(r.v),
-        buf(malloc(1))
-    { }
-
-    X(X &&r)
-    :   v(r.v),
-        buf(r.buf)
-    {
-        r.buf = nullptr;
-    }
-
-    ~X() {
-        if (buf != nullptr) {
-            free(buf);
-            buf = nullptr;
-        }
-    }
-
-    X & operator=(const X &r) {
-        if (this != &r) {
-            if (buf != nullptr) free(buf);
-            v = r.v;
-            buf = malloc(1);
-        }
-        return *this;
-    }
-
-    X & operator=(X &&r) {
-        if (this != &r) {
-            if (buf != nullptr) free(buf);
-            v = r.v;
-            buf = r.buf;
-            r.buf = nullptr;
-        }
-        return *this;
-    }
-
-    size_t hash() const {
-        return (size_t) v;
-    }
-
-    bool operator==(const X &rhs) const {
-        return v == rhs.v;
-    }
-};
-
 unit("hash-set", "initializer-list")
 .body([] {
 
-    HashSet<X> s({ 0, 1, 2 });
+    HashSet<HashableObj> s({ 0, 1, 2 });
 
     assert(s.size() == 3);
-    assert((HashSetTester<HashSet<X>>::tableSize(s)) <= 2 * 3);
-    assert((HashSetTester<HashSet<X>>::bucketSize(s)) <= 2);
+    assert((HashSetTester<HashSet<HashableObj>>::tableSize(s)) <= 2 * 3);
+    assert((HashSetTester<HashSet<HashableObj>>::bucketSize(s)) <= 2);
 
     for (int i = 0; i < 3; ++i) {
         assert(s.contains(i));
@@ -154,15 +94,15 @@ unit("hash-set", "initializer-list")
 unit("hash-set", "unique-dense-keys")
 .body([] {
 
-    HashSet<X> s;
+    HashSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(i);
     }
 
     assert(s.size() == TEST_SIZE);
-    assert((HashSetTester<HashSet<X>>::tableSize(s)) <= 2 * TEST_SIZE);
-    assert((HashSetTester<HashSet<X>>::bucketSize(s)) <= 2);
+    assert((HashSetTester<HashSet<HashableObj>>::tableSize(s)) <= 2 * TEST_SIZE);
+    assert((HashSetTester<HashSet<HashableObj>>::bucketSize(s)) <= 2);
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         assert(s.contains(i));
@@ -179,7 +119,7 @@ unit("hash-set", "unique-dense-keys")
 unit("parallel::hash-set", "unique-dense-keys")
 .body([] {
 
-    parallel::HashSet<X> s;
+    parallel::HashSet<HashableObj> s;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
@@ -187,7 +127,7 @@ unit("parallel::hash-set", "unique-dense-keys")
     }
 
     assert(s.size() == PARALLEL_TEST_SIZE);
-    assert((parallel::HashSetTester<parallel::HashSet<X>>::tableSize(s)) <= 2 * PARALLEL_TEST_SIZE);
+    assert((parallel::HashSetTester<parallel::HashSet<HashableObj>>::tableSize(s)) <= 2 * PARALLEL_TEST_SIZE);
 
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
         assert(s.contains(i));
@@ -204,7 +144,7 @@ unit("parallel::hash-set", "unique-dense-keys")
 unit("hash-set", "dense-keys")
 .body([] {
 
-    HashSet<X> s;
+    HashSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(dtest_random() * TEST_SIZE);
@@ -221,7 +161,7 @@ unit("hash-set", "dense-keys")
 unit("hash-set", "sparse-keys")
 .body([] {
 
-    HashSet<X> s;
+    HashSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(dtest_random() * (TEST_SIZE * 1000));
@@ -238,7 +178,7 @@ unit("hash-set", "sparse-keys")
 unit("hash-set", "colliding-keys")
 .body([] {
 
-    HashSet<X> s;
+    HashSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(dtest_random() * (TEST_SIZE / 10));
@@ -255,7 +195,7 @@ unit("hash-set", "colliding-keys")
 unit("hash-set", "foreach")
 .body([] {
 
-    HashSet<X> s;
+    HashSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(i);
@@ -264,7 +204,7 @@ unit("hash-set", "foreach")
     assert(s.size() == TEST_SIZE);
 
     size_t count = 0;
-    s.foreach([&count] (X &n) {
+    s.foreach([&count] (HashableObj &n) {
         assert(n.v < TEST_SIZE);
         ++count;
     });
@@ -274,7 +214,7 @@ unit("hash-set", "foreach")
 unit("hash-set", "map")
 .body([] {
 
-    HashSet<X> s;
+    HashSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(i);
@@ -282,14 +222,14 @@ unit("hash-set", "map")
 
     assert(s.size() == TEST_SIZE);
 
-    auto s2 = s.map([] (const X &n) -> X {
+    auto s2 = s.map([] (const HashableObj &n) -> HashableObj {
         return { n.v + 1 };
     });
 
     assert(s2.size() == TEST_SIZE);
 
-    assert((HashSetTester<HashSet<X>>::tableSize(s2)) <= (HashSetTester<HashSet<X>>::tableSize(s)));
-    assert((HashSetTester<HashSet<X>>::bucketSize(s2)) <= (HashSetTester<HashSet<X>>::bucketSize(s)));
+    assert((HashSetTester<HashSet<HashableObj>>::tableSize(s2)) <= (HashSetTester<HashSet<HashableObj>>::tableSize(s)));
+    assert((HashSetTester<HashSet<HashableObj>>::bucketSize(s2)) <= (HashSetTester<HashSet<HashableObj>>::bucketSize(s)));
 
     for (int i = 1; i <= TEST_SIZE; ++i) {
         assert(s2.contains(i));
@@ -307,7 +247,7 @@ unit("hash-set", "map-to-list")
 .dependsOn("list")
 .body([] {
 
-    HashSet<X> s;
+    HashSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(i);
@@ -315,7 +255,7 @@ unit("hash-set", "map-to-list")
 
     assert(s.size() == TEST_SIZE);
 
-    auto l = s.map<List<X>>([] (const X &n) -> X {
+    auto l = s.map<List<HashableObj>>([] (const HashableObj &n) -> HashableObj {
         return n;
     });
 
@@ -333,7 +273,7 @@ unit("hash-set", "to-list")
 .dependsOn("list")
 .body([] {
 
-    HashSet<X> s;
+    HashSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(i);
@@ -341,7 +281,7 @@ unit("hash-set", "to-list")
 
     assert(s.size() == TEST_SIZE);
 
-    auto l = s.to<List<X>>();
+    auto l = s.to<List<HashableObj>>();
 
     assert(l.size() == TEST_SIZE);
 
@@ -375,15 +315,15 @@ perf("hash-set", "put(p)")
 unit("hash-multiset", "unique-dense-keys")
 .body([] {
 
-    HashMultiSet<X> s;
+    HashMultiSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(i);
     }
 
     assert(s.size() == TEST_SIZE);
-    assert((HashSetTester<HashMultiSet<X>>::tableSize(s)) <= 2 * TEST_SIZE);
-    assert((HashSetTester<HashMultiSet<X>>::bucketSize(s)) <= 2);
+    assert((HashSetTester<HashMultiSet<HashableObj>>::tableSize(s)) <= 2 * TEST_SIZE);
+    assert((HashSetTester<HashMultiSet<HashableObj>>::bucketSize(s)) <= 2);
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         assert(s.contains(i));
@@ -400,7 +340,7 @@ unit("hash-multiset", "unique-dense-keys")
 unit("parallel::hash-multiset", "unique-dense-keys")
 .body([] {
 
-    parallel::HashMultiSet<X> s;
+    parallel::HashMultiSet<HashableObj> s;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
@@ -408,7 +348,7 @@ unit("parallel::hash-multiset", "unique-dense-keys")
     }
 
     assert(s.size() == PARALLEL_TEST_SIZE);
-    assert((parallel::HashSetTester<parallel::HashMultiSet<X>>::tableSize(s)) <= 2 * PARALLEL_TEST_SIZE);
+    assert((parallel::HashSetTester<parallel::HashMultiSet<HashableObj>>::tableSize(s)) <= 2 * PARALLEL_TEST_SIZE);
 
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
         assert(s.contains(i));
@@ -425,7 +365,7 @@ unit("parallel::hash-multiset", "unique-dense-keys")
 unit("hash-multiset", "dense-keys")
 .body([] {
 
-    HashMultiSet<X> s;
+    HashMultiSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(dtest_random() * TEST_SIZE);
@@ -444,7 +384,7 @@ unit("hash-multiset", "dense-keys")
 unit("parallel::hash-multiset", "dense-keys")
 .body([] {
 
-    parallel::HashMultiSet<X> s;
+    parallel::HashMultiSet<HashableObj> s;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
@@ -464,7 +404,7 @@ unit("parallel::hash-multiset", "dense-keys")
 unit("hash-multiset", "sparse-keys")
 .body([] {
 
-    HashMultiSet<X> s;
+    HashMultiSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(dtest_random() * (TEST_SIZE * 1000));
@@ -483,7 +423,7 @@ unit("hash-multiset", "sparse-keys")
 unit("parallel::hash-multiset", "sparse-keys")
 .body([] {
 
-    parallel::HashMultiSet<X> s;
+    parallel::HashMultiSet<HashableObj> s;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
@@ -503,7 +443,7 @@ unit("parallel::hash-multiset", "sparse-keys")
 unit("hash-multiset", "colliding-keys")
 .body([] {
 
-    HashMultiSet<X> s;
+    HashMultiSet<HashableObj> s;
 
     for (int i = 0; i < TEST_SIZE; ++i) {
         s.put(dtest_random() * (TEST_SIZE / 10));
@@ -522,7 +462,7 @@ unit("hash-multiset", "colliding-keys")
 unit("parallel::hash-multiset", "colliding-keys")
 .body([] {
 
-    parallel::HashMultiSet<X> s;
+    parallel::HashMultiSet<HashableObj> s;
 
     #pragma omp parallel for
     for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
