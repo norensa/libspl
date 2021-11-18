@@ -11,7 +11,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build
       run: make test-build-only
+
     - name: Run tests
       run: ./test/dtest/dtest-cxx17 test/build
+
     - name: Dump results
+      if: ${{ always() }}
       run: cat dtest.log.json
