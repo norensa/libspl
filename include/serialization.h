@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <stdint.h>
 #include <factory.h>
+#include <exception.h>
 
 namespace spl {
 
@@ -356,6 +357,11 @@ protected:
     virtual size_t _getLength() const = 0;
 
     void _write(const void *data, size_t len) override final {
+        if (_position + len > length()) {
+            throw OutOfRangeError(
+                "Attempt to write beyond the available serialization region"
+            );
+        }
         _writeAt(_position, data, len);
         _position += len;
     }
@@ -417,6 +423,11 @@ public:
      * @return A reference to this object for chaining.
      */
     OutputRandomAccessSerializer & seekTo(size_t position) {
+        if (position > length()) {
+            throw OutOfRangeError(
+                "Attempt to seek beyond the available serialization region"
+            );
+        }
         flush();
         _position = position;
         return *this;
@@ -773,6 +784,11 @@ public:
      * @return A reference to this object for chaining.
      */
     InputRandomAccessSerializer & seekTo(size_t position) {
+        if (position > length()) {
+            throw OutOfRangeError(
+                "Attempt to seek beyond the available serialization region"
+            );
+        }
         _emptyBuffer();
         _position = position;
         return *this;

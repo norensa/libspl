@@ -4,6 +4,7 @@
 
 module("stream-serializer")
 .dependsOn({
+    "exception",
     "factory"
 });
 
