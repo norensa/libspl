@@ -190,6 +190,7 @@ protected:
     uint8_t *_cursor = nullptr;
     size_t _remaining = 0;
     SerializationLevel _level = SerializationLevel::PLAIN;
+    size_t _totalByteCount = 0;
 
     inline bool _fit(size_t sz) {
         if (sz <= _remaining) {
@@ -242,6 +243,13 @@ public:
     }
 
     /**
+     * @return The total number of bytes serialized.
+     */
+    size_t totalByteCount() const {
+        return _totalByteCount;
+    }
+
+    /**
      * @brief Sets the serialization level.
      * 
      * @param[in] level The serialization level.
@@ -268,6 +276,7 @@ public:
         else {
             _write(data, len);
         }
+        _totalByteCount += len;
 
         return *this;
     }
@@ -294,6 +303,7 @@ public:
         else {
             _write(&x, sizeof(T));
         }
+        _totalByteCount += sizeof(T);
         return *this;
     }
 
@@ -538,9 +548,11 @@ protected:
     uint8_t *_cursor = nullptr;
     size_t _available = 0;
     SerializationLevel _level = SerializationLevel::PLAIN;
+    size_t _totalByteCount = 0;
 
     inline void _fillBuffer() {
         _available = _read(_buf, _bufSize);
+        _totalByteCount += _available;
         _cursor = _buf;
     }
 
@@ -574,6 +586,14 @@ public:
 
     InputStreamSerializer & operator=(InputStreamSerializer &&) = delete;
 
+    /**
+     * @return The total number of bytes read. Note that this number may include
+     * additional bytes read in internal buffers but not yet read by the user.
+     */
+    size_t totalByteCount() const {
+        return _totalByteCount;
+    }
+
     InputStreamSerializer & setLevel(SerializationLevel level) {
         _level = level;
         return *this;
@@ -606,6 +626,7 @@ public:
             else {
                 _emptyBuffer();
                 _read(data, len);
+                _totalByteCount += len;
             }
         }
         return *this;
@@ -647,6 +668,7 @@ public:
             else {
                 _emptyBuffer();
                 _read(data, len);
+                _totalByteCount += len;
             }
         }
         return *this;
