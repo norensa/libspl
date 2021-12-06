@@ -25,4 +25,16 @@ struct Copyable {
     virtual T * copy() const = 0;
 };
 
+/**
+ * @brief A trait for polymorphic movable objects supporting the virtual
+ * function `move()`.
+ * 
+ * @tparam T Base type of a series of movable types.
+ */
+template <typename T>
+struct Movable {
+
+    virtual T * move() = 0;
+};
+
 }   // namespace spl
