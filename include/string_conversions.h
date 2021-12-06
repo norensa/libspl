@@ -8,6 +8,10 @@
 
 namespace spl {
 
+/**
+ * @brief An error to indicate that a string parse failed because the string
+ * includes non-numeric characters.
+ */
 struct StringNotNumeric
 :   StringParseError
 {
@@ -16,6 +20,10 @@ struct StringNotNumeric
     { }
 };
 
+/**
+ * @brief A class for conversions between various data types and their string
+ * representation.
+ */
 class StringConversions {
 
 private:
