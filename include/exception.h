@@ -351,6 +351,32 @@ public:
 };
 
 /**
+ * @brief An error to indicate that a string parse failed.
+ */
+class StringParseError
+:   public Error
+{
+
+public:
+
+    /**
+     * @brief Construct a new StringParseError object.
+     */
+    StringParseError()
+    :   Error("Failed to parse string")
+    { }
+
+    /**
+     * @brief Construct a new StringParseError object.
+     * 
+     * @param msg The error message.
+     */
+    StringParseError(const char *msg)
+    :   Error(msg)
+    { }
+};
+
+/**
  * @brief An error to indicate that an invalid argument or combination of
  * arguments was given.
 */
