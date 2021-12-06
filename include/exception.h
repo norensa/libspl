@@ -325,6 +325,32 @@ public:
 };
 
 /**
+ * @brief An error to indicate that an operation is unsupported.
+*/
+class UnsupportedError
+:   public Error
+{
+
+public:
+
+    /**
+     * @brief Construct a new UnsupportedError object.
+     */
+    UnsupportedError()
+    :   Error("Unsupported operation")
+    { }
+
+    /**
+     * @brief Construct a new UnsupportedError object.
+     * 
+     * @param msg The error message.
+     */
+    UnsupportedError(const char *msg)
+    :   Error(msg)
+    { }
+};
+
+/**
  * @brief An error to indicate that an invalid argument or combination of
  * arguments was given.
 */
