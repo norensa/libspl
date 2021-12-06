@@ -55,6 +55,23 @@ namespace spl {
     }
 
     /**
+     * @brief Calculates the hash code of a null-terminated string.
+     * 
+     * @param[in] str Pointer to a null-terminate string.
+     * @return The calculated hash code.
+     */
+    inline size_t hash(const char *str) {
+        // http://www.cse.yorku.ca/~oz/hash.html
+        size_t h = 5381;
+        int c;
+        while (*str != '\0') {
+            c = *str++;
+            h = ((h << 5) + h) + c;
+        }
+        return h;
+    }
+
+    /**
      * @brief The default functor for calculating the hash codes of objects. If
      * the object supports the Hashable trait, the `hash() const` function is
      * used. Otherwise, std::hash is used to evaluate a hash code.
