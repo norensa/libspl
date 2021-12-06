@@ -538,10 +538,11 @@ protected:
      * implementation of this function may perform a blocking call.
      * 
      * @param[in] data Pointer to a region of memory used to write data.
+     * @param[in] minLen The minimum number of bytes required.
      * @param[in] maxLen The maximum number of bytes to read.
      * @return The actual number of bytes read.
      */
-    virtual size_t _read(void *data, size_t maxLen) = 0;
+    virtual size_t _read(void *data, size_t minLen, size_t maxLen) = 0;
 
     uint8_t *_buf = nullptr;
     size_t _bufSize = 0;
@@ -550,8 +551,8 @@ protected:
     SerializationLevel _level = SerializationLevel::PLAIN;
     size_t _totalByteCount = 0;
 
-    inline void _fillBuffer() {
-        _available = _read(_buf, _bufSize);
+    inline void _fillBuffer(size_t minLen = 0) {
+        _available = _read(_buf, minLen, _bufSize);
         _totalByteCount += _available;
         _cursor = _buf;
     }
@@ -618,14 +619,14 @@ public:
             len -= _available;
 
             if (len < _bufSize) {
-                _fillBuffer();
+                _fillBuffer(len);
                 memcpy(data, _cursor, len);
                 _cursor += len;
                 _available -= len;
             }
             else {
                 _emptyBuffer();
-                _read(data, len);
+                _read(data, len, len);
                 _totalByteCount += len;
             }
         }
@@ -660,14 +661,14 @@ public:
             len -= _available;
 
             if (len < _bufSize) {
-                _fillBuffer();
+                _fillBuffer(len);
                 memcpy(data, _cursor, len);
                 _cursor += len;
                 _available -= len;
             }
             else {
                 _emptyBuffer();
-                _read(data, len);
+                _read(data, len, len);
                 _totalByteCount += len;
             }
         }
@@ -752,8 +753,18 @@ protected:
      */
     virtual size_t _getLength() const = 0;
 
-    size_t _read(void *data, size_t maxLen) override final {
-        size_t l = std::min(maxLen, length() - _position);
+    size_t _read(void *data, size_t minLen, size_t maxLen) override final {
+
+        size_t r = remaining();
+
+        if (r < minLen) {
+            throw OutOfRangeError(
+                "Attempt to read beyond the available serialization region"
+            );
+        }
+
+        size_t l = std::min(maxLen, r);
+
         _readAt(_position, data, l);
         _position += l;
         return l;

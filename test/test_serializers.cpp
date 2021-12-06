@@ -13,7 +13,7 @@ private:
 
 protected:
 
-    size_t _read(void *data, size_t maxLen) override {
+    size_t _read(void *data, size_t minLen, size_t maxLen) override {
         size_t l = std::min(maxLen, _len - _pos);
         memcpy(data, _mem + _pos, l);
         _pos += l;
