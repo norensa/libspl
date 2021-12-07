@@ -663,7 +663,8 @@ protected:
     size_t _findNext(HashRange &range, size_t h, const K &k) const {
         do {
             if (
-                _table[range.pos].h == h
+                _table[range.pos].occupied()
+                && _table[range.pos].h == h
                 && _eq(_table[range.pos], k)
             ) {
                 size_t retval = range.pos;
@@ -683,7 +684,8 @@ protected:
 
         do {
             if (
-                _table[range.pos].h == h
+                _table[range.pos].occupied()
+                && _table[range.pos].h == h
                 && _eq(_table[range.pos], k)
             ) return range.pos;
             range.next();
