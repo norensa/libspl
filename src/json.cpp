@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2021 Noah Orensa.
+ * Licensed under the MIT license. See LICENSE file in the project root for details.
+*/
+
+#include <json.h>
+
+using namespace spl;
+
 static constexpr char _UNESCAPED[] = {
     '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
     '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
@@ -67,10 +76,6 @@ static constexpr const char * _ESCAPED[] = {
     nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
     nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
 };
-
-#include <json.h>
-
-using namespace spl;
 
 std::string JSON::_indent(const std::string &str, int spaces) {
     std::string in = "";
