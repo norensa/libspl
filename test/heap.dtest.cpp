@@ -1,6 +1,11 @@
 #include <dtest.h>
 #include <heap.h>
 
+module("heap")
+.dependsOn({
+    "exception"
+});
+
 using namespace spl;
 
 #define TEST_SIZE (1024)
