@@ -351,6 +351,11 @@ public:
      * or Error (in case of other errors) will be thrown.
      * 
      * @param addr A socket address.
+     * @throws ConnectionTimedOutError if the attempt to connect has timed out.
+     * @throws ConnectionRefusedError if no one is listening on the specified
+     * remote.
+     * @throws NetworkUnreachableError if the remote address is unreachable.
+     * @throws Error if any other error prevents connection.
      */
     TCPSocket(const SocketAddress &addr);
 
@@ -362,6 +367,11 @@ public:
      * 
      * @param ip IP address string.
      * @param port Port number to connect to.
+     * @throws ConnectionTimedOutError if the attempt to connect has timed out.
+     * @throws ConnectionRefusedError if no one is listening on the specified
+     * remote.
+     * @throws NetworkUnreachableError if the remote address is unreachable.
+     * @throws Error if any other error prevents connection.
      */
     TCPSocket(const char *ip, in_port_t port)
     :   TCPSocket(str_to_addr(ip, port))
@@ -375,6 +385,11 @@ public:
      * 
      * @param ip IP address string.
      * @param port Port number to connect to.
+     * @throws ConnectionTimedOutError if the attempt to connect has timed out.
+     * @throws ConnectionRefusedError if no one is listening on the specified
+     * remote.
+     * @throws NetworkUnreachableError if the remote address is unreachable.
+     * @throws Error if any other error prevents connection.
      */
     TCPSocket(const std::string &ip, in_port_t port)
     :   TCPSocket(str_to_addr(ip, port))
@@ -387,6 +402,11 @@ public:
      * or Error (in case of other errors) will be thrown.
      * 
      * @param addr Socket address string.
+     * @throws ConnectionTimedOutError if the attempt to connect has timed out.
+     * @throws ConnectionRefusedError if no one is listening on the specified
+     * remote.
+     * @throws NetworkUnreachableError if the remote address is unreachable.
+     * @throws Error if any other error prevents connection.
      */
     TCPSocket(const char *addr)
     :   TCPSocket(str_to_addr(addr))
@@ -399,6 +419,11 @@ public:
      * or Error (in case of other errors) will be thrown.
      * 
      * @param addr Socket address string.
+     * @throws ConnectionTimedOutError if the attempt to connect has timed out.
+     * @throws ConnectionRefusedError if no one is listening on the specified
+     * remote.
+     * @throws NetworkUnreachableError if the remote address is unreachable.
+     * @throws Error if any other error prevents connection.
      */
     TCPSocket(const std::string &addr)
     :   TCPSocket(str_to_addr(addr))
@@ -445,6 +470,9 @@ public:
      * 
      * @param data Pointer to data to be sent.
      * @param len Length of the data to be sent.
+     * @throws ConnectionTerminatedError if the other end terminated the
+     * connection.
+     * @throws Error if an unexpected error prevents sending.
      * @return True if the operation was successful, false if the operation
      * could not be completed.
      */
@@ -460,6 +488,9 @@ public:
      * @param len Maximum length of data to receive.
      * @param block If true, the function will block until len bytes of data are
      * received.
+     * @throws ConnectionTerminatedError if the other end terminated the
+     * connection.
+     * @throws Error if an unexpected error prevents receiving.
      * @return Size of the data actually received, if successful. If no more
      * data can be retrieved, -1 is returned.
      */
@@ -481,6 +512,9 @@ public:
      * @param len Maximum length of data to receive.
      * @param block If true, the function will block until len bytes of data are
      * received.
+     * @throws ConnectionTerminatedError if the other end terminated the
+     * connection.
+     * @throws Error if an unexpected error prevents receiving.
      * @return Size of the data actually received, if successful. If no more
      * data can be retrieved, -1 is returned.
      */

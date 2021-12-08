@@ -144,6 +144,7 @@ public:
      * @tparam T An unsigned int type.
      * @tparam base Numeric base (default = 10).
      * @param str Pointer to null terminated string.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
      * @return An unsigned integer containing the value represented in str.
      */
     template <
@@ -168,6 +169,7 @@ public:
      * @tparam T An unsigned int type.
      * @tparam base Numeric base (default = 10).
      * @param str Pointer to null terminated string.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
      * @return An unsigned integer containing the value represented in str.
      */
     template <
@@ -302,6 +304,7 @@ public:
      * @tparam T A signed int type.
      * @tparam base Numeric base (default = 10).
      * @param str Pointer to null terminated string.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
      * @return A signed integer containing the value represented in str.
      */
     template <
@@ -332,6 +335,7 @@ public:
      * @tparam T A signed int type.
      * @tparam base Numeric base (default = 10).
      * @param str Pointer to null terminated string.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
      * @return A signed integer containing the value represented in str.
      */
     template <
@@ -511,6 +515,7 @@ public:
      * @tparam T A floating point type.
      * @tparam base Numeric base (default = 10).
      * @param str Pointer to null terminated string.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
      * @return A floating point number containing the value represented in str.
      */
     template <
@@ -556,6 +561,7 @@ public:
      * @tparam T A floating point type.
      * @tparam base Numeric base (default = 10).
      * @param str Pointer to null terminated string.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
      * @return A floating point number containing the value represented in str.
      */
     template <

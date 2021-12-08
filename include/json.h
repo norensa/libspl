@@ -296,6 +296,7 @@ public:
      * 
      * @tparam T Type of the object to decode.
      * @param str A null-terminated JSON string.
+     * @throws JSONDecodeError if the parsing fails.
      * @return The parsed value.
      */
     template <typename T>
@@ -313,6 +314,7 @@ public:
      * 
      * @tparam T Type of the object to decode.
      * @param str A JSON string.
+     * @throws JSONDecodeError if the parsing fails.
      * @return The parsed value.
      */
     template <typename T>

@@ -178,6 +178,7 @@ public:
      * joined. Throws a ThreadNotJoinableError if the thread is not in a
      * joinable state.
      * 
+     * @throws ThreadNotJoinableError if the thread is not in a joinable state.
      * @return A reference to this object for chaining.
      */
     Thread & join() {
@@ -196,6 +197,7 @@ public:
      * ThreadNotJoinableError if the thread is not in a joinable state.
      * 
      * @param timeoutNanos Timeout duration in nanoseconds.
+     * @throws ThreadNotJoinableError if the thread is not in a joinable state.
      * @return True if the thread was actually joined, false if a timeout
      * occurred.
      */

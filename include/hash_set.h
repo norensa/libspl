@@ -312,6 +312,7 @@ public:
      * thrown.
      * 
      * @param k The key to search for.
+     * @throws ElementNotFoundError if the key is not found.
      * @return A copy of the actual key corresponding to the given key.
      */
     template <typename K>
@@ -462,6 +463,7 @@ public:
      * exist, an ElementNotFoundError will be thrown.
      * 
      * @param k The key to erase.
+     * @throws ElementNotFoundError if the key is not found.
      * @return The actual removed key.
      */
     template <typename K>
@@ -807,6 +809,7 @@ public:
      * thrown.
      * 
      * @param k The key to search for.
+     * @throws ElementNotFoundError if the key is not found.
      * @return A copy of the actual key corresponding to the given key.
      */
     template <typename K>
@@ -1030,6 +1033,7 @@ public:
      * exist, an ElementNotFoundError will be thrown.
      * 
      * @param k The key to erase.
+     * @throws ElementNotFoundError if the key is not found.
      * @return The actual removed key.
      */
     template <typename K>
@@ -1055,6 +1059,7 @@ public:
      * operation may be performed on this container.
      * 
      * @param k The key to erase.
+     * @throws ElementNotFoundError if the key is not found.
      * @return The actual removed key.
      */
     template <typename K>
@@ -1461,6 +1466,7 @@ public:
      * thrown.
      * 
      * @param k The key to search for.
+     * @throws ElementNotFoundError if the key is not found.
      * @return A copy of an actual key corresponding to the given key.
      */
     template <typename K>
@@ -1613,6 +1619,7 @@ public:
      * exist, an ElementNotFoundError will be thrown.
      * 
      * @param k The key to erase.
+     * @throws ElementNotFoundError if the key is not found.
      * @return The actual removed key.
      */
     template <typename K>
@@ -1964,6 +1971,7 @@ public:
      * thrown.
      * 
      * @param k The key to search for.
+     * @throws ElementNotFoundError if the key is not found.
      * @return A copy of an actual key corresponding to the given key.
      */
     template <typename K>
@@ -2196,6 +2204,7 @@ public:
      * matches the given key, only one key is erased.
      * 
      * @param k The key to erase.
+     * @throws ElementNotFoundError if the key is not found.
      * @return The actual removed key.
      */
     template <typename K>
@@ -2222,6 +2231,7 @@ public:
      * operation may be performed on this container.
      * 
      * @param k The key to erase.
+     * @throws ElementNotFoundError if the key is not found.
      * @return The actual removed key.
      */
     template <typename K>
