@@ -17,7 +17,7 @@ module("tcp-socket")
     "deque",
 });
 
-module("tcp-socket-serialization")
+module("tcp-socket-serializer")
 .dependsOn({
     "tcp-socket",
     "stream-serializer"
@@ -553,7 +553,7 @@ dunit("tcp-socket", "poll()")
     }
 });
 
-dunit("tcp-socket-serialization", "primitive-types")
+dunit("tcp-socket-serializer", "primitive-types")
 .workers(1)
 .driver([] {
     TCPServerSocket s(0, 128);
@@ -582,7 +582,7 @@ dunit("tcp-socket-serialization", "primitive-types")
     serializer.flush();
 });
 
-dunit("tcp-socket-serialization", "serializable-type")
+dunit("tcp-socket-serializer", "serializable-type")
 .workers(1)
 .driver([] {
     TCPServerSocket s(0, 128);
@@ -606,7 +606,7 @@ dunit("tcp-socket-serialization", "serializable-type")
     assert(elem.serialized());
 });
 
-dunit("tcp-socket-serialization", "large-serialization")
+dunit("tcp-socket-serializer", "large-serialization")
 .workers(1)
 .driver([] {
     TCPServerSocket s(0, 128);
@@ -631,7 +631,7 @@ dunit("tcp-socket-serialization", "large-serialization")
     serializer.flush();
 });
 
-dunit("tcp-socket-serialization", "bulk-serialization")
+dunit("tcp-socket-serializer", "bulk-serialization")
 .workers(1)
 .driver([] {
     TCPServerSocket s(0, 128);
