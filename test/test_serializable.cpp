@@ -80,3 +80,37 @@ struct ComparableStreamSerializable
         return x < rhs.x;
     }
 };
+
+struct RandomAccessSerializable
+:   Serializable,
+    WithDefaultFactory<RandomAccessSerializable>
+{
+    int data = 0;
+
+    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        assert(false);
+    }
+
+    void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const override {
+        const_cast<RandomAccessSerializable *>(this)->data = -1;
+        serializer << data;
+    }
+
+    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        assert(false);
+    }
+
+    void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) override {
+        serializer >> data;
+        assert(data == -1);
+        data = 1;
+    }
+
+    bool serialized() const {
+        return data == -1;
+    }
+
+    bool deserialized() const {
+        return data == 1;
+    }
+};
