@@ -189,7 +189,7 @@ private:
                 else {
                     try {
                         task = _tasks.dequeueOrTimeout((next - now).count());
-                    } catch(DequeueTimedout &) { }
+                    } catch(TimeoutError &) { }
                 }
             }
             else {

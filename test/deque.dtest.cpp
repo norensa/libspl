@@ -5,6 +5,11 @@
 #include <thread.h>
 #include <list.h>
 
+module("deque")
+.dependsOn({
+    "exception"
+});
+
 module("parallel::deque")
 .dependsOn({
     "deque"
@@ -525,7 +530,7 @@ static void producer_consumer(int numProducers, int numConsumers) {
                 try {
                     values.insert(q.dequeueOrTimeout());
                 }
-                catch (DequeueTimedout &) { }
+                catch (TimeoutError &) { }
             }
         }));
     }

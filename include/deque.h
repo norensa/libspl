@@ -11,14 +11,10 @@
 #include <container.h>
 #include <thread.h>
 #include <mutex>
+#include <exception.h>
 #include <serialization.h>
 
 namespace spl {
-
-/**
- * @brief An exception used for timeout events on a dequeue operation.
-*/
-struct DequeueTimedout { };
 
 /**
  * @brief Double-ended queue supporting O(1) enqueue and dequeue operations.
@@ -866,15 +862,15 @@ public:
 
     /**
      * @brief Dequeues an element from the front of the queue or blocks for the
-     * indicated timeout duration. If timeout is reached, a DequeueTimeout
+     * indicated timeout duration. If timeout is reached, a TimeoutError
      * exception is thrown.
      * 
      * @param[in] timeoutNanos The timeout duration in nanoseconds.
-     * @throws A DequeueTimeout exception if timeout is reached.
+     * @throws TimeoutError if timeout is reached.
      * @return The element at the front of the queue.
      */
     T dequeueOrTimeout(uint64_t timeoutNanos = 10000lu) {
-        if (! _sem.wait(timeoutNanos)) throw DequeueTimedout();
+        if (! _sem.wait(timeoutNanos)) throw TimeoutError();
         _mtx.lock();
         T data = base::takeFront();
         _mtx.unlock();
@@ -883,12 +879,12 @@ public:
 
     /**
      * @brief Dequeues an element from the front of the queue or blocks for the
-     * indicated timeout duration. If timeout is reached, a DequeueTimeout
+     * indicated timeout duration. If timeout is reached, a TimeoutError
      * exception is thrown.
      * 
      * @param[out] elem A reference to an element.
      * @param[in] timeoutNanos The timeout duration in nanoseconds.
-     * @throws A DequeueTimeout exception if timeout is reached.
+     * @throws TimeoutError if timeout is reached.
      * @return A reference to this container for chaining.
      */
     Deque & dequeueOrTimeout(T &elem, uint64_t timeoutNanos = 10000lu) {
