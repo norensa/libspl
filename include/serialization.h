@@ -807,7 +807,7 @@ public:
      * the underlying byte range.
      */
     size_t remaining() const {
-        return _length - _position;
+        return length() - _position;
     }
 
     /**
