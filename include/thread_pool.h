@@ -31,28 +31,31 @@ private:
     enum class Status : int {
         COMPLETED,
         DEFERRED,
-        RESCHED
+        RESCHED,
+        WILL_RESCHED,
     };
 
     Status _status;
     jmp_buf _ret;
     std::chrono::high_resolution_clock::time_point _deferTime;
+    void *_task;
 
     ExecutionContext() = default;
 
     template <typename Task>
     void _run(Task *t) {
+        _task = t;
         _status = Status::COMPLETED;
         if (setjmp(_ret) == 0) {
-            _doRun(t);
+            (*t)(*this);
         }
     }
 
 protected:
 
     template <typename Task>
-    void _doRun(Task *t) {
-        (*t)(*this);
+    Task * currentTask() const {
+        return static_cast<Task *>(_task);
     }
 
 public:
@@ -112,14 +115,21 @@ public:
         _status = Status::RESCHED;
         longjmp(_ret, 1);
     }
+
+    void markNotDone() {
+        _status = Status::WILL_RESCHED;
+    }
 };
 
 /**
  * @brief An error to indicate that scheduling a task was rejected.
  */
-struct TaskRejectedError
-:   Error
+class TaskRejectedError
+:   public Error
 {
+
+public:
+
     TaskRejectedError()
     :   Error("Task scheduling rejected")
     { }
@@ -202,6 +212,9 @@ private:
                     _tasks.enqueue(task);
                     break;
 
+                case Context::Status::WILL_RESCHED:
+                    break;
+
                 default:
                     delete task;
                 }
@@ -243,6 +256,7 @@ public:
      * TaskRejectedError if the thread pool is being terminated.
      * 
      * @param t The task to enqueue.
+     * @throws TaskRejectedError if the thread pool is being terminated.
      */
     void run(Task *t) {
         if (_stopping) throw TaskRejectedError();
@@ -254,6 +268,7 @@ public:
      * TaskRejectedError if the thread pool is being terminated.
      * 
      * @param t The task to enqueue.
+     * @throws TaskRejectedError if the thread pool is being terminated.
      */
     void run(const Task &t) {
         run(new Task(t));
@@ -264,6 +279,7 @@ public:
      * TaskRejectedError if the thread pool is being terminated.
      * 
      * @param t The task to enqueue.
+     * @throws TaskRejectedError if the thread pool is being terminated.
      */
     void run(Task &&t) {
         run(new Task(std::move(t)));
@@ -276,6 +292,8 @@ public:
      * 
      * @param timeoutMillis The timeout duration in milliseconds. Default =
      * 1000ms.
+     * @throws TimeoutError if the thread pool cannot terminate before the
+     * indicated timeout duration.
      */
     void terminate(uint64_t timeoutMillis = 1000)  {
         auto now = std::chrono::high_resolution_clock::now();
