@@ -39,50 +39,10 @@ private:
     static constexpr size_t __POINT = 50;
     static constexpr size_t __FRACTION_START = 51;
 
-    static constexpr uint8 __NVALD = (uint8) -1;
+    static constexpr uint8 __NVAL = (uint8) -1;
 
-    static constexpr uint8 _digitToVal[] = {
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        0, 1, 2, 3, 4, 5, 6, 7,
-        8, 9, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, 10, 11, 12, 13, 14, 15, 16,
-        17, 18, 19, 20, 21, 22, 23, 24,
-        25, 26, 27, 28, 29, 30, 31, 32,
-        33, 34, 35, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, 10, 11, 12, 13, 14, 15, 16,
-        17, 18, 19, 20, 21, 22, 23, 24,
-        25, 26, 27, 28, 29, 30, 31, 32,
-        33, 34, 35, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-        __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD, __NVALD,
-    };
-
-    static constexpr char _valToDigit[] = {
-        '0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-        'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-        'W', 'X', 'Y', 'Z'
-    };
+    static const uint8 _digitToVal[];
+    static const char _valToDigit[];
 
     static thread_local char _numBuf[__NUMBER_BUFFER_SIZE];
     static thread_local char _expBuf[__NUMBER_BUFFER_SIZE];
@@ -155,7 +115,7 @@ public:
     static T str_to_unsigned_int(const char *str) {
         T x = 0;
         while (*str != '\0') {
-            if (_digitToVal[(size_t) *str] == __NVALD || _digitToVal[(size_t) *str] >= base) throw StringNotNumeric();
+            if (_digitToVal[(size_t) *str] == __NVAL || _digitToVal[(size_t) *str] >= base) throw StringNotNumeric();
             x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
             ++str;
         }
@@ -320,7 +280,7 @@ public:
             ++str;
         }
         while (*str != '\0') {
-            if (_digitToVal[(size_t) *str] == __NVALD || _digitToVal[(size_t) *str] >= base) throw StringNotNumeric();
+            if (_digitToVal[(size_t) *str] == __NVAL || _digitToVal[(size_t) *str] >= base) throw StringNotNumeric();
             x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
             ++str;
         }
@@ -444,14 +404,14 @@ public:
             neg = true;
             ++str;
         }
-        while (_digitToVal[(size_t) *str] != __NVALD && _digitToVal[(size_t) *str] < base) {
+        while (_digitToVal[(size_t) *str] != __NVAL && _digitToVal[(size_t) *str] < base) {
             x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
             ++str;
         }
         if (*str == '.') {
             ++str;
             T f = (T) 1 / (T) base;
-            while (_digitToVal[(size_t) *str] != __NVALD && _digitToVal[(size_t) *str] < base) {
+            while (_digitToVal[(size_t) *str] != __NVAL && _digitToVal[(size_t) *str] < base) {
                 x += (T) _digitToVal[(size_t) *str] * f;
                 ++str;
                 f *= (T) 1 / (T) base;
@@ -530,14 +490,14 @@ public:
             neg = true;
             ++str;
         }
-        while (_digitToVal[(size_t) *str] != __NVALD && _digitToVal[(size_t) *str] < base) {
+        while (_digitToVal[(size_t) *str] != __NVAL && _digitToVal[(size_t) *str] < base) {
             x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
             ++str;
         }
         if (*str == '.') {
             ++str;
             T f = (T) 1 / (T) base;
-            while (_digitToVal[(size_t) *str] != __NVALD && _digitToVal[(size_t) *str] < base) {
+            while (_digitToVal[(size_t) *str] != __NVAL && _digitToVal[(size_t) *str] < base) {
                 x += (T) _digitToVal[(size_t) *str] * f;
                 ++str;
                 f *= (T) 1 / (T) base;
