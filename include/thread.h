@@ -10,6 +10,7 @@
 #include <semaphore.h>
 #include <exception.h>
 #include <sys/sysinfo.h>
+#include <atomic>
 
 namespace spl {
 
@@ -82,10 +83,18 @@ private:
         std::function<void()> func = nullptr;
         volatile bool needToTerminate = false;
         volatile bool running = false;
+        std::atomic<size_t> referenceCount;
 
         Context(std::function<void()> &&func)
-        :   func(std::move(func))
+        :   func(std::move(func)),
+            referenceCount(2)   // 2 initial references (1 for the thread itself, and 1 for the Thread object)
         { }
+
+        void exit() {
+            if (referenceCount.fetch_sub(1) == 1) {
+                delete this;        // no longer needed
+            }
+        }
     };
     static thread_local Context *__ctx;
 
@@ -98,6 +107,7 @@ private:
         __ctx->running = true;
         __ctx->func();
         __ctx->running = false;
+        __ctx->exit();
         pthread_exit(nullptr);
     }
 
@@ -132,7 +142,7 @@ public:
     }
 
     ~Thread() {
-        if (_ctx != nullptr) delete _ctx;
+        if (_ctx != nullptr) _ctx->exit();
     }
 
     Thread & operator=(const Thread &) = delete;
@@ -231,18 +241,25 @@ public:
     /**
      * @brief Cancels this thread, terminating it at the next possible
      * cancellation point.
+     * Note that a thread exiting through cancellation points cannot be allowed
+     * to exit normally, otherwise this may result in segmentation faults
+     * related to this Thread object.
      * 
      * @return A reference to this object for chaining.
      */
     Thread & cancel() {
         int err = pthread_cancel(_tid);
         if (err != 0) throw ErrnoRuntimeError(err);
+        _ctx->exit();       // in place of the thread's own call to exit()
         return *this;
     }
 
     /**
      * @brief Called by a thread to check for cancellation. This creates a
      * cancellation point.
+     * Note that a thread exiting through cancellation points cannot be allowed
+     * to exit normally, otherwise this may result in segmentation faults
+     * related to this Thread object.
      */
     static void terminateIfCancelled() {
         pthread_testcancel();
@@ -266,6 +283,7 @@ public:
     static void terminateIfRequested() {
         if (__ctx->needToTerminate) {
             __ctx->running = false;
+            __ctx->exit();
             pthread_exit(nullptr);
         }
     }

@@ -2,6 +2,7 @@
 
 #include <thread.h>
 #include <list.h>
+#include <atomic>
 
 module("thread")
 .dependsOn({
@@ -33,6 +34,20 @@ unit("thread", "cancel")
     }).cancel().join();
 
     assert(ran);
+});
+
+unit("thread", "detach")
+.body([] {
+    std::atomic<size_t> count;
+    count = 1000;
+    for (auto i = 0; i < 1000; ++i) {
+        Thread([&count] {
+            --count;
+        }).detach();
+    }
+
+    while(count > 0);
+    usleep(100000);     // make sure all threads have terminated
 });
 
 unit("thread", "requestTerminate")
