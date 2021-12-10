@@ -61,3 +61,6 @@ bin/
 # log files
 *.log
 *.log.*
+
+# documentation
+/doc/
