@@ -492,7 +492,7 @@ public:
      * connection.
      * @throws Error if an unexpected error prevents receiving.
      * @return Size of the data actually received, if successful. If no more
-     * data can be retrieved, -1 is returned.
+     * data can be retrieved, 0 is returned.
      */
     ssize_t recv(void *data, size_t len, bool block = true) {
         return _recv(
@@ -516,7 +516,7 @@ public:
      * connection.
      * @throws Error if an unexpected error prevents receiving.
      * @return Size of the data actually received, if successful. If no more
-     * data can be retrieved, -1 is returned.
+     * data can be retrieved, 0 is returned.
      */
     ssize_t peek(void *data, size_t len, bool block = true) {
         return _recv(
