@@ -159,20 +159,19 @@ File & File::collapse(size_t offset, size_t len) {
     return *this;
 }
 
-MemoryMapping File::map(bool writeable) {
+MemoryMapping File::map(size_t offset, size_t len, bool writeable) {
     if (_fd == -1) open();
 
     int prot = PROT_READ;
     if (writeable) prot |= PROT_WRITE;
-    size_t sz = _info.clear().length();
 
     void *ptr = mmap(
         nullptr,
-        sz,
+        len,
         prot,
         MAP_PRIVATE | MAP_NONBLOCK | MAP_NORESERVE,
         _fd,
-        0
+        offset
     );
 
     if (ptr == MAP_FAILED) {

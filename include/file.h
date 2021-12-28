@@ -503,6 +503,8 @@ private:
 
 public:
 
+    MemoryMapping() = default;
+
     MemoryMapping(const MemoryMapping &) = delete;
 
     MemoryMapping(MemoryMapping &&rhs)
@@ -1088,14 +1090,28 @@ public:
     File & collapse(size_t offset, size_t len);
 
     /**
-     * @brief Creates a memory mapping of a file.
+     * @brief Creates a memory mapping of a region in the file.
+     * 
+     * @param offset Offset of the mapped region.
+     * @param len Length of the mapped region.
+     * @param writeable Determines whether the memory mapping should be
+     * writeable. If the writable=false, then the memory mapping will be
+     * write-protected.
+     * @return The memory mapped buffer.
+     */
+    MemoryMapping map(size_t offset, size_t len, bool writeable = true);
+
+    /**
+     * @brief Creates a memory mapping of the entire file.
      * 
      * @param writeable Determines whether the memory mapping should be
      * writeable. If the writable=false, then the memory mapping will be
      * write-protected.
      * @return The memory mapped buffer.
      */
-    MemoryMapping map(bool writeable = true);
+    MemoryMapping map(bool writeable = true) {
+        return map(0, _info.clear().length(), writeable);
+    }
 };
 
 /**
