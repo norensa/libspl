@@ -178,5 +178,5 @@ MemoryMapping File::map(size_t offset, size_t len, bool writeable) {
         throw ErrnoRuntimeError();
     }
 
-    return MemoryMapping(ptr, sz);
+    return MemoryMapping(ptr, len);
 }
