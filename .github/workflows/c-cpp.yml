@@ -14,9 +14,7 @@ jobs:
 
     - name: Run tests
       run: |
-        export LD_LIBRARY_PATH=lib/*
-        echo $LD_LIBRARY_PATH
-        ./test/dtest/dtest-cxx17 test/build
+        export LD_LIBRARY_PATH=lib/* && ./test/dtest/dtest-cxx17 test/build
 
     - name: Dump results
       if: ${{ always() }}
