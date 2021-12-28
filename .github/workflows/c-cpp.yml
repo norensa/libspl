@@ -13,7 +13,9 @@ jobs:
       run: make test-build-only
 
     - name: Run tests
-      run: ./test/dtest/dtest-cxx17 test/build
+      run: |
+        export LD_LIBRARY_PATH=lib/*
+        ./test/dtest/dtest-cxx17 test/build
 
     - name: Dump results
       if: ${{ always() }}

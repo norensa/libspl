@@ -32,7 +32,7 @@ test : libspl
 test-build-only : libspl
 	@$(MAKE) -C test --no-print-directory EXTRACXXFLAGS="$(EXTRACXXFLAGS)" nodep="$(nodep)"
 
-libspl : $(LIB_DIR)/libspl.a
+libspl : $(LIB_DIR)/libspl.so
 
 ifndef nodep
 include $(SOURCES:src/%.cpp=.dep/%.d)
@@ -62,9 +62,9 @@ clean-dep :
 
 # core
 
-$(LIB_DIR)/libspl.a: $(OBJ_FILES) | $(LIB_DIR)
-	@echo "AR        $(MODULE)/$@"
-	@$(AR) $(ARFLAGS) $@ $(OBJ_FILES)
+$(LIB_DIR)/libspl.so: $(OBJ_FILES) | $(LIB_DIR)
+	@echo "LD        $(MODULE)/$@"
+	@$(CXX) -shared $(CXXFLAGS) $(EXTRACXXFLAGS) $(OBJ_FILES) -o $@
 
 .dep/%.d : src/%.cpp | .dep
 	@echo "DEP       $(MODULE)/$@"

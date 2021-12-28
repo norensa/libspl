@@ -10,7 +10,7 @@ INCLUDES = -I../include
 # add any library directories and files
 LIB_DIRS = -L../lib/$(shell uname -s)-$(shell uname -m)
 LIBS = -lspl
-LIB_DEPEND = ../lib/$(shell uname -s)-$(shell uname -m)/libspl.a
+LIB_DEPEND = ../lib/$(shell uname -s)-$(shell uname -m)/libspl.so
 
 CXX = g++
 CPPFLAGS = -Werror -Wall -Winline -Wpedantic
@@ -71,6 +71,6 @@ dtest:
 	sed 's,\($*\)\.o[ :]*,$(BUILD_DIR)/\1.so $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
-$(BUILD_DIR)/%.dtest.so : %.dtest.cpp $(LIB_DEPEND) | $(BUILD_DIR) dtest
+$(BUILD_DIR)/%.dtest.so : %.dtest.cpp | $(BUILD_DIR) dtest $(LIB_DEPEND)
 	@echo "CXX       $(MODULE)/test/$@"
 	@$(CXX) -shared $(CPPFLAGS) $(CXXFLAGS) $(EXTRACXXFLAGS) -Idtest/include $(INCLUDES) $< $(LD_FLAGS) $(LIB_DIRS) $(LIBS) -o $@
