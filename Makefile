@@ -47,6 +47,7 @@ endif
 clean :
 	@rm -rf build lib
 	@echo "Cleaned $(MODULE)/build/"
+	@echo "Cleaned $(MODULE)/lib/"
 	@$(MAKE) -C test --no-print-directory clean nodep="$(nodep)"
 
 clean-dep :
