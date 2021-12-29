@@ -59,7 +59,7 @@ spl::InputRandomAccessSerializer & operator>>(
 // std::string /////////////////////////////////////////////////////////////////
 #include <string>
 
-spl::OutputStreamSerializer & operator<<(
+inline spl::OutputStreamSerializer & operator<<(
     spl::OutputStreamSerializer &serializer,
     const std::string &string
 ) {
@@ -69,7 +69,7 @@ spl::OutputStreamSerializer & operator<<(
     return serializer;
 }
 
-spl::OutputRandomAccessSerializer & operator<<(
+inline spl::OutputRandomAccessSerializer & operator<<(
     spl::OutputRandomAccessSerializer &serializer,
     const std::string &string
 ) {
@@ -80,7 +80,7 @@ spl::OutputRandomAccessSerializer & operator<<(
     return serializer;
 }
 
-spl::InputStreamSerializer & operator>>(
+inline spl::InputStreamSerializer & operator>>(
     spl::InputStreamSerializer &serializer,
     std::string &string
 ) {
@@ -91,7 +91,7 @@ spl::InputStreamSerializer & operator>>(
     return serializer;
 }
 
-spl::InputRandomAccessSerializer & operator>>(
+inline spl::InputRandomAccessSerializer & operator>>(
     spl::InputRandomAccessSerializer &serializer,
     std::string &string
 ) {
