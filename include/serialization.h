@@ -127,7 +127,10 @@ public:
  */
 template <typename T>
 struct SupportsTrivialSerialization_t {
-    static constexpr bool value = std::is_copy_assignable_v<T>;
+    static constexpr bool value = 
+        std::is_copy_assignable_v<T>
+        && ! std::is_pointer_v<T>
+    ;
 };
 
 /**
@@ -137,7 +140,8 @@ struct SupportsTrivialSerialization_t {
  */
 template <typename T>
 struct SupportsCustomSerialization_t {
-    static constexpr bool value = std::is_base_of_v<Serializable, std::remove_pointer_t<T>>;
+    static constexpr bool value =
+        std::is_base_of_v<Serializable, std::remove_pointer_t<T>>;
 };
 
 /**
@@ -146,7 +150,8 @@ struct SupportsCustomSerialization_t {
  * @tparam T The type to check.
  */
 template <typename T>
-inline constexpr bool SupportsTrivialSerialization = SupportsTrivialSerialization_t<T>::value;
+inline constexpr bool SupportsTrivialSerialization =
+    SupportsTrivialSerialization_t<T>::value;
 
 /**
  * @brief Evaluates to true if T implements custom serialization. 
@@ -154,7 +159,8 @@ inline constexpr bool SupportsTrivialSerialization = SupportsTrivialSerializatio
  * @tparam T The type to check.
  */
 template <typename T>
-inline constexpr bool SupportsCustomSerialization = SupportsCustomSerialization_t<T>::value;
+inline constexpr bool SupportsCustomSerialization =
+    SupportsCustomSerialization_t<T>::value;
 
 /**
  * @brief Evaluates to true if T is serializable. 
