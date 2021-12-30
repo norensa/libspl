@@ -194,6 +194,7 @@ protected:
     uint8_t *_buf = nullptr;
     size_t _bufSize = 0;
     uint8_t *_cursor = nullptr;
+    uint8_t *_lockedCursor = nullptr;
     size_t _remaining = 0;
     SerializationLevel _level = SerializationLevel::PLAIN;
     size_t _totalByteCount = 0;
@@ -239,12 +240,40 @@ public:
      * @return A reference to this object for chaining.
      */
     OutputStreamSerializer & flush() {
-        size_t len = _cursor - _buf;
+        size_t locked = _lockedCursor == nullptr ? 0 : (_cursor - _lockedCursor);
+        size_t len = _cursor - _buf - locked;
+
         if (len > 0) {
             _write(_buf, len);
-            _cursor = _buf;
-            _remaining = _bufSize;
+
+            if (locked > 0) memmove(_buf, _lockedCursor, locked);
+            _cursor = _buf + locked;
+            if (_lockedCursor != nullptr) _lockedCursor = _buf;
+            _remaining = _bufSize - locked;
         }
+        return *this;
+    }
+
+    /**
+     * @brief Locks the stream cursor in place, preventing any subsequent data
+     * from being flushed to the underlying stream before a call to commit() is
+     * made.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    OutputStreamSerializer & lock() {
+        _lockedCursor = _cursor;
+        return *this;
+    }
+
+    /**
+     * @brief Unlocks the stream cursor and commits all serialized data to the
+     * underlying stream.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    OutputStreamSerializer & commit() {
+        _lockedCursor = nullptr;
         return *this;
     }
 

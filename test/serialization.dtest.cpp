@@ -257,6 +257,26 @@ unit("stream-serializer", "bulk-serialization")
     delete b;
 });
 
+unit("stream-serializer", "lock")
+.body([] {
+    MemoryOutputStreamSerializer out;
+    out << 1;
+    out.lock();
+    out << 2;
+    out.flush();
+
+    auto in = out.toInput();
+    int x;
+    in >> x;
+    assert(x == 1);
+
+    try {
+        in >> x;
+        fail("got data beyond lock position");
+    }
+    catch (const OutOfRangeError &) { }
+});
+
 unit("random-access-serializer", "primitive-types")
 .body([] {
     int x = 1;
