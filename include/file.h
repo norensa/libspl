@@ -554,6 +554,31 @@ public:
     size_t size() const {
         return _size;
     }
+
+    /**
+     * @brief Synchronizes the changes done to the memory mapping with the
+     * underlying storage.
+     * 
+     * @param block Indicates whether to block until the synchronization is
+     * done. Default = false.
+     */
+    void sync(bool block = false) {
+        int flags = block ? MS_ASYNC : MS_SYNC;
+        msync(_mem, _size, flags);
+    }
+
+    /**
+     * @brief Synchronizes the changes done to the memory mapping with the
+     * underlying storage and invalidates all other mappings of the same region.
+     * 
+     * @param block Indicates whether to block until the synchronization is
+     * done. Default = false.
+     */
+    void sync_invalidate(bool block = false) {
+        int flags = MS_INVALIDATE;
+        flags |= block ? MS_ASYNC : MS_SYNC;
+        msync(_mem, _size, MS_SYNC);
+    }
 };
 
 /**
