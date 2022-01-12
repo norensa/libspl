@@ -191,6 +191,7 @@ protected:
      */
     virtual void _write(const void *data, size_t len) = 0;
 
+    bool _allocated = false;
     uint8_t *_buf = nullptr;
     size_t _bufSize = 0;
     uint8_t *_cursor = nullptr;
@@ -212,14 +213,24 @@ protected:
 public:
 
     /**
+     * @param[in] buffer Buffer to use for serialization.
+     * @param[in] bufferSize Size of the buffer.
+     */
+    OutputStreamSerializer(void *buffer, size_t bufferSize)
+    :   _buf((uint8_t *) buffer),
+        _bufSize(bufferSize),
+        _cursor((uint8_t *) buffer),
+        _remaining(bufferSize),
+        _level(SerializationLevel::PLAIN)
+    { }
+
+    /**
      * @param[in] bufferSize Size of the internal buffer. Default size is 1 KiB.
      */
-    OutputStreamSerializer(size_t bufferSize = _DEFAULT_BUFFER_SIZE) {
-        _buf = new uint8_t[bufferSize];
-        _bufSize = bufferSize;
-        _cursor = _buf;
-        _remaining = bufferSize;
-        _level = SerializationLevel::PLAIN;
+    OutputStreamSerializer(size_t bufferSize = _DEFAULT_BUFFER_SIZE)
+    :   OutputStreamSerializer(new uint8_t[bufferSize], bufferSize)
+    {
+        _allocated = true;
     }
 
     OutputStreamSerializer(const OutputStreamSerializer &) = delete;
@@ -227,7 +238,7 @@ public:
     OutputStreamSerializer(OutputStreamSerializer &&) = delete;
 
     ~OutputStreamSerializer() {
-        delete[] _buf;
+        if (_allocated) delete[] _buf;
     }
 
     OutputStreamSerializer & operator=(const OutputStreamSerializer &) = delete;
@@ -433,6 +444,29 @@ public:
     }
 
     /**
+     * @brief Locks the stream cursor in place, preventing any subsequent data
+     * from being flushed to the underlying stream before a call to commit() is
+     * made.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    OutputRandomAccessSerializer & lock() {
+        OutputStreamSerializer::lock();
+        return *this;
+    }
+
+    /**
+     * @brief Unlocks the stream cursor and commits all serialized data to the
+     * underlying stream.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    OutputRandomAccessSerializer & commit() {
+        OutputStreamSerializer::commit();
+        return *this;
+    }
+
+    /**
      * @brief Sets the serialization level.
      * 
      * @param[in] level The serialization level.
@@ -579,6 +613,7 @@ protected:
      */
     virtual size_t _read(void *data, size_t minLen, size_t maxLen) = 0;
 
+    bool _allocated = false;
     uint8_t *_buf = nullptr;
     size_t _bufSize = 0;
     uint8_t *_cursor = nullptr;
@@ -600,14 +635,22 @@ protected:
 public:
 
     /**
+     * @param[in] buffer Buffer to use for serialization.
+     * @param[in] bufferSize Size of the buffer.
+     */
+    InputStreamSerializer(void *buffer, size_t bufferSize)
+    :   _buf((uint8_t *) buffer),
+        _bufSize(bufferSize),
+        _level(SerializationLevel::PLAIN)
+    { }
+
+    /**
      * @param[in] bufferSize Size of the internal buffer. Default size is 1 KiB.
      */
-    InputStreamSerializer(size_t bufferSize = _DEFAULT_BUFFER_SIZE) {
-        _buf = new uint8_t[bufferSize];
-        _bufSize = bufferSize;
-        _cursor = nullptr;
-        _available = 0;
-        _level = SerializationLevel::PLAIN;
+    InputStreamSerializer(size_t bufferSize = _DEFAULT_BUFFER_SIZE)
+    :   InputStreamSerializer(new uint8_t[bufferSize], bufferSize)
+    {
+        _allocated = true;
     }
 
     InputStreamSerializer(const InputStreamSerializer &) = delete;
@@ -615,7 +658,7 @@ public:
     InputStreamSerializer(InputStreamSerializer &&) = delete;
 
     ~InputStreamSerializer() {
-        delete[] _buf;
+        if (_allocated) delete[] _buf;
     }
 
     InputStreamSerializer & operator=(const InputStreamSerializer &) = delete;
