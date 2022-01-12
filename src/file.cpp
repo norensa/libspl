@@ -123,10 +123,9 @@ void File::write(size_t offset, const void *buf, size_t len) {
     _info.clear();
 }
 
-File & File::allocate(size_t offset, size_t len, bool initialize) {
+File & File::allocate(size_t offset, size_t len) {
     if (_fd == -1) open();
-    int mode = initialize ? FALLOC_FL_ZERO_RANGE : 0;
-    if (fallocate(_fd, mode, offset, len) != 0) {
+    if (fallocate(_fd, 0, offset, len) != 0) {
         throw ErrnoRuntimeError();
     }
     _info.clear();
