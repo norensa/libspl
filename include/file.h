@@ -564,7 +564,7 @@ public:
      */
     void sync(bool block = false) {
         int flags = block ? MS_ASYNC : MS_SYNC;
-        msync(_mem, _size, flags);
+        if (msync(_mem, _size, flags) != 0) throw ErrnoRuntimeError();
     }
 
     /**
@@ -577,7 +577,7 @@ public:
     void sync_invalidate(bool block = false) {
         int flags = MS_INVALIDATE;
         flags |= block ? MS_ASYNC : MS_SYNC;
-        msync(_mem, _size, MS_SYNC);
+        if (msync(_mem, _size, MS_SYNC) != 0) throw ErrnoRuntimeError();
     }
 };
 
