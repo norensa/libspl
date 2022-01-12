@@ -563,7 +563,7 @@ public:
      * done. Default = false.
      */
     void sync(bool block = false) {
-        int flags = block ? MS_ASYNC : MS_SYNC;
+        int flags = block ? MS_SYNC : MS_ASYNC;
         if (msync(_mem, _size, flags) != 0) throw ErrnoRuntimeError();
     }
 
@@ -576,8 +576,8 @@ public:
      */
     void sync_invalidate(bool block = false) {
         int flags = MS_INVALIDATE;
-        flags |= block ? MS_ASYNC : MS_SYNC;
-        if (msync(_mem, _size, MS_SYNC) != 0) throw ErrnoRuntimeError();
+        flags |= block ? MS_SYNC : MS_ASYNC;
+        if (msync(_mem, _size, flags) != 0) throw ErrnoRuntimeError();
     }
 };
 

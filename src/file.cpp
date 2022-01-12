@@ -162,6 +162,9 @@ File & File::collapse(size_t offset, size_t len) {
 MemoryMapping File::map(size_t offset, size_t len, bool writeable) {
     if (_fd == -1) open();
 
+    int flags = MAP_NONBLOCK | MAP_NORESERVE;
+    if (writeable) flags |= MAP_SHARED;
+
     int prot = PROT_READ;
     if (writeable) prot |= PROT_WRITE;
 
@@ -169,7 +172,7 @@ MemoryMapping File::map(size_t offset, size_t len, bool writeable) {
         nullptr,
         len,
         prot,
-        MAP_PRIVATE | MAP_NONBLOCK | MAP_NORESERVE,
+        flags,
         _fd,
         offset
     );

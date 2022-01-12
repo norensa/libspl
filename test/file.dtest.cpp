@@ -304,6 +304,48 @@ unit("file", "map")
     remove("./test-file");
 });
 
+unit("file", "map-sync")
+.body([] {
+    File f("./test-file");
+
+    f.open(File::READ_WRITE | File::CREATE);
+
+    int *a = new int[TEST_SIZE];
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        a[i] = dtest_random() * i;
+    }
+
+    f.write(a, sizeof(int) * TEST_SIZE);
+    f.close();
+
+    {
+        auto m = f.map();
+        f.close();
+        assert(memcmp(a, m.ptr(), sizeof(int) * TEST_SIZE) == 0);
+    }
+
+    for (int i = 0; i < TEST_SIZE; ++i) {
+        a[i] = dtest_random() * i;
+    }
+
+    {
+        auto m = f.map(true);
+        f.close();
+        memcpy(m.ptr(), a, sizeof(int) * TEST_SIZE);
+        m.sync(true);
+    }
+
+    {
+        auto m = f.map();
+        f.close();
+        assert(memcmp(a, m.ptr(), sizeof(int) * TEST_SIZE) == 0);
+    }
+
+    delete a;
+
+    remove("./test-file");
+});
+
 unit("file-serializer", "primitive-types")
 .body([] {
     File f("./test-file");
