@@ -1084,7 +1084,7 @@ public:
      * @param len Length of the allocated area.
      * @return A reference to this object for chaining.
      */
-    File & allocate(size_t offset, size_t len);
+    File & allocate(size_t offset, size_t len, bool initialize = false);
 
     /**
      * @brief Deallocated disk space within a file, leaving a hole.
