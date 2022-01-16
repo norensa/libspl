@@ -199,14 +199,38 @@ protected:
     size_t _remaining = 0;
     SerializationLevel _level = SerializationLevel::PLAIN;
     size_t _totalByteCount = 0;
+    size_t _alignment = 1;
 
-    inline bool _fit(size_t sz) {
+private:
+
+    bool _fit(size_t sz) {
         if (sz <= _remaining) {
             return true;
         }
-        else {
+        else if ((_cursor - _buf) % _alignment == 0) {
             flush();
-            return sz <= _bufSize;
+        }
+        return sz <= _remaining;
+    }
+
+    void _put(const void *data, size_t len) {
+        size_t l;
+        while (len > 0) {
+            l = _cursor - _buf;
+            if (l % _alignment == 0 && ((size_t) data) % _alignment == 0 && len % _alignment == 0) {
+                if (l > 0) flush();
+                _write(data, len);
+                return;
+            }
+            else {
+                if (_remaining == 0) flush();
+                l = std::min(_remaining, len);
+                memcpy(_cursor, data, l);
+                _cursor += l;
+                _remaining -= l;
+                len -= l;
+                data = (uint8_t *) data + l;
+            }
         }
     }
 
@@ -320,7 +344,7 @@ public:
             _remaining -= len;
         }
         else {
-            _write(data, len);
+            _put(data, len);
         }
         _totalByteCount += len;
 
@@ -347,7 +371,7 @@ public:
             _remaining -= sizeof(T);
         }
         else {
-            _write(&x, sizeof(T));
+            _put(&x, sizeof(T));
         }
         _totalByteCount += sizeof(T);
         return *this;
@@ -423,6 +447,16 @@ protected:
     }
 
 public:
+
+    /**
+     * @param[in] buffer Buffer to use for serialization.
+     * @param[in] bufferSize Size of the buffer.
+     */
+    OutputRandomAccessSerializer(void *buffer, size_t bufferSize)
+    :   OutputStreamSerializer(buffer, bufferSize),
+        _position(0),
+        _length(-1UL)
+    { }
 
     /**
      * @param[in] bufferSize Size of the internal buffer. Default size is 1 KiB.
@@ -513,23 +547,19 @@ public:
     }
 
     /**
-     * @brief Increments the current position.
+     * @brief Moves the current position.
      * 
-     * @param[in] displacement The desired increment in position.
+     * @param[in] displacement The desired increment/decrement in position.
      * @return A reference to this object for chaining.
      */
-    OutputRandomAccessSerializer & seekForward(size_t displacement) {
-        return seekTo(_position + displacement);
-    }
-
-    /**
-     * @brief Decrements the current position.
-     * 
-     * @param[in] displacement The desired decrement in position.
-     * @return A reference to this object for chaining.
-     */
-    OutputRandomAccessSerializer & seekBackward(size_t displacement) {
-        return seekTo(_position - displacement);
+    OutputRandomAccessSerializer & seek(ssize_t displacement) {
+        ssize_t newPos = _position + displacement;
+        if (newPos < 0) {
+            throw OutOfRangeError(
+                "Attempt to seek beyond the available serialization region"
+            );
+        }
+        return seekTo(newPos);
     }
 
     /**
@@ -620,16 +650,41 @@ protected:
     size_t _available = 0;
     SerializationLevel _level = SerializationLevel::PLAIN;
     size_t _totalByteCount = 0;
+    size_t _alignment = 1;
 
-    inline void _fillBuffer(size_t minLen = 0) {
+protected:
+
+    void _emptyBuffer() {
+        _available = 0;
+        _cursor = nullptr;
+    }
+
+private:
+
+    void _fillBuffer(size_t minLen = 0) {
         _available = _read(_buf, minLen, _bufSize);
         _totalByteCount += _available;
         _cursor = _buf;
     }
 
-    inline void _emptyBuffer() {
-        _available = 0;
-        _cursor = nullptr;
+    void _get(void *data, size_t len) {
+        size_t l;
+        while (len > 0) {
+            if (len >= _bufSize && _available == 0 && ((size_t) data) % _alignment == 0 && len % _alignment == 0) {
+                _read(data, len, len);
+                _totalByteCount += len;
+                return;
+            }
+            else {
+                if (_available == 0) _fillBuffer(1);
+                l = std::min(_available, len);
+                memcpy(data, _cursor, l);
+                _cursor += l;
+                _available -= l;
+                len -= l;
+                data = (uint8_t *) data + l;
+            }
+        }
     }
 
 public:
@@ -692,21 +747,7 @@ public:
             _available -= len;
         }
         else {
-            memcpy(data, _cursor, _available);
-            data = (uint8_t *) data + _available;
-            len -= _available;
-
-            if (len < _bufSize) {
-                _fillBuffer(len);
-                memcpy(data, _cursor, len);
-                _cursor += len;
-                _available -= len;
-            }
-            else {
-                _emptyBuffer();
-                _read(data, len, len);
-                _totalByteCount += len;
-            }
+            _get(data, len);
         }
         return *this;
     }
@@ -731,24 +772,7 @@ public:
             _available -= sizeof(T);
         }
         else {
-            void *data = &x;
-            size_t len = sizeof(T);
-
-            memcpy(data, _cursor, _available);
-            data = (uint8_t *) data + _available;
-            len -= _available;
-
-            if (len < _bufSize) {
-                _fillBuffer(len);
-                memcpy(data, _cursor, len);
-                _cursor += len;
-                _available -= len;
-            }
-            else {
-                _emptyBuffer();
-                _read(data, len, len);
-                _totalByteCount += len;
-            }
+            _get(&x, sizeof(T));
         }
         return *this;
     }
@@ -851,6 +875,16 @@ protected:
 public:
 
     /**
+     * @param[in] buffer Buffer to use for serialization.
+     * @param[in] bufferSize Size of the buffer.
+     */
+    InputRandomAccessSerializer(void *buffer, size_t bufferSize)
+    :   InputStreamSerializer(buffer, bufferSize),
+        _position(0),
+        _length(-1UL)
+    { }
+
+    /**
      * @param[in] bufferSize Size of the internal buffer. Default size is 1 KiB.
      */
     InputRandomAccessSerializer(size_t bufferSize = _DEFAULT_BUFFER_SIZE)
@@ -906,23 +940,19 @@ public:
     }
 
     /**
-     * @brief Increments the current position.
+     * @brief Moves the current position.
      * 
-     * @param[in] displacement The desired increment in position.
+     * @param[in] displacement The desired increment/decrement in position.
      * @return A reference to this object for chaining.
      */
-    InputRandomAccessSerializer & seekForward(size_t displacement) {
-        return seekTo(_position + displacement);
-    }
-
-    /**
-     * @brief Decrements the current position.
-     * 
-     * @param[in] displacement The desired decrement in position.
-     * @return A reference to this object for chaining.
-     */
-    InputRandomAccessSerializer & seekBackward(size_t displacement) {
-        return seekTo(_position - displacement);
+    InputRandomAccessSerializer & seek(ssize_t displacement) {
+        ssize_t newPos = _position + displacement;
+        if (newPos < 0) {
+            throw OutOfRangeError(
+                "Attempt to seek beyond the available serialization region"
+            );
+        }
+        return seekTo(newPos);
     }
 
     /**
