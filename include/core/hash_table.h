@@ -695,6 +695,8 @@ protected:
     }
 
     size_t _getFreeIndex(size_t h) {
+        begin:
+        // range of indices where our key should exist
         HashRange range = _controller.hashRange(h);
         size_t collisions = 1;          // count hash collisions
 
@@ -705,26 +707,43 @@ protected:
         } while (range.nonEmpty());
 
         _resize(collisions);
-        return _getFreeIndex(h);
+        goto begin;
     }
 
     template <typename K>
     size_t _findOrGetFreeIndex(size_t h, const K &k) {
+        begin:
         // range of indices where our key should exist
         HashRange range = _controller.hashRange(h);
-        size_t collisions = 1;          // count hash collisions
+
+        _controller.lock();
 
         do {
-            if (_table[range.pos].occupyIfFree()) return range.pos;
             if (_table[range.pos].h == h) {
-                if (_eq(_table[range.pos], k)) return range.pos;
-                ++collisions;
+                if (_eq(_table[range.pos], k)) {
+                    _controller.unlock();
+                    return range.pos;
+                }
             }
             range.next();
         } while (range.nonEmpty());
 
+        range = _controller.hashRange(h);
+
+        size_t collisions = 1;          // count hash collisions
+
+        do {
+            if (_table[range.pos].occupyIfFree()) {
+                _controller.unlock();
+                return range.pos;
+            }
+            if (_table[range.pos].h == h) ++collisions;
+            range.next();
+        } while (range.nonEmpty());
+
+        _controller.unlock();
         _resize(collisions);
-        return _getFreeIndex(h);
+        goto begin;
     }
 
     size_t _getFreeIndex_noResize(size_t h) {

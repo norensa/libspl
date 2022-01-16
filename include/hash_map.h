@@ -1182,10 +1182,12 @@ public:
      */
     Val & operator[](const Key &k) {
         size_t h = _hash(k);
+        _controller.enter();
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
             _table[i].set(h, { k, Val() });
         }
+        _controller.exit();
         return _table[i].storage.n.v;
     }
 
@@ -1200,10 +1202,12 @@ public:
      */
     Val & operator[](Key &&k) {
         size_t h = _hash(k);
+        _controller.enter();
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
             _table[i].set(h, { std::move(k), Val() });
         }
+        _controller.exit();
         return _table[i].storage.n.v;
     }
 

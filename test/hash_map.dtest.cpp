@@ -150,6 +150,31 @@ unit("parallel::hash-map", "unique-dense-keys")
     assert(count == PARALLEL_TEST_SIZE);
 });
 
+unit("parallel::hash-map", "unique-dense-keys-2")
+.body([] {
+    parallel::HashMap<int, int> m;
+
+    #pragma omp parallel for
+    for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
+        m.put(i, i * 2);
+    }
+
+    assert(m.size() == PARALLEL_TEST_SIZE);
+
+    for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
+        assert(m.get(i) == i * 2);
+        assert(m[i] == m.get(i));
+    }
+
+    size_t count = 0;
+    for (auto &x : m) {
+        assert(x.k < PARALLEL_TEST_SIZE);
+        assert(x.k * 2 == x.v);
+        ++count;
+    }
+    assert(count == PARALLEL_TEST_SIZE);
+});
+
 unit("hash-map", "dense-keys")
 .body([] {
 
@@ -371,6 +396,30 @@ unit("parallel::hash-multimap", "unique-dense-keys")
     for (auto &x : m) {
         assert(x.k.v < PARALLEL_TEST_SIZE);
         assert(x.k.v * 2 == x.v.v);
+        ++count;
+    }
+    assert(count == PARALLEL_TEST_SIZE);
+});
+
+unit("parallel::hash-multimap", "unique-dense-keys-2")
+.body([] {
+    parallel::HashMultiMap<int, int> m;
+
+    #pragma omp parallel for
+    for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
+        m.put(i, i * 2);
+    }
+
+    assert(m.size() == PARALLEL_TEST_SIZE);
+
+    for (int i = 0; i < PARALLEL_TEST_SIZE; ++i) {
+        assert(m.get(i) == i * 2);
+    }
+
+    size_t count = 0;
+    for (auto &x : m) {
+        assert(x.k < PARALLEL_TEST_SIZE);
+        assert(x.k * 2 == x.v);
         ++count;
     }
     assert(count == PARALLEL_TEST_SIZE);
