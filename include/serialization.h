@@ -320,6 +320,13 @@ public:
     }
 
     /**
+     * @return The byte alignment of this serializer.
+     */
+    size_t alignment() const {
+        return _alignment;
+    }
+
+    /**
      * @brief Sets the serialization level.
      * 
      * @param[in] level The serialization level.
@@ -728,6 +735,19 @@ public:
         return _totalByteCount;
     }
 
+    /**
+     * @return The byte alignment of this serializer.
+     */
+    size_t alignment() const {
+        return _alignment;
+    }
+
+    /**
+     * @brief Sets the serialization level.
+     * 
+     * @param[in] level The serialization level.
+     * @return A reference to this object for chaining.
+     */
     InputStreamSerializer & setLevel(SerializationLevel level) {
         _level = level;
         return *this;
