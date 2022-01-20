@@ -55,7 +55,7 @@ unit("stream-serializer", "serializable-type")
 
     struct StreamSerializable
     :   Serializable,
-        WithDefaultFactory<StreamSerializable>
+        WithFactory<StreamSerializable>
     {
         int data = 5;
 
@@ -93,7 +93,7 @@ unit("stream-serializer", "serializable-type-ptr")
 
     struct StreamSerializable
     :   Serializable,
-        WithDefaultFactory<StreamSerializable>
+        WithFactory<StreamSerializable>
     {
         int data = 5;
 
@@ -134,7 +134,7 @@ unit("stream-serializer", "serializable-type-ptr-creation")
 
     struct StreamSerializable
     :   Serializable,
-        WithDefaultFactory<StreamSerializable>
+        WithFactory<StreamSerializable>
     {
         int data = 5;
 
@@ -178,7 +178,7 @@ unit("stream-serializer", "serializable-type-nullptr")
 
     struct StreamSerializable
     :   Serializable,
-        WithDefaultFactory<StreamSerializable>
+        WithFactory<StreamSerializable>
     {
         int data = 5;
 
@@ -315,7 +315,7 @@ unit("random-access-serializer", "serializable-type")
 
     struct RandomAccessSerializable
     :   Serializable,
-        WithDefaultFactory<RandomAccessSerializable>
+        WithFactory<RandomAccessSerializable>
     {
         int data = 5;
 

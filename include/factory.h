@@ -112,28 +112,33 @@ public:
 };
 
 /**
- * @brief Registers the default no-argument constructor as a factory method for
- * the type T.
+ * @brief Registers a constructor as a factory method for the type T.
  * 
  * @tparam T The type for which a factory method will be created.
+ * @tparam Args The constructor arguments.
  */
-template <typename T>
-class WithDefaultFactory {
+template <typename T, typename ...Args>
+class WithFactory {
 private:
 
     static inline class _Init {
-        friend class WithDefaultFactory;
+        friend class WithFactory;
 
         // to prevent the compiler from optimizing-out this entire class
         bool initialized = false;
         _Init() {
-            Factory::registerFactory(typeid(T), [] { return new T(); });
+            Factory::registerFactory<Args...>(
+                typeid(T),
+                std::function<void *(Args...)>([] (Args... args) {
+                    return new T(args...);
+                })
+            );
         }
     } __init;
 
 public:
 
-    WithDefaultFactory() {
+    WithFactory() {
         __init.initialized = true;
     }
 };

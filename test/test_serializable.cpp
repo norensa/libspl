@@ -6,7 +6,7 @@ using namespace spl;
 
 struct StreamSerializable
 :   Serializable,
-    WithDefaultFactory<StreamSerializable>
+    WithFactory<StreamSerializable>
 {
     int data = 0;
 
@@ -48,7 +48,7 @@ struct StreamSerializable_NotCopyAssignable {
 
 struct ComparableStreamSerializable
 :   StreamSerializable,
-    WithDefaultFactory<ComparableStreamSerializable>
+    WithFactory<ComparableStreamSerializable>
 {
     int x = 0;
 
@@ -83,7 +83,7 @@ struct ComparableStreamSerializable
 
 struct RandomAccessSerializable
 :   Serializable,
-    WithDefaultFactory<RandomAccessSerializable>
+    WithFactory<RandomAccessSerializable>
 {
     int data = 0;
 

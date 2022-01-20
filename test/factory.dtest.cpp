@@ -106,7 +106,7 @@ unit("factory", "createObject(size_t)")
 
 unit("factory", "static-default-factory")
 .body([] {
-    struct A : WithDefaultFactory<A> {
+    struct A : WithFactory<A> {
         virtual ~A() = default;
         virtual char f() {
             return 'A';
