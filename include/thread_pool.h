@@ -40,8 +40,6 @@ private:
     std::chrono::high_resolution_clock::time_point _deferTime;
     void *_task;
 
-    ExecutionContext() = default;
-
     template <typename Task>
     void _run(Task *t) {
         _task = t;
@@ -52,6 +50,8 @@ private:
     }
 
 protected:
+
+    ExecutionContext() = default;
 
     template <typename Task>
     Task * currentTask() const {
