@@ -786,7 +786,7 @@ protected:
         rhs._controller.enter();
         _controller = rhs._controller;
         _table = new node[_controller.tableSize];
-        _size = rhs._size;
+        _size = static_cast<size_t>(rhs._size);
         for (size_t i = 0; i < _controller.tableSize; ++i) {
             if (rhs._table[i].occupied()) {
                 size_t j = _getFreeIndex_noResize(rhs._table[i].h);
