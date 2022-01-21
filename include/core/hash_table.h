@@ -310,17 +310,21 @@ using HashSetNode = HashTableNode<Key>;
 template <typename Key>
 using AtomicHashSetNode = AtomicHashTableNode<Key>;
 
-template <typename Node, typename Key, typename KeyEqual> 
+template <typename KeyEqual> 
 struct HashMapNodeKeyEqual {
     KeyEqual _eq;
+
+    template <typename Node, typename Key>
     bool operator()(const Node &n, const Key &k) const {
         return _eq(n.storage.n.k, k);
     }
 };
 
-template <typename Node, typename Key, typename KeyEqual> 
+template <typename KeyEqual> 
 struct HashSetNodeKeyEqual {
     KeyEqual _eq;
+
+    template <typename Node, typename Key>
     bool operator()(const Node &n, const Key &k) const {
         return _eq(n.storage.n, k);
     }

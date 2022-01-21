@@ -35,7 +35,7 @@ class HashMap
         Key,
         __HashTable::HashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<__HashTable::HashMapNode<Key, Val>, Key, KeyEqual>,
+        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
         __HashTable::HashTableController,
         size_t
     >,
@@ -51,7 +51,7 @@ private:
         Key,
         __HashTable::HashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<__HashTable::HashMapNode<Key, Val>, Key, KeyEqual>,
+        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
         __HashTable::HashTableController,
         size_t
     >;
@@ -682,7 +682,7 @@ class HashMap
         Key,
         __HashTable::AtomicHashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<__HashTable::AtomicHashMapNode<Key, Val>, Key, KeyEqual>,
+        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >,
@@ -698,7 +698,7 @@ private:
         Key,
         __HashTable::AtomicHashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<__HashTable::AtomicHashMapNode<Key, Val>, Key, KeyEqual>,
+        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >;
@@ -1540,7 +1540,7 @@ class HashMultiMap
         Key,
         __HashTable::HashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<__HashTable::HashMapNode<Key, Val>, Key, KeyEqual>,
+        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
         __HashTable::HashTableController,
         size_t
     >,
@@ -1556,7 +1556,7 @@ private:
         Key,
         __HashTable::HashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<__HashTable::HashMapNode<Key, Val>, Key, KeyEqual>,
+        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
         __HashTable::HashTableController,
         size_t
     >;
@@ -2126,7 +2126,7 @@ class HashMultiMap
         Key,
         __HashTable::AtomicHashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<__HashTable::AtomicHashMapNode<Key, Val>, Key, KeyEqual>,
+        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >,
@@ -2142,7 +2142,7 @@ private:
         Key,
         __HashTable::AtomicHashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<__HashTable::AtomicHashMapNode<Key, Val>, Key, KeyEqual>,
+        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >;

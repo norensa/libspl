@@ -33,7 +33,7 @@ class HashSet
         Key,
         __HashTable::HashSetNode<Key>,
         KeyHash,
-        __HashTable::HashSetNodeKeyEqual<__HashTable::HashSetNode<Key>, Key, KeyEqual>,
+        __HashTable::HashSetNodeKeyEqual<KeyEqual>,
         __HashTable::HashTableController,
         size_t
     >,
@@ -49,7 +49,7 @@ private:
         Key,
         __HashTable::HashSetNode<Key>,
         KeyHash,
-        __HashTable::HashSetNodeKeyEqual<__HashTable::HashSetNode<Key>, Key, KeyEqual>,
+        __HashTable::HashSetNodeKeyEqual<KeyEqual>,
         __HashTable::HashTableController,
         size_t
     >;
@@ -533,7 +533,7 @@ class HashSet
         Key,
         __HashTable::AtomicHashSetNode<Key>,
         KeyHash,
-        __HashTable::HashSetNodeKeyEqual<__HashTable::AtomicHashSetNode<Key>, Key, KeyEqual>,
+        __HashTable::HashSetNodeKeyEqual<KeyEqual>,
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >,
@@ -549,7 +549,7 @@ private:
         Key,
         __HashTable::AtomicHashSetNode<Key>,
         KeyHash,
-        __HashTable::HashSetNodeKeyEqual<__HashTable::AtomicHashSetNode<Key>, Key, KeyEqual>,
+        __HashTable::HashSetNodeKeyEqual<KeyEqual>,
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >;
@@ -1188,7 +1188,7 @@ class HashMultiSet
         Key,
         __HashTable::HashSetNode<Key>,
         KeyHash,
-        __HashTable::HashSetNodeKeyEqual<__HashTable::HashSetNode<Key>, Key, KeyEqual>,
+        __HashTable::HashSetNodeKeyEqual<KeyEqual>,
         __HashTable::HashTableController,
         size_t
     >,
@@ -1204,7 +1204,7 @@ private:
         Key,
         __HashTable::HashSetNode<Key>,
         KeyHash,
-        __HashTable::HashSetNodeKeyEqual<__HashTable::HashSetNode<Key>, Key, KeyEqual>,
+        __HashTable::HashSetNodeKeyEqual<KeyEqual>,
         __HashTable::HashTableController,
         size_t
     >;
@@ -1690,7 +1690,7 @@ class HashMultiSet
         Key,
         __HashTable::AtomicHashSetNode<Key>,
         KeyHash,
-        __HashTable::HashSetNodeKeyEqual<__HashTable::AtomicHashSetNode<Key>, Key, KeyEqual>,
+        __HashTable::HashSetNodeKeyEqual<KeyEqual>,
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >,
@@ -1706,7 +1706,7 @@ private:
         Key,
         __HashTable::AtomicHashSetNode<Key>,
         KeyHash,
-        __HashTable::HashSetNodeKeyEqual<__HashTable::AtomicHashSetNode<Key>, Key, KeyEqual>,
+        __HashTable::HashSetNodeKeyEqual<KeyEqual>,
         __HashTable::ConcurrentHashTableController,
         std::atomic_size_t
     >;
