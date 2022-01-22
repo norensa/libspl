@@ -111,12 +111,16 @@ public:
 
 template <typename Key, typename Val>
 struct SupportsTrivialSerialization_t<MapNode<Key, Val>> {
-    static constexpr bool value = SupportsTrivialSerialization<Key> && SupportsTrivialSerialization<Val>;
+    static constexpr bool value =
+        SupportsTrivialSerialization<Key> && SupportsTrivialSerialization<Val>;
 };
 
 template <typename Key, typename Val>
 struct SupportsCustomSerialization_t<MapNode<Key, Val>> {
-    static constexpr bool value = SupportsCustomSerialization<Key> || SupportsCustomSerialization<Val>;
+    static constexpr bool value =
+        (SupportsCustomSerialization<Key> && SupportsCustomSerialization<Val>)
+        || (SupportsTrivialSerialization<Key> && SupportsCustomSerialization<Val>)
+        || (SupportsCustomSerialization<Key> && SupportsTrivialSerialization<Val>);
 };
 
 namespace __HashTable {
