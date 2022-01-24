@@ -91,6 +91,19 @@ unit("file", "mkdirs")
     remove("./test-dir");
 });
 
+unit("file", "rmdirs")
+.body([] {
+    File::mkdirs("./test-dir/a/b");
+
+    assert(access("./test-dir", F_OK) == 0);
+    assert(access("./test-dir/a", F_OK) == 0);
+    assert(access("./test-dir/a/b", F_OK) == 0);
+
+    File::rmdirs("./test-dir");
+
+    assert(access("./test-dir", F_OK) != 0);
+});
+
 unit("file", "remove")
 .body([] {
     mkdir("./test-dir", File::DEFAULT_NEW_DIRECTORY_MODE);

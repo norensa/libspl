@@ -59,6 +59,18 @@ void File::mkdirs(const char *path) {
     free(tmp);
 }
 
+void File::rmdirs(const Path &path) {
+    PathInfo pi(path);
+
+    if (pi.isDir()) {
+        list(path.append("*")).foreach([] (const Path &path) {
+            rmdirs(path);
+        });
+    }
+
+    remove(path);
+}
+
 List<Path> File::list(const char *pattern) {
     List<Path> children;
 
@@ -67,8 +79,8 @@ List<Path> File::list(const char *pattern) {
         for (size_t i = 0; i < globbuf.gl_pathc; ++i) {
             children.append(globbuf.gl_pathv[i]);
         }
-        globfree(&globbuf);
     }
+    globfree(&globbuf);
 
     return children;
 }

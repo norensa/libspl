@@ -788,6 +788,13 @@ public:
     }
 
     /**
+     * @brief Removes a directory and all of its contents.
+     * 
+     * @param[in] path The path of the directory to remove.
+     */
+    static void rmdirs(const Path &path);
+
+    /**
      * @brief Renames and/or moves a file.
      * 
      * @param[in] oldPath The path of the file to rename and/or move.
@@ -950,6 +957,17 @@ public:
      */
     File & mkdirs() {
         mkdirs(_info.path());
+        return *this;
+    }
+
+    /**
+     * @brief Removes the directory specified by this object and all of its
+     * contents.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    File & rmdirs() {
+        rmdirs(_info.path());
         return *this;
     }
 
