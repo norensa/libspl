@@ -12,20 +12,27 @@
 namespace spl { 
 
 /**
- * @brief Helper class for synchronizing concurrent actions.
+ * @brief Helper class for synchronizing concurrent events.
  */
 class SynchronizationCondition {
 
 private:
 
     size_t _count;
+    size_t _wakeup;
     std::mutex _mtx;
     std::condition_variable _cv;
 
 public:
 
     SynchronizationCondition()
-    :   _count(0)
+    :   _count(0),
+        _wakeup(0)
+    { }
+
+    SynchronizationCondition(size_t wakeupThreshold)
+    :   _count(0),
+        _wakeup(wakeupThreshold)
     { }
 
     SynchronizationCondition(const SynchronizationCondition &) = delete;
@@ -39,33 +46,57 @@ public:
     SynchronizationCondition & operator=(SynchronizationCondition &&) = delete;
 
     /**
-     * @brief Called before an action begins.
+     * @brief Increases the internal counter by x.
+     * 
+     * @param x The amount to increase.
      */
-    void begin() {
+    void increase(size_t x) {
         std::unique_lock lk(_mtx);
-        ++_count;
+        _count += x;
     }
 
     /**
-     * @brief Called after an action ends.
+     * @brief Decreases the internal counter by x and wakes up all sleeping
+     * threads in wait() if the counter is less than or equal to the wakeup
+     * threshold.
+     * 
+     * @param x The amount to increase.
      */
-    void end() {
+    void decrease(size_t x) {
         std::unique_lock lk(_mtx);
-        if (_count == 0) throw RuntimeError("end() called without begin()");
-        --_count;
-        if (_count == 0) {
+        if (x > _count) throw RuntimeError("Attempt to decrease counter beyond 0");
+        _count -= x;
+        if (_count <= _wakeup) {
             lk.unlock();
             _cv.notify_all();
         }
     }
 
     /**
-     * @brief Waits until all started actions are completed; i.e. end() is
-     * called as many times as begin().
+     * @brief Increases the internal counter by 1.
+     * Note: This variant can be used to synchronize and wait for number of
+     * running threads.
+     */
+    void begin() {
+        increase(1);
+    }
+
+    /**
+     * @brief Decreases the internal counter by 1.
+     * Note: This variant can be used to synchronize and wait for number of
+     * running threads.
+     */
+    void end() {
+        decrease(1);
+    }
+
+    /**
+     * @brief Waits until the internal counter is less than or equal to the
+     * wakeup threshold.
      */
     void wait() {
         std::unique_lock lk(_mtx);
-        _cv.wait(lk, [this] { return _count == 0; });
+        _cv.wait(lk, [this] { return _count == _wakeup; });
     }
 };
 
