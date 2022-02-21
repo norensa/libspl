@@ -50,7 +50,7 @@ public:
      * 
      * @param x The amount to increase.
      */
-    void increase(size_t x) {
+    void increase(size_t x = 1) {
         std::unique_lock lk(_mtx);
         _count += x;
     }
@@ -62,7 +62,7 @@ public:
      * 
      * @param x The amount to increase.
      */
-    void decrease(size_t x) {
+    void decrease(size_t x = 1) {
         std::unique_lock lk(_mtx);
         if (x > _count) throw RuntimeError("Attempt to decrease counter beyond 0");
         _count -= x;
@@ -96,7 +96,7 @@ public:
      */
     void wait() {
         std::unique_lock lk(_mtx);
-        _cv.wait(lk, [this] { return _count == _wakeup; });
+        _cv.wait(lk, [this] { return _count <= _wakeup; });
     }
 };
 
