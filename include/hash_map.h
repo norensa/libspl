@@ -508,6 +508,7 @@ public:
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
             _table[i].set(h, { k, Val() });
+            ++_size;
         }
         return _table[i].storage.n.v;
     }
@@ -525,6 +526,7 @@ public:
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
             _table[i].set(h, { std::move(k), Val() });
+            ++_size;
         }
         return _table[i].storage.n.v;
     }
@@ -1186,6 +1188,7 @@ public:
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
             _table[i].set(h, { k, Val() });
+            ++_size;
         }
         _controller.exit();
         return _table[i].storage.n.v;
@@ -1206,6 +1209,7 @@ public:
         size_t i = _findOrGetFreeIndex(h, k);
         if (! _table[i].occupied()) {
             _table[i].set(h, { std::move(k), Val() });
+            ++_size;
         }
         _controller.exit();
         return _table[i].storage.n.v;
