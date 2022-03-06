@@ -22,7 +22,6 @@ unit("exception", "Error")
 });
 
 unit("exception", "RuntimeError")
-.inProcess()
 .body([] {
     const char m[] = "test message";
     try {

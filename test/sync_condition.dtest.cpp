@@ -12,7 +12,6 @@ using namespace spl;
 
 unit("sync-condition", "wait")
 .dependsOn("thread")
-.inProcess()
 .body([] {
     SynchronizationCondition cond;
 

@@ -230,7 +230,6 @@ unit("json", "encode-map")
 });
 
 unit("json", "decode-map")
-.inProcess()
 .body([] {
     assert(( JSON::decode<HashMap<std::string, int>>("{}").empty() ));
 
