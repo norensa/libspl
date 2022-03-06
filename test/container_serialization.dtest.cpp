@@ -922,3 +922,42 @@ unit("container-serialization", "heap<serializable>")
         assert(x.deserialized());
     }
 });
+
+// range ///////////////////////
+
+#include <range.h>
+
+unit("container-serialization", "range")
+.dependsOn({
+    "range",
+    "std-serialization",
+})
+.body([] {
+
+    Range<int> r;
+
+    r.insert({ 1, 2 });
+    r.insert({ 3, 8 });
+    r.insert({ 9, 12 });
+
+    MemoryOutputStreamSerializer out;
+    out << r;
+    out.flush();
+
+    Range<int> r2;
+    auto in = out.toInput();
+    in >> r2;
+
+    auto it1 = r.begin();
+    auto it2 = r2.begin();
+    while (it1 != r.end()) {
+        assert(it2 != r2.end());
+
+        assert(it1->start == it2->start);
+        assert(it1->end == it2->end);
+
+        ++it1;
+        ++it2;
+    }
+    assert(it2 == r2.end());
+});
