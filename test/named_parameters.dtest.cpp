@@ -6,7 +6,7 @@ module("named-parameters")
     "exception",
     "hash-map",
     "stream-serializer",
-    "std_serialization",
+    "std-serialization",
     "json"
 });
 
