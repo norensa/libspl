@@ -68,6 +68,16 @@ public:
     }
 
     /**
+     * @brief Checks whether a parameter with the given key exists.
+     * 
+     * @param key The key to check.
+     * @return true if the key exists, false otherwise.
+     */
+    bool contains(const std::string &key) const {
+        return _param.contains(key);
+    }
+
+    /**
      * @brief Adds a named parameter of type T to the stored parameters.
      * 
      * @tparam T Type of the parameter. The supported primitive types are
