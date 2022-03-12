@@ -72,6 +72,22 @@ namespace spl {
     }
 
     /**
+     * @brief Squeezes a long hash word into 32 bits.
+     * 
+     * @param h A size_t hash word.
+     * @return The shortened 32-bit hash.
+     */
+    inline uint32_t short_hash(size_t h) {
+        #if sizeof(size_t) == 4
+            return h;
+        #elif sizeof(size_t) == 8
+            return static_cast<uint32_t>(h) ^ static_cast(h >> 32);
+        #else
+            #error "Unsupported hash code size"
+        #endif
+    }
+
+    /**
      * @brief The default functor for calculating the hash codes of objects. If
      * the object supports the Hashable trait, the `hash() const` function is
      * used. Otherwise, std::hash is used to evaluate a hash code.
