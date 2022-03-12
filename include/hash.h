@@ -88,7 +88,7 @@ namespace spl {
             return h;
         }
         else {
-            return static_cast<uint32_t>(h) ^ static_cast(h >> 32);
+            return static_cast<uint32_t>(h) ^ static_cast<uint32_t>(h >> 32);
         }
     }
 
