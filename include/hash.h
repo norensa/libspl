@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <cstddef>
 #include <functional>
+#include <assert.h>
 
 namespace spl {
 
@@ -78,13 +79,17 @@ namespace spl {
      * @return The shortened 32-bit hash.
      */
     inline uint32_t short_hash(size_t h) {
-        #if sizeof(size_t) == 4
+        static_assert(
+            sizeof(size_t) == 4 || sizeof(size_t) == 8,
+            "Unsupported size_t size"
+        );
+
+        if (sizeof(size_t) == 4) {
             return h;
-        #elif sizeof(size_t) == 8
+        }
+        else {
             return static_cast<uint32_t>(h) ^ static_cast(h >> 32);
-        #else
-            #error "Unsupported hash code size"
-        #endif
+        }
     }
 
     /**
