@@ -9,7 +9,6 @@
 #include <type_traits>
 #include <cstddef>
 #include <functional>
-#include <assert.h>
 
 namespace spl {
 
