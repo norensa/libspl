@@ -25,7 +25,7 @@ dunit("tcp-socket", "echo")
 .workers(1)
 .driver([] {
     TCPServerSocket s(0, 128);
-    dtest_sendMsg(s.address());
+    dtest_send_msg(s.address());
 
     auto conn = s.accept();
     int data;
@@ -34,7 +34,7 @@ dunit("tcp-socket", "echo")
 })
 .worker([] {
     SocketAddress addr;
-    dtest_recvMsg() >> addr;
+    dtest_recv_msg(addr);
     TCPSocket s(addr);
 
     int data = dtest_random() * 100;
@@ -48,7 +48,7 @@ dunit("tcp-socket", "pollOrAccept(F)")
 .workers(4)
 .driver([] {
     TCPServerSocket s(0, 128);
-    dtest_sendMsg(s.address());
+    dtest_send_msg(s.address());
 
     std::vector<TCPSocket *> conn;
     std::vector<std::vector<int>> data(4);
@@ -99,7 +99,7 @@ dunit("tcp-socket", "pollOrAccept(F)")
 })
 .worker([] {
     SocketAddress addr;
-    dtest_recvMsg() >> addr;
+    dtest_recv_msg(addr);
     TCPSocket s(addr);
 
     for (auto i = 0; i < 1000; ++i) {
@@ -112,7 +112,7 @@ dunit("tcp-socket", "pollOrAccept()")
 .workers(4)
 .driver([] {
     TCPServerSocket s(0, 128);
-    dtest_sendMsg(s.address());
+    dtest_send_msg(s.address());
 
     std::vector<TCPSocket *> conn;
     std::vector<std::vector<int>> data(4);
@@ -162,7 +162,7 @@ dunit("tcp-socket", "pollOrAccept()")
 })
 .worker([] {
     SocketAddress addr;
-    dtest_recvMsg() >> addr;
+    dtest_recv_msg(addr);
     TCPSocket s(addr);
 
     for (auto i = 0; i < 1000; ++i) {
@@ -175,7 +175,7 @@ dunit("tcp-socket", "poll(F)")
 .workers(4)
 .driver([] {
     TCPServerSocket s(0, 128);
-    dtest_sendMsg(s.address());
+    dtest_send_msg(s.address());
 
     std::vector<TCPSocket *> conn;
     std::vector<std::vector<int>> data(2);
@@ -229,7 +229,7 @@ dunit("tcp-socket", "poll(F)")
 })
 .worker([] {
     SocketAddress addr;
-    dtest_recvMsg() >> addr;
+    dtest_recv_msg(addr);
 
     try {
         TCPSocket s(addr);
@@ -254,7 +254,7 @@ dunit("tcp-socket", "poll()")
 .workers(4)
 .driver([] {
     TCPServerSocket s(0, 128);
-    dtest_sendMsg(s.address());
+    dtest_send_msg(s.address());
 
     std::vector<TCPSocket *> conn;
     std::vector<std::vector<int>> data(2);
@@ -306,7 +306,7 @@ dunit("tcp-socket", "poll()")
 })
 .worker([] {
     SocketAddress addr;
-    dtest_recvMsg() >> addr;
+    dtest_recv_msg(addr);
 
     try {
         TCPSocket s(addr);
@@ -331,7 +331,7 @@ dunit("tcp-socket-serializer", "primitive-types")
 .workers(1)
 .driver([] {
     TCPServerSocket s(0, 128);
-    dtest_sendMsg(s.address());
+    dtest_send_msg(s.address());
 
     int x;
     long y;
@@ -345,7 +345,7 @@ dunit("tcp-socket-serializer", "primitive-types")
 })
 .worker([] {
     SocketAddress addr;
-    dtest_recvMsg() >> addr;
+    dtest_recv_msg(addr);
 
     int x = 1;
     long y = 2;
@@ -360,7 +360,7 @@ dunit("tcp-socket-serializer", "serializable-type")
 .workers(1)
 .driver([] {
     TCPServerSocket s(0, 128);
-    dtest_sendMsg(s.address());
+    dtest_send_msg(s.address());
 
     auto elem = StreamSerializable();
 
@@ -370,7 +370,7 @@ dunit("tcp-socket-serializer", "serializable-type")
 })
 .worker([] {
     SocketAddress addr;
-    dtest_recvMsg() >> addr;
+    dtest_recv_msg(addr);
 
     auto elem = StreamSerializable();
 
@@ -384,7 +384,7 @@ dunit("tcp-socket-serializer", "large-serialization")
 .workers(1)
 .driver([] {
     TCPServerSocket s(0, 128);
-    dtest_sendMsg(s.address());
+    dtest_send_msg(s.address());
 
     auto serializer = InputTCPSocketSerializer(s.accept());
     for (auto i = 0; i < TEST_SIZE; ++i) {
@@ -395,7 +395,7 @@ dunit("tcp-socket-serializer", "large-serialization")
 })
 .worker([] {
     SocketAddress addr;
-    dtest_recvMsg() >> addr;
+    dtest_recv_msg(addr);
 
     auto serializer = OutputTCPSocketSerializer(TCPSocket(addr));
 
@@ -409,7 +409,7 @@ dunit("tcp-socket-serializer", "bulk-serialization")
 .workers(1)
 .driver([] {
     TCPServerSocket s(0, 128);
-    dtest_sendMsg(s.address());
+    dtest_send_msg(s.address());
 
     int *b = new int[TEST_SIZE];
     auto serializer = InputTCPSocketSerializer(s.accept());
@@ -418,7 +418,7 @@ dunit("tcp-socket-serializer", "bulk-serialization")
 })
 .worker([] {
     SocketAddress addr;
-    dtest_recvMsg() >> addr;
+    dtest_recv_msg(addr);
 
     int *a = new int[TEST_SIZE];
     for (auto i = 0; i < TEST_SIZE; ++i) {
