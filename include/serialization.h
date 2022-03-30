@@ -543,6 +543,7 @@ public:
      * @return A reference to this object for chaining.
      */
     OutputRandomAccessSerializer & seekTo(size_t position) {
+        if (position == _position) return *this;
         if (position > length()) {
             throw OutOfRangeError(
                 "Attempt to seek beyond the available serialization region"
@@ -567,6 +568,39 @@ public:
             );
         }
         return seekTo(newPos);
+    }
+
+    /**
+     * @return The current position.
+     */
+    size_t tell() const {
+        return _position;
+    }
+
+    /**
+     * @brief Moves the current position forward until it is aligned.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    OutputRandomAccessSerializer & alignForward() {
+        if (_position % _alignment != 0) {
+            size_t p = _position / _alignment * _alignment + _alignment;
+            seekTo(p);
+        }
+        return *this;
+    }
+
+    /**
+     * @brief Moves the current position backward until it is aligned.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    OutputRandomAccessSerializer & alignBackward() {
+        if (_position % _alignment != 0) {
+            size_t p = _position / _alignment * _alignment;
+            seekTo(p);
+        }
+        return *this;
     }
 
     /**
@@ -973,6 +1007,39 @@ public:
             );
         }
         return seekTo(newPos);
+    }
+
+    /**
+     * @return The current position.
+     */
+    size_t tell() const {
+        return _position;
+    }
+
+    /**
+     * @brief Moves the current position forward until it is aligned.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    InputRandomAccessSerializer & alignForward() {
+        if (_position % _alignment != 0) {
+            size_t p = _position / _alignment * _alignment + _alignment;
+            seekTo(p);
+        }
+        return *this;
+    }
+
+    /**
+     * @brief Moves the current position forward until it is aligned.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    InputRandomAccessSerializer & alignBackward() {
+        if (_position % _alignment != 0) {
+            size_t p = _position / _alignment * _alignment;
+            seekTo(p);
+        }
+        return *this;
     }
 
     /**
