@@ -519,6 +519,13 @@ public:
     }
 
     /**
+     * @return The current position.
+     */
+    size_t tell() const {
+        return _position + (_cursor - _buf);
+    }
+
+    /**
      * @return The limit of the underlying byte range.
      */
     size_t length() const {
@@ -533,7 +540,7 @@ public:
      * the underlying byte range.
      */
     size_t remaining() const {
-        return length() - _position;
+        return length() - tell();
     }
 
     /**
@@ -568,13 +575,6 @@ public:
             );
         }
         return seekTo(newPos);
-    }
-
-    /**
-     * @return The current position.
-     */
-    size_t tell() const {
-        return _position;
     }
 
     /**
@@ -911,7 +911,7 @@ protected:
 
     size_t _read(void *data, size_t minLen, size_t maxLen) override final {
 
-        size_t r = remaining();
+        size_t r = length() - _position;
 
         if (r < minLen) {
             throw OutOfRangeError(
@@ -959,6 +959,13 @@ public:
     }
 
     /**
+     * @return The current position.
+     */
+    size_t tell() const {
+        return _position - _available;
+    }
+
+    /**
      * @return The limit of the underlying byte range.
      */
     size_t length() const {
@@ -973,7 +980,7 @@ public:
      * the underlying byte range.
      */
     size_t remaining() const {
-        return length() - _position;
+        return length() - tell();
     }
 
     /**
@@ -1007,13 +1014,6 @@ public:
             );
         }
         return seekTo(newPos);
-    }
-
-    /**
-     * @return The current position.
-     */
-    size_t tell() const {
-        return _position;
     }
 
     /**

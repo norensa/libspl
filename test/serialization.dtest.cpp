@@ -385,3 +385,27 @@ unit("random-access-serializer", "large-serialization")
     delete idx_write;
     delete idx_read;
 });
+
+unit("random-access-serializer", "tell")
+.inProcess()
+.body([] {
+
+    MemoryOutputRandomAccessSerializer out;
+
+    assert(out.tell() == 0);
+    for (auto i = 0; i < 3; ++i) {
+        out << static_cast<int>(dtest_random() * 3);
+    }
+    assert(out.tell() == sizeof(int) * 3);
+
+    out.flush();
+    assert(out.tell() == sizeof(int) * 3);
+
+    auto in = out.toInput();
+    assert(in.tell() == 0);
+    for (auto i = 0; i < 3; ++i) {
+        int x;
+        in >> x;
+    }
+    assert(in.tell() == sizeof(int) * 3);
+});
