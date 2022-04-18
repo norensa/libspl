@@ -398,6 +398,18 @@ public:
     }
 
     /**
+     * @brief Detaches a client connection and removes it from the cache.
+     * Note: this function is thread safe for concurrent calls on different
+     * connections.
+     * 
+     * @param conn A client connection.
+     */
+    void detachConnection(TCPSocket *conn) {
+        _pollfds.erase(conn->_fd);
+        _connections.erase(conn->_fd);
+    }
+
+    /**
      * @brief Polls the cached client connections for incoming data.
      * 
      * @param f A functor supporting operator()(TCPSocket *) to call if some
