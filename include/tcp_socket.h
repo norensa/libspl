@@ -3,6 +3,8 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#pragma once
+
 #include <socket.h>
 #include <hash_map.h>
 #include <hash_set.h>
