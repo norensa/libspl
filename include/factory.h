@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <typeinfo>
+#include <hash.h>
 
 namespace spl {
 
@@ -21,6 +22,29 @@ private:
 
     static void * _get(size_t hashCode);
 
+    static size_t _hash(size_t code) {
+        return code;
+    }
+
+    static size_t _hash(const std::type_info &type) {
+        return type.hash_code();
+    }
+
+    template <typename T>
+    static size_t _hash() {
+        return typeid(T).hash_code();
+    }
+
+    template <typename ...T>
+    static size_t _hash(const std::type_info &type) {
+        return hash_combine(_hash(type), _hash<T>()...);
+    }
+
+    template <typename ...T>
+    static size_t _hash(size_t code) {
+        return hash_combine(_hash(code), _hash<T>()...);
+    }
+
 public:
 
     /**
@@ -33,7 +57,7 @@ public:
         const std::type_info &type,
         const std::function<void *()> &factory
     ) {
-        _put(type.hash_code(), new std::function(factory));
+        _put(_hash(type), new std::function(factory));
     }
 
     /**
@@ -49,7 +73,7 @@ public:
         const std::type_info &type,
         const std::function<void *(Args...)> &factory
     ) {
-        _put(type.hash_code(), new std::function(factory));
+        _put(_hash<Args...>(type), new std::function(factory));
     }
 
     /**
@@ -63,7 +87,7 @@ public:
     static T * createObject(size_t hashCode) {
         return static_cast<T *>(
             static_cast<std::function<void *()> *>(
-                _get(hashCode)
+                _get(_hash(hashCode))
             )->operator()()
         );
     }
@@ -80,7 +104,7 @@ public:
     static T * createObject(size_t hashCode, Args ...args) {
         return static_cast<T *>(
             static_cast<std::function<void *(Args...)> *>(
-                _get(hashCode)
+                _get(_hash<Args...>(hashCode))
             )->operator()(args...)
         );
     }
@@ -94,7 +118,7 @@ public:
      */
     template <typename T>
     static T * createObject(const std::type_info &type = typeid(T)) {
-        return createObject<T>(type.hash_code());
+        return createObject<T>(_hash(type));
     }
 
     /**
@@ -107,7 +131,7 @@ public:
      */
     template <typename T, typename ...Args>
     static T * createObject(const std::type_info &type, Args ...args) {
-        return createObject<T, Args...>(type.hash_code(), args...);
+        return createObject<T, Args...>(_hash<Args...>(type), args...);
     }
 };
 

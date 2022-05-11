@@ -119,3 +119,34 @@ unit("factory", "static-default-factory")
     assert(a->f() == 'A');
     delete a;
 });
+
+unit("factory", "multiple-factory")
+.body([] {
+
+    static bool factoryCalled = false;
+    static bool intFactoryCalled = false;
+
+    struct A : WithFactory<A>, WithFactory<A, int> {
+        A() { factoryCalled = true; }
+        A(int) { intFactoryCalled = true; }
+        virtual ~A() = default;
+        virtual char f() {
+            return 'a';
+        }
+    };
+
+    A x;
+
+    A *a = Factory::createObject<A>(typeid(A).hash_code());
+    assert(a->f() == 'a');
+    delete a;
+
+    assert(factoryCalled);
+    assert(! intFactoryCalled);
+
+    a = Factory::createObject<A>(typeid(A).hash_code(), 5);
+    assert(a->f() == 'a');
+    delete a;
+
+    assert(intFactoryCalled);
+});
