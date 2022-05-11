@@ -8,7 +8,7 @@ module("string-conversions")
 });
 
 #define PERFORMANCE_ITERATIONS 1000000
-#define PERFORMANCE_MARGIN_PARSE (1/1.05)
+#define PERFORMANCE_MARGIN_PARSE (1)
 #define PERFORMANCE_MARGIN_TOSTR (1/1.5)
 
 using namespace spl;
