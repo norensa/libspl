@@ -14,6 +14,8 @@
 #include <setjmp.h>
 #include <unistd.h>
 #include <heap.h>
+#include <hash_set.h>
+#include <ucontext.h>
 
 namespace spl {
 
@@ -29,24 +31,57 @@ class ExecutionContext {
 private:
 
     enum class Status : int {
-        COMPLETED,
-        DEFERRED,
+        COMPLETE,
         RESCHED,
-        WILL_RESCHED,
+        RESCHED_LATER,
+        DEFERRED,
+        DEFERRED_SAVED,
+        SUSPENDED,
     };
 
-    Status _status;
-    jmp_buf _ret;
+    // per-context object
+    size_t _stackSize;
+    ucontext_t _ctx;
+
+    // per-task
+    ucontext_t *_uctx;
+    volatile Status _status;
     std::chrono::high_resolution_clock::time_point _deferTime;
-    void *_task;
+
+    // per-thread
+    static thread_local void *_task;
+    static thread_local ExecutionContext *_this;
 
     template <typename Task>
-    void _run(Task *t) {
+    static void _ret() {
+        (*static_cast<Task *>(_task))(*_this);
+        _this->_status = Status::COMPLETE;
+        // return to parent context
+    }
+
+    template <typename Task>
+    void _run(Task *t, ucontext_t *uctx, void *stack = nullptr) {
+        // set per-task and per-thread members
+        _uctx = uctx;
         _task = t;
-        _status = Status::COMPLETED;
-        if (setjmp(_ret) == 0) {
-            (*t)(*this);
+        _this = this;
+
+        // initialize context stack, if a stack is given
+        if (stack != nullptr) {
+            // current context
+            getcontext(_uctx);
+
+            // new stack
+            _uctx->uc_stack.ss_sp = stack;
+            _uctx->uc_stack.ss_size = _stackSize;
+            _uctx->uc_link = &_ctx;
+
+            // jump into _ret on first swap
+            makecontext(_uctx, _ret<Task>, 0);
         }
+
+        // swap into task
+        swapcontext(&_ctx, _uctx);
     }
 
 protected:
@@ -61,63 +96,145 @@ protected:
 public:
 
     /**
-     * @brief Reschedules this thread after a timeout duration has passed.
+     * @brief Reschedules this task. This restarts the execution of the task from
+     * the begining.
      * 
-     * @param duration The desired timeout duration.
+     * @param insert Indicates whether to re-insert the task to the back of the
+     * ready queue. If the task is not inserted, then it must be re-run using
+     * ThreadPool:run(Task *). (default = true)
+     */
+    void resched(bool insert = true) {
+        _status = insert ? Status::RESCHED : Status::RESCHED_LATER;
+        // jump into _run, never to return
+        setcontext(&_ctx);
+    }
+
+    /**
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. This wil restart the task from the beginning.
+     * 
+     * @param duration The desired wait duration.
      */
     void setTimeout(const std::chrono::duration<uint64_t, std::nano> &duration) {
         _deferTime = std::chrono::high_resolution_clock::now() + duration;
         _status = Status::DEFERRED;
-        longjmp(_ret, 1);
+        // jump into _run, never to return
+        setcontext(&_ctx);
     }
 
     /**
-     * @brief Reschedules this thread after a timeout duration has passed.
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. This wil restart the task from the beginning.
      * 
-     * @param nanos The desired timeout duration in nanoseconds.
+     * @param nanos The desired wait duration in nanoseconds.
      */
     void setTimeoutNanos(uint64_t nanos) {
-        setTimeout(std::chrono::nanoseconds(nanos));
+        wait(std::chrono::nanoseconds(nanos));
     }
 
     /**
-     * @brief Reschedules this thread after a timeout duration has passed.
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. This wil restart the task from the beginning.
      * 
-     * @param micros The desired timeout duration in microseconds.
+     * @param micros The desired wait duration in microseconds.
      */
     void setTimeoutMicros(uint64_t micros) {
-        setTimeout(std::chrono::microseconds(micros));
+        wait(std::chrono::microseconds(micros));
     }
 
     /**
-     * @brief Reschedules this thread after a timeout duration has passed.
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. This wil restart the task from the beginning.
      * 
-     * @param millis The desired timeout duration in milliseconds.
+     * @param millis The desired wait duration in milliseconds.
      */
     void setTimeoutMillis(uint64_t millis) {
-        setTimeout(std::chrono::milliseconds(millis));
+        wait(std::chrono::milliseconds(millis));
     }
 
     /**
-     * @brief Reschedules this thread after a timeout duration has passed.
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. This wil restart the task from the beginning.
      * 
-     * @param seconds The desired timeout duration in seconds.
+     * @param seconds The desired wait duration in seconds.
      */
     void setTimeout(uint64_t seconds) {
-        setTimeout(std::chrono::seconds());
+        setTimeout(std::chrono::seconds(seconds));
     }
 
     /**
-     * @brief Reschedules this thread by inserting to the back of the ready
-     * queue.
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. Unlike setTimeout, this resumes execution of the task.
+     * 
+     * @param duration The desired wait duration.
      */
-    void resched() {
-        _status = Status::RESCHED;
-        longjmp(_ret, 1);
+    void wait(const std::chrono::duration<uint64_t, std::nano> &duration) {
+        _deferTime = std::chrono::high_resolution_clock::now() + duration;
+        _status = Status::DEFERRED_SAVED;
+        // swap into _run
+        swapcontext(_uctx, &_ctx);
+        // wait is over, go back to task
     }
 
-    void markNotDone() {
-        _status = Status::WILL_RESCHED;
+    /**
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. Unlike setTimeout, this resumes execution of the task.
+     * 
+     * @param nanos The desired wait duration in nanoseconds.
+     */
+    void waitNanos(uint64_t nanos) {
+        wait(std::chrono::nanoseconds(nanos));
+    }
+
+    /**
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. Unlike setTimeout, this resumes execution of the task.
+     * 
+     * @param micros The desired wait duration in microseconds.
+     */
+    void waitMicros(uint64_t micros) {
+        wait(std::chrono::microseconds(micros));
+    }
+
+    /**
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. Unlike setTimeout, this resumes execution of the task.
+     * 
+     * @param millis The desired wait duration in milliseconds.
+     */
+    void waitMillis(uint64_t millis) {
+        wait(std::chrono::milliseconds(millis));
+    }
+
+    /**
+     * @brief Pauses this task until a timeout duration has passed. The actual
+     * wait duration is arbitrarily long but guaranteed to be at least the
+     * specified amount. Unlike setTimeout, this resumes execution of the task.
+     * 
+     * @param seconds The desired wait duration in seconds.
+     */
+    void wait(uint64_t seconds) {
+        wait(std::chrono::seconds(seconds));
+    }
+
+    /**
+     * @brief Suspends this task indefinitely until execution is resumed using
+     * ThreadPool::resume(Task *).
+     */
+    void suspend() {
+        _status = Status::SUSPENDED;
+        // swap into _run
+        swapcontext(_uctx, &_ctx);
+        // suspension is over, go back to task
     }
 };
 
@@ -155,74 +272,203 @@ public:
     using Task = task_type;
     using Context = context_type;
 
+    static constexpr size_t DEFAULT_STACK_SIZE = 16 * 1024;
+
 private:
 
+    struct QueuedTask {
+        Task *task = nullptr;
+        ucontext_t *uctx = nullptr;
+        void *stack = nullptr;
+
+        QueuedTask() = default;
+
+        QueuedTask(Task *task)
+        :   task(task),
+            uctx(nullptr),
+            stack(nullptr)
+        { }
+
+        QueuedTask(Task *task, ucontext_t *uctx, void *stack)
+        :   task(task),
+            uctx(uctx),
+            stack(stack)
+        { }
+
+        bool saveContext(ucontext_t *u, void *s) {
+            if (uctx == nullptr) {
+                uctx = u;
+                stack = s;
+                return true;
+            }
+            return false;
+        }
+
+        bool hasContext() {
+            return uctx != nullptr;
+        }
+
+        void freeContext() {
+            if (stack != nullptr) free(stack);
+            if (uctx != nullptr) delete uctx;
+        }
+
+        void freeAll() {
+            delete task;
+            freeContext();
+        }
+    };
+
+    struct QueuedTaskHash {
+        size_t operator()(const QueuedTask &queuedTask) const {
+            return (size_t) queuedTask.task;
+        }
+
+        size_t operator()(const Task *task) const {
+            return (size_t) task;
+        }
+    };
+
+    struct QueuedTaskEqual {
+        bool operator()(const QueuedTask &lhs, const QueuedTask &rhs) const {
+            return lhs.task == rhs.task;
+        }
+
+        bool operator()(const QueuedTask &lhs, const Task *rhs) const {
+            return lhs.task == rhs;
+        }
+
+        bool operator()(const Task *lhs, const QueuedTask &rhs) const {
+            return lhs == rhs.task;
+        }
+    };
+
     List<Thread> _threads;
-    parallel::Deque<Task *> _tasks;
+    size_t _stackSize;
+    parallel::Deque<QueuedTask> _tasks;
+    parallel::HashMultiSet<QueuedTask, QueuedTaskHash, QueuedTaskEqual> _suspendedTasks;
     volatile bool _running = false;
     volatile bool _stopping = false;
     uint64_t _dequeueTimeout = 10000UL;
 
     template <typename Task>
-    struct DeferredTask {
-        Task *task;
+    struct DeferredTask : QueuedTask {
         std::chrono::high_resolution_clock::time_point time;
+
+        DeferredTask() = default;
+
+        DeferredTask(QueuedTask t, std::chrono::high_resolution_clock::time_point time)
+        :   QueuedTask(t),
+            time(time)
+        { }
 
         bool operator<(const DeferredTask &rhs) const {
             return time > rhs.time;
         }
     };
 
-    void _worker()  {
-        Context ctx;
+    void _worker() {
         Heap<DeferredTask<Task>> deferredTasks;
 
-        while (_running || deferredTasks.nonEmpty()) {
-            Task *task = nullptr;
+        Context ctx;
+        ctx._stackSize = _stackSize;
 
+        ucontext_t *uctx = new ucontext_t();
+        void *stack = malloc(_stackSize);
+
+        QueuedTask qt;
+
+        while (_running || deferredTasks.nonEmpty()) {
+            // check deferred tasks first
             if (deferredTasks.nonEmpty()) {
                 auto now = std::chrono::high_resolution_clock::now();
+
+                // time of the next task
                 auto next = deferredTasks.top().time;
+
+                // if the time of the next task is up
                 if (now >= next) {
-                    task = deferredTasks.pop().task;
+                    // then run the next defferred task
+                    qt = deferredTasks.pop();
                 }
                 else {
+                    // otherwise wait on the ready queue
+                    // If something shows up on the ready queue between now and
+                    // the time of the next task, it gets priority
                     try {
-                        task = _tasks.dequeueOrTimeout((next - now).count());
-                    } catch(TimeoutError &) { }
+                        qt = _tasks.dequeueOrTimeout((next - now).count());
+                    } catch(TimeoutError &) {
+                        // set null to indicate "no task"
+                        qt.task = nullptr;
+                    }
                 }
             }
             else {
-                task = _tasks.dequeue();
+                // no deferred tasks, get something from the ready queue or wait
+                qt = _tasks.dequeue();
             }
 
-            if (task != nullptr) {
-                ctx._run(task);
+            // if we got a task
+            if (qt.task != nullptr) {
+
+                if (qt.hasContext()) {
+                    // use the task's saved context and stack
+                    ctx._run(qt.task, qt.uctx);
+                }
+                else {
+                    // use the current context and stack
+                    ctx._run(qt.task, uctx, stack);
+                }
 
                 switch (ctx._status) {
-                case Context::Status::COMPLETED:
-                    delete task;
-                    break;
-
-                case Context::Status::DEFERRED:
-                    deferredTasks.push({ task, ctx._deferTime });
-                    break;
+                case Context::Status::COMPLETE:
+                    // release all task resources
+                    qt.freeAll();
+                break;
 
                 case Context::Status::RESCHED:
-                    _tasks.enqueue(task);
-                    break;
+                    // no longer needed, execution will start from the begining
+                    qt.freeContext();
+                    // re-enqueue to the back of the ready queue
+                    _tasks.enqueue(qt.task);
+                break;
 
-                case Context::Status::WILL_RESCHED:
-                    break;
+                case Context::Status::RESCHED_LATER:
+                    // no longer needed, execution will start from the begining
+                    qt.freeContext();
+                break;
 
-                default:
-                    delete task;
+                case Context::Status::DEFERRED:
+                    deferredTasks.push({ qt, ctx._deferTime });
+                break;
+
+                case Context::Status::DEFERRED_SAVED:
+                    // if the task didn't already have a saved context,
+                    // then steal current context & stack and keep them for the task
+                    if (qt.saveContext(uctx, stack)) {
+                        // allocate new context & stack for the next task
+                        uctx = new ucontext_t();
+                        stack = malloc(_stackSize);
+                    }
+                    deferredTasks.push({ qt, ctx._deferTime });
+                break;
+
+                case Context::Status::SUSPENDED:
+                    // if the task didn't already have a saved context,
+                    // then steal current context & stack and keep them for the task
+                    if (qt.saveContext(uctx, stack)) {
+                        // allocate new context & stack for the next task
+                        uctx = new ucontext_t();
+                        stack = malloc(_stackSize);
+                    }
+                    _suspendedTasks.put(qt);
+                break;
                 }
             }
-            else {
-                sched_yield();
-            }
         }
+
+        delete uctx;
+        free(stack);
     }
 
 public:
@@ -231,8 +477,11 @@ public:
      * @brief Construct a new ThreadPool object.
      * 
      * @param size The number of threads in the thread pool.
+     * @param stackSize The size of the stack used for tasks. (default = 16 KiB)
      */
-    ThreadPool(size_t size) {
+    ThreadPool(size_t size, size_t stackSize = DEFAULT_STACK_SIZE)
+    :   _stackSize(stackSize)
+    {
         _running = true;
         for (size_t i = 0; i < size; ++i) {
             _threads.insert(
@@ -286,6 +535,16 @@ public:
     }
 
     /**
+     * @brief Resumes a suspended task. The task should be previously submitted
+     * using run(Task *) as this pointer is used to lookup the suspended task.
+     * 
+     * @param t The task to resume.
+     */
+    void resume(Task *t) {
+        _tasks.enqueue(_suspendedTasks.remove(t));
+    }
+
+    /**
      * @brief Terminates the thread pool. This function sisables enqueueing new
      * tasks and waits for all tasks to finish. Throws a TimeoutError if the
      * thread pool cannot terminate before the indicated timeout duration.
@@ -336,8 +595,8 @@ public:
             }
         });
 
-        _tasks.foreach([] (Task *t) { 
-            if (t != nullptr) delete t;
+        _tasks.foreach([] (QueuedTask &t) { 
+            if (t.task != nullptr) t.freeAll();
         });
         _tasks.clear();
     }
