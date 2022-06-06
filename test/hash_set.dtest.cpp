@@ -81,7 +81,7 @@ unit("hash-set", "initializer-list")
     HashSet<HashableObj> s({ 0, 1, 2 });
 
     assert(s.size() == 3);
-    assert((HashSetTester<HashSet<HashableObj>>::tableSize(s)) <= 2 * 3);
+    assert((HashSetTester<HashSet<HashableObj>>::tableSize(s)) <= 2 * 8);
     assert((HashSetTester<HashSet<HashableObj>>::bucketSize(s)) <= 2);
 
     for (int i = 0; i < 3; ++i) {

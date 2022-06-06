@@ -85,7 +85,7 @@ unit("hash-map", "initializer-list")
     });
 
     assert(m.size() == 3);
-    assert((HashMapTester<HashMap<HashableObj, HashableObj>>::tableSize(m)) <= 2 * 3);
+    assert((HashMapTester<HashMap<HashableObj, HashableObj>>::tableSize(m)) <= 2 * 8);
     assert((HashMapTester<HashMap<HashableObj, HashableObj>>::bucketSize(m)) <= 2);
 
     for (int i = 0; i < 3; ++i) {
