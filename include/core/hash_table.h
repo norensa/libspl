@@ -489,6 +489,7 @@ protected:
     using storage_node = typename node::storage_type;
 
     static constexpr size_t __INITIAL_TABLE_SIZE = 128;
+    static constexpr size_t __MINIMUM_TABLE_SIZE = 8;
     static constexpr size_t __NPOS = (size_t) -1;
 
     KeyHash _hash;
@@ -955,6 +956,7 @@ protected:
 public:
 
     HashTable(size_t initialSize = __INITIAL_TABLE_SIZE) {
+        if (initialSize < __MINIMUM_TABLE_SIZE) initialSize = __MINIMUM_TABLE_SIZE;
         _controller.init(initialSize);
         _table = new node[_controller.tableSize];
         _size = 0;
