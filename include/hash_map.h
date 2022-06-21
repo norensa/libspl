@@ -608,18 +608,60 @@ public:
     }
 
     /**
+     * @brief Erases and returns the corresponding value for a key in this map
+     * iff it satisfies a given predicate. If no such key exists, an
+     * ElementNotFoundError will be thrown.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The value corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    Val remove(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        size_t i = _findIndex(h, k);
+        if (i == __NPOS || ! predicate(_table[i].storage.n)) throw ElementNotFoundError();
+        Val retval = std::move(_table[i].storage.n.v);
+        _table[i].release();
+        --_size;
+        return retval;
+    }
+
+    /**
      * @brief Removes a node from this map and returns it. If the indicated key
      * does not exist, an ElementNotFoundError will be thrown.
      * 
      * @param k The key to erase.
      * @throws ElementNotFoundError if the key is not found.
-     * @return The value corresponding to the erased key.
+     * @return The node corresponding to the erased key.
      */
     template <typename K>
     storage_node removeNode(const K &k) {
         size_t h = _hash(k);
         size_t i = _findIndex(h, k);
         if (i == __NPOS) throw ElementNotFoundError();
+        storage_node retval = std::move(_table[i].storage.n);
+        _table[i].release();
+        --_size;
+        return retval;
+    }
+
+    /**
+     * @briefRemoves a node from this map and returns it iff it satisfies a
+     * given predicate. If no such key exists, an ElementNotFoundError will be
+     * thrown.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The node corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    storage_node removeNode(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        size_t i = _findIndex(h, k);
+        if (i == __NPOS || ! predicate(_table[i].storage.n)) throw ElementNotFoundError();
         storage_node retval = std::move(_table[i].storage.n);
         _table[i].release();
         --_size;
@@ -1383,13 +1425,70 @@ public:
         return retval;
     }
 
+     /**
+     * @brief Erases and returns the corresponding value for a key in this map
+     * iff it satisfies a given predicate. If no such key exists, an
+     * ElementNotFoundError will be thrown.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The value corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    Val remove(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        _controller.enter();
+        size_t i = _findIndex(h, k);
+        if (i == __NPOS || ! predicate(_table[i].storage.n)) {
+            _controller.exit();
+            throw ElementNotFoundError();
+        }
+        Val retval = std::move(_table[i].storage.n.v);
+        _table[i].release();
+        --_size;
+        _controller.exit();
+        return retval;
+    }
+
+    /**
+     * @brief Erases and returns the corresponding value for a key in this map
+     * iff it satisfies a given predicate. If no such key exists, an
+     * ElementNotFoundError will be thrown.
+     * Note: This variant obtains a lock to ensure that no other concurrent
+     * operation may be performed on this container.
+
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The value corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    Val remove_l(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        _controller.enter();
+        _controller.lock();
+        size_t i = _findIndex(h, k);
+        if (i == __NPOS || ! predicate(_table[i].storage.n)) {
+            _controller.unlock();
+            _controller.exit();
+            throw ElementNotFoundError();
+        }
+        Val retval = std::move(_table[i].storage.n.v);
+        _table[i].release();
+        --_size;
+        _controller.unlock();
+        _controller.exit();
+        return retval;
+    }
+
     /**
      * @brief Removes a node from this map and returns it. If the indicated key
      * does not exist, an ElementNotFoundError will be thrown.
      * 
      * @param k The key to erase.
      * @throws ElementNotFoundError if the key is not found.
-     * @return The value corresponding to the erased key.
+     * @return The node corresponding to the erased key.
      */
     template <typename K>
     storage_node removeNode(const K &k) {
@@ -1415,7 +1514,7 @@ public:
      * 
      * @param k The key to erase.
      * @throws ElementNotFoundError if the key is not found.
-     * @return The value corresponding to the erased key.
+     * @return The node corresponding to the erased key.
      */
     template <typename K>
     storage_node removeNode_l(const K &k) {
@@ -1424,6 +1523,63 @@ public:
         _controller.lock();
         size_t i = _findIndex(h, k);
         if (i == __NPOS) {
+            _controller.unlock();
+            _controller.exit();
+            throw ElementNotFoundError();
+        }
+        storage_node retval = std::move(_table[i].storage.n);
+        _table[i].release();
+        --_size;
+        _controller.unlock();
+        _controller.exit();
+        return retval;
+    }
+
+    /**
+     * @brief Removes a node from this map and returns it iff it satisfies a
+     * given predicate. If no such key exists, an ElementNotFoundError will be
+     * thrown.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The node corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    storage_node removeNode(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        _controller.enter();
+        size_t i = _findIndex(h, k);
+        if (i == __NPOS || ! predicate(_table[i].storage.n)) {
+            _controller.exit();
+            throw ElementNotFoundError();
+        }
+        storage_node retval = std::move(_table[i].storage.n);
+        _table[i].release();
+        --_size;
+        _controller.exit();
+        return retval;
+    }
+
+    /**
+     * @brief Removes a node from this map and returns it iff it satisfies a
+     * given predicate. If no such key exists, an ElementNotFoundError will be
+     * thrown.
+     * Note: This variant obtains a lock to ensure that no other concurrent
+     * operation may be performed on this container.
+
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The node corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    storage_node removeNode_l(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        _controller.enter();
+        _controller.lock();
+        size_t i = _findIndex(h, k);
+        if (i == __NPOS || ! predicate(_table[i].storage.n)) {
             _controller.unlock();
             _controller.exit();
             throw ElementNotFoundError();
@@ -2032,6 +2188,49 @@ public:
     }
 
     /**
+     * @brief Erases all keys from this map that match a given key. If no such
+     * key exists, the function does nothing.
+     * 
+     * @param k The key to erase.
+     * @return Number of keys erased.
+     */
+    template <typename K>
+    size_t eraseAll(const K &k) {
+        size_t retval = 0;
+        size_t h = _hash(k);
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            _table[i].release();
+            --_size;
+            ++retval;
+        }
+        return retval;
+    }
+
+    /**
+     * @brief Erases all keys from this map that match a given key and satisfy a
+     * given predicate. If no such key exists, the function does nothing.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @return Number of keys erased.
+     */
+    template <typename K, typename Pred>
+    size_t eraseAll(const K &k, Pred predicate) {
+        size_t retval = 0;
+        size_t h = _hash(k);
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            if (predicate(_table[i].storage.n)) {
+                _table[i].release();
+                --_size;
+                ++retval;
+            }
+        }
+        return retval;
+    }
+
+    /**
      * @brief Erases a key from this map and returns the corresponding value. If
      * the key does not exist, an ElementNotFoundError will be thrown. If more
      * than one key matches the given key, only one key is erased.
@@ -2052,13 +2251,39 @@ public:
     }
 
     /**
+     * @brief Erases and returns the corresponding value for a key in this map
+     * iff it satisfies a given predicate. If no such key exists, an
+     * ElementNotFoundError will be thrown. If more than one key matches the
+     * given key and satisfies the predicate, only one key will be erased.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The value corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    Val remove(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            if (predicate(_table[i].storage.n)) {
+                Val retval = std::move(_table[i].storage.n.v);
+                _table[i].release();
+                --_size;
+                return retval;
+            }
+        }
+        throw ElementNotFoundError();
+    }
+
+    /**
      * @brief Removes a node from this map and returns it. If the indicated key
      * does not exist, an ElementNotFoundError will be thrown. If more than one
      * key matches the given key, only one node is removed.
      * 
      * @param k The key to erase.
      * @throws ElementNotFoundError if the key is not found.
-     * @return The value corresponding to the erased key.
+     * @return The node corresponding to the erased key.
      */
     template <typename K>
     storage_node removeNode(const K &k) {
@@ -2069,6 +2294,32 @@ public:
         _table[i].release();
         --_size;
         return retval;
+    }
+
+    /**
+     * @brief Removes a node from this map and returns it iff it satisfies a
+     * given predicate. If no such key exists, an ElementNotFoundError will be
+     * thrown. If more than one key matches the given key, only one node is
+     * removed.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The node corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    storage_node removeNode(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            if (predicate(_table[i].storage.n)) {
+                storage_node retval = std::move(_table[i].storage.n);
+                _table[i].release();
+                --_size;
+                return retval;
+            }
+        }
+        throw ElementNotFoundError();
     }
 
     /**
@@ -2710,6 +2961,108 @@ public:
     }
 
     /**
+     * @brief Erases all keys from this map that match a given key. If no such
+     * key exists, the function does nothing.
+     * 
+     * @param k The key to erase.
+     * @return Number of keys erased.
+     */
+    template <typename K>
+    size_t eraseAll(const K &k) {
+        size_t retval = 0;
+        size_t h = _hash(k);
+        _controller.enter();
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            _table[i].release();
+            --_size;
+            ++retval;
+        }
+        _controller.exit();
+        return retval;
+    }
+
+    /**
+     * @brief Erases all keys from this map that match a given key. If no such
+     * key exists, the function does nothing.
+     * Note: This variant obtains a lock to ensure that no other concurrent
+     * operation may be performed on this container.
+
+     * @param k The key to erase.
+     * @return Number of keys erased.
+     */
+    template <typename K>
+    size_t eraseAll_l(const K &k) {
+        size_t retval = 0;
+        size_t h = _hash(k);
+        _controller.enter();
+        _controller.lock();
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            _table[i].release();
+            --_size;
+            ++retval;
+        }
+        _controller.unlock();
+        _controller.exit();
+        return retval;
+    }
+
+    /**
+     * @brief Erases all keys from this map that match a given key and satisfy a
+     * given predicate. If no such key exists, the function does nothing.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @return Number of keys erased.
+     */
+    template <typename K, typename Pred>
+    size_t eraseAll(const K &k, Pred predicate) {
+        size_t retval = 0;
+        size_t h = _hash(k);
+        _controller.enter();
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            if (predicate(_table[i].storage.n)) {
+                _table[i].release();
+                --_size;
+                ++retval;
+            }
+        }
+        _controller.exit();
+        return retval;
+    }
+
+    /**
+     * @brief Erases all keys from this map that match a given key and satisfy a
+     * given predicate. If no such key exists, the function does nothing.
+     * Note: This variant obtains a lock to ensure that no other concurrent
+     * operation may be performed on this container.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @return Number of keys erased.
+     */
+    template <typename K, typename Pred>
+    size_t eraseAll_l(const K &k, Pred predicate) {
+        size_t retval = 0;
+        size_t h = _hash(k);
+        _controller.enter();
+        _controller.lock();
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            if (predicate(_table[i].storage.n)) {
+                _table[i].release();
+                --_size;
+                ++retval;
+            }
+        }
+        _controller.unlock();
+        _controller.exit();
+        return retval;
+    }
+
+    /**
      * @brief Erases a key from this map and returns the corresponding value. If
      * the key does not exist, an ElementNotFoundError will be thrown. If more
      * than one key matches the given key, only one key is erased.
@@ -2765,13 +3118,76 @@ public:
     }
 
     /**
+     * @brief Erases and returns the corresponding value for a key in this map
+     * iff it satisfies a given predicate. If no such key exists, an
+     * ElementNotFoundError will be thrown. If more than one key matches the
+     * given key and satisfies the predicate, only one key will be erased.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The value corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    Val remove(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        _controller.enter();
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            if (predicate(_table[i].storage.n)) {
+                Val retval = std::move(_table[i].storage.n.v);
+                _table[i].release();
+                --_size;
+                _controller.exit();
+                return retval;
+            }
+        }
+        _controller.exit();
+        throw ElementNotFoundError();
+    }
+
+    /**
+     * @brief Erases and returns the corresponding value for a key in this map
+     * iff it satisfies a given predicate. If no such key exists, an
+     * ElementNotFoundError will be thrown. If more than one key matches the
+     * given key and satisfies the predicate, only one key will be erased.
+     * Note: This variant obtains a lock to ensure that no other concurrent
+     * operation may be performed on this container.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The value corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    Val remove_l(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        _controller.enter();
+        _controller.lock();
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            if (predicate(_table[i].storage.n)) {
+                Val retval = std::move(_table[i].storage.n.v);
+                _table[i].release();
+                --_size;
+                _controller.unlock();
+                _controller.exit();
+                return retval;
+            }
+        }
+        _controller.unlock();
+        _controller.exit();
+        throw ElementNotFoundError();
+    }
+
+    /**
      * @brief Removes a node from this map and returns it. If the indicated key
      * does not exist, an ElementNotFoundError will be thrown. If more than one
      * key matches the given key, only one node is removed.
      * 
      * @param k The key to erase.
      * @throws ElementNotFoundError if the key is not found.
-     * @return The value corresponding to the erased key.
+     * @return The node corresponding to the erased key.
      */
     template <typename K>
     storage_node removeNode(const K &k) {
@@ -2798,7 +3214,7 @@ public:
      * 
      * @param k The key to erase.
      * @throws ElementNotFoundError if the key is not found.
-     * @return The value corresponding to the erased key.
+     * @return The node corresponding to the erased key.
      */
     template <typename K>
     storage_node removeNode_l(const K &k) {
@@ -2813,6 +3229,69 @@ public:
             _controller.unlock();
             _controller.exit();
             return retval;
+        }
+        _controller.unlock();
+        _controller.exit();
+        throw ElementNotFoundError();
+    }
+
+    /**
+     * @brief Removes a node from this map and returns it iff it satisfies a
+     * given predicate. If no such key exists, an ElementNotFoundError will be
+     * thrown. If more than one key matches the given key, only one node is
+     * removed.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The node corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    storage_node removeNode(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        _controller.enter();
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            if (predicate(_table[i].storage.n)) {
+                storage_node retval = std::move(_table[i].storage.n);
+                _table[i].release();
+                --_size;
+                _controller.exit();
+                return retval;
+            }
+        }
+        _controller.exit();
+        throw ElementNotFoundError();
+    }
+
+    /**
+     * @brief Removes a node from this map and returns it iff it satisfies a
+     * given predicate. If no such key exists, an ElementNotFoundError will be
+     * thrown. If more than one key matches the given key, only one node is
+     * removed.
+     * Note: This variant obtains a lock to ensure that no other concurrent
+     * operation may be performed on this container.
+     * 
+     * @param k The key to erase.
+     * @param predicate A predicate functor.
+     * @throws ElementNotFoundError if the key is not found.
+     * @return The node corresponding to the erased key.
+     */
+    template <typename K, typename Pred>
+    storage_node removeNode_l(const K &k, Pred predicate) {
+        size_t h = _hash(k);
+        _controller.enter();
+        _controller.lock();
+        auto range = _findRange(h);
+        for (size_t i = _findNext(range, h, k); i != __NPOS; i = _findNext(range, h, k)) {
+            if (predicate(_table[i].storage.n)) {
+                storage_node retval = std::move(_table[i].storage.n);
+                _table[i].release();
+                --_size;
+                _controller.unlock();
+                _controller.exit();
+                return retval;
+            }
         }
         _controller.unlock();
         _controller.exit();
