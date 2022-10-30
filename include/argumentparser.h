@@ -56,7 +56,53 @@ public:
         return *this;
     }
 
-    template <typename T>
+    template <
+        typename T,
+        std::enable_if_t<
+            ! (std::is_same_v<T, uint8>
+            || std::is_same_v<T, uint16>
+            || std::is_same_v<T, uint32>
+            || std::is_same_v<T, uint64>
+            || std::is_same_v<T, int8>
+            || std::is_same_v<T, int16>
+            || std::is_same_v<T, int32>
+            || std::is_same_v<T, int64>
+            || std::is_same_v<T, float32>
+            || std::is_same_v<T, float64>
+            || std::is_same_v<T, float128>
+            ),
+            int
+        > = 0
+    >
+    static std::function<bool(const char * const *)> store(T &val) {
+        return std::function([&val] (const char * const *args)->bool {
+            try {
+                val = args[0];
+            }
+            catch (...) {
+                return false;
+            }
+            return true;
+        });
+    }
+
+    template <
+        typename T,
+        std::enable_if_t<
+            std::is_same_v<T, uint8>
+            || std::is_same_v<T, uint16>
+            || std::is_same_v<T, uint32>
+            || std::is_same_v<T, uint64>
+            || std::is_same_v<T, int8>
+            || std::is_same_v<T, int16>
+            || std::is_same_v<T, int32>
+            || std::is_same_v<T, int64>
+            || std::is_same_v<T, float32>
+            || std::is_same_v<T, float64>
+            || std::is_same_v<T, float128>,
+            int
+        > = 0
+    >
     static std::function<bool(const char * const *)> store(T &val) {
         return std::function([&val] (const char * const *args)->bool {
             try {
@@ -79,7 +125,7 @@ public:
 };
 
 template <>
-std::function<bool(const char * const *)> Argument::store<bool>(bool &val) {
+std::function<bool(const char * const *)> Argument::store<bool, 0>(bool &val) {
     return std::function([&val] (const char * const *args)->bool {
         if (strcasecmp(args[0], "true") == 0) val = true;
         else if (strcasecmp(args[0], "false") == 0) val = false;
@@ -90,13 +136,12 @@ std::function<bool(const char * const *)> Argument::store<bool>(bool &val) {
 }
 
 template <>
-std::function<bool(const char * const *)> Argument::store<std::string>(std::string &val) {
+std::function<bool(const char * const *)> Argument::store<std::string, 0>(std::string &val) {
     return std::function([&val] (const char * const *args)->bool {
         val = args[0];
         return true;
     });
 }
-
 
 class ArgumentParser {
 

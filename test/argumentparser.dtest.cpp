@@ -156,3 +156,29 @@ unit("argumentparser", "set-numeric")
     parser.parse(1, args1);
     assert(val == 4);
 });
+
+unit("argumentparser", "store-char-ptr")
+.body([] {
+    ArgumentParser parser;
+    const char *val = nullptr;
+
+    parser.add(
+        Argument("--opt")
+        .numParams(1)
+        .action(Argument::store(val))
+    );
+
+    const char *args1[] = {
+        "--opt",
+        "something"
+    };
+    parser.parse(2, args1);
+    assert(val == args1[1]);
+
+    const char *args2[] = {
+        "--opt",
+        "something else"
+    };
+    parser.parse(2, args2);
+    assert(val == args2[1]);
+});
