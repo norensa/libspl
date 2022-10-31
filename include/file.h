@@ -836,6 +836,27 @@ public:
         return list(_getPath(pattern));
     }
 
+    /**
+     * @brief Changes the current working directory.
+     * 
+     * @param path The new working directory.
+     */
+    static void chdir(const char *path) {
+        if (::chdir(path) != 0) {
+            throw ErrnoRuntimeError();
+        }
+    }
+
+    /**
+     * @brief Changes the current working directory.
+     * 
+     * @param path The new working directory.
+     */
+    template <typename P>
+    static void chdir(const P &path) {
+        chdir(_getPath(path));
+    }
+
 private:
 
     PathInfo _info;
@@ -994,6 +1015,17 @@ public:
         close();
         rename(_info.path(), newPath);
         _info = PathInfo(newPath);
+        return *this;
+    }
+
+    /**
+     * @brief Changes the current working directory to that specified by this
+     * object.
+     * 
+     * @return A reference to this object for chaining.
+     */
+    File & chdir() {
+        chdir(_info.path());
         return *this;
     }
 
