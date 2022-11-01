@@ -672,6 +672,21 @@ public:
     static constexpr int UNNAMED_TEMP = O_TMPFILE;
 
     /**
+     * @brief Flag used to request a shared (read) lock on a file region.
+     */
+    static constexpr short LOCK_SHARE = F_RDLCK;
+
+    /**
+     * @brief Flag used to request an exclusive (write) lock on a file region.
+     */
+    static constexpr short LOCK_EXCLUSIVE = F_WRLCK;
+
+    /**
+     * @brief Flag used to request unlocking a file region.
+     */
+    static constexpr short LOCK_UNLOCK = F_UNLCK;
+
+    /**
      * @brief Generates a unique path to a non-existing file.
      * 
      * @param[in] dir Directory under which a unique path will be generated.
@@ -1040,7 +1055,7 @@ public:
      * is 0755. See the manual pages for more details.
      * @return A reference to this object for chaining.
      */
-    File & open(int flags = DEFAULT_OPEN_FLAGS, mode_t mode = DEFAULT_NEW_FILE_MODE)  {
+    File & open(int flags = DEFAULT_OPEN_FLAGS, mode_t mode = DEFAULT_NEW_FILE_MODE) {
         if (_fd == -1) {
             _fd = ::open(_info.path().get(), flags, mode);
             if (_fd == -1) {
@@ -1072,7 +1087,6 @@ public:
      * EOF has been reached.
      */
     size_t read(size_t offset, void *buf, size_t len);
-
 
     /**
      * @brief Writes a block of data starting at the current file position.
@@ -1186,6 +1200,66 @@ public:
      */
     MemoryMapping map(bool writeable = true) {
         return map(0, _info.clear().length(), writeable);
+    }
+
+    /**
+     * @brief Acquires/releases a region lock.
+     * Note: for locks to work across threads (or fork()ed processes), each
+     * thread/process should create its own File object. See the manual pages on
+     * "open file description locks" for more details.
+     * 
+     * @param mode Lock mode: can be either one of LOCK_EXCLUSIVE, LOCK_SHARED,
+     * or LOCK_UNLOCK (default = LOCK_EXCLUSIVE).
+     * @param offset Offset in the file. -1 indicates that the parameter len is
+     * to be intrepreted as starting at current file position. -2 indicates that
+     * the parameter len is to be intrepreted as starting at the end of the
+     * file. Otherwise, the offset is taken from the beginning of the file.
+     * @param len Length of the locked region. Negative values could be used in
+     * combination with offset = -1 or -2. Zero indicates that the locked region
+     * extends to the end of the file.
+     * @param blocking Indicates whether the call should block or return
+     * immediately if another conflicting lock is held by another
+     * thread/process.
+     * @return A boolean indicating success/failure if blocking is set to false.
+     * The return value is always true if blocking is set to true.
+     */
+    bool lock(short mode = LOCK_EXCLUSIVE, off_t offset = 0, off_t len = 0, bool blocking = true);
+
+    /**
+     * @brief Tests a region lock.
+     * Note: for locks to work across threads (or fork()ed processes), each
+     * thread/process should create its own File object. See the manual pages on
+     * "open file description locks" for more details.
+     * 
+     * @param mode Lock mode: can be either one of LOCK_EXCLUSIVE, LOCK_SHARED,
+     * or LOCK_UNLOCK (default = LOCK_EXCLUSIVE).
+     * @param offset Offset in the file. -1 indicates that the parameter len is
+     * to be intrepreted as starting at current file position. -2 indicates that
+     * the parameter len is to be intrepreted as starting at the end of the
+     * file. Otherwise, the offset is taken from the beginning of the file.
+     * @param len Length of the locked region. Negative values could be used in
+     * combination with offset = -1 or -2. Zero indicates that the locked region
+     * extends to the end of the file.
+     * @return True if the region is not locked at the time of checking, false
+     * otherwise.
+     */
+    bool lock_test(short mode = LOCK_EXCLUSIVE, off_t offset = 0, off_t len = 0);
+
+    /**
+     * @brief Releases a region lock.
+     * Note: this is equivalent to calling lock(LOCK_UNLOCK, offset, len,
+     * false).
+     * 
+     * @param offset Offset in the file. -1 indicates that the parameter len is
+     * to be intrepreted as starting at current file position. -2 indicates that
+     * the parameter len is to be intrepreted as starting at the end of the
+     * file. Otherwise, the offset is taken from the beginning of the file.
+     * @param len Length of the locked region. Negative values could be used in
+     * combination with offset = -1 or -2. Zero indicates that the locked region
+     * extends to the end of the file.
+     */
+    void unlock(off_t offset = 0, off_t len = 0) {
+        lock(LOCK_UNLOCK, offset, len, false);
     }
 };
 

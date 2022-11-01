@@ -195,3 +195,62 @@ MemoryMapping File::map(size_t offset, size_t len, bool writeable) {
 
     return MemoryMapping(ptr, len);
 }
+
+flock _make_flock(short mode, off_t offset, off_t len) {
+    flock l;
+    l.l_type = mode;
+
+    if (offset == (off_t) -1) {
+        l.l_whence = SEEK_CUR;
+        l.l_start = (off_t) 0;
+    }
+    else if (offset == (off_t) -2) {
+        l.l_whence = SEEK_END;
+        l.l_start = (off_t) 0;
+    }
+    else {
+        l.l_whence = SEEK_SET;
+        l.l_start = offset;
+    }
+
+    l.l_len = len;
+    l.l_pid = 0;
+
+    return l;
+}
+
+bool File::lock(short mode, off_t offset, off_t len, bool blocking) {
+    if (_fd == -1) open();
+
+    flock l = _make_flock(mode, offset, len);
+
+    if (blocking) {
+        while (true) {
+            if (fcntl(_fd, F_OFD_SETLKW, &l) == -1) {
+                if (errno == EINTR) continue;
+                throw ErrnoRuntimeError();
+            }
+            return true;
+        }
+    }
+    else {
+        if (fcntl(_fd, F_OFD_SETLK, &l) == -1) {
+            if (errno == EAGAIN) return false;
+            throw ErrnoRuntimeError();
+        }
+        return true;
+    }
+}
+
+bool File::lock_test(short mode, off_t offset, off_t len) {
+    if (mode == LOCK_UNLOCK) {
+        throw InvalidArgument("Cannot test for LOCK_UNLOCK mode");
+    }
+
+    if (_fd == -1) open();
+
+    flock l = _make_flock(mode, offset, len);
+
+    if (fcntl(_fd, F_OFD_GETLK, &l) == -1) throw ErrnoRuntimeError();
+    return l.l_type == F_UNLCK;
+}

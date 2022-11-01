@@ -6,6 +6,9 @@
 #include <dtest.h>
 #include <file.h>
 #include "test_serializable.cpp"
+#include <vector>
+#include <thread>
+#include <atomic>
 
 module("path")
 .dependsOn({
@@ -360,6 +363,51 @@ unit("file", "map-sync")
     }
 
     delete a;
+
+    remove("./test-file");
+});
+
+unit("file", "lock")
+.body([] {
+    File f("./test-file");
+    f.open(File::READ_WRITE | File::CREATE);
+
+    std::atomic_size_t count;
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 8; ++i) {
+        threads.push_back(std::thread([&count] {
+            File f("./test-file");
+            for (int j = 0; j < 10000; ++j) {
+                assert(f.lock());
+                ++count;
+                assert(count == 1);
+                --count;
+                f.unlock();
+            }
+        }));
+    }
+
+    for (auto & t : threads) t.join();
+
+    f.close();
+    remove("./test-file");
+});
+
+unit("file", "lock_test")
+.body([] {
+    File f("./test-file");
+    f.open(File::READ_WRITE | File::CREATE);
+
+    File f2("./test-file");
+
+    assert(f2.lock_test());
+    assert(f.lock());
+    assert(! f2.lock_test());
+    f.unlock();
+    assert(f2.lock_test());
+
+    f.close();
+    f2.close();
 
     remove("./test-file");
 });
