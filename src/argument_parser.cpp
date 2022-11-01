@@ -1,4 +1,9 @@
-#include <argumentparser.h>
+/*
+ * Copyright (c) 2022 Noah Orensa.
+ * Licensed under the MIT license. See LICENSE file in the project root for details.
+*/
+
+#include <argument_parser.h>
 
 using namespace spl;
 
@@ -9,6 +14,10 @@ ArgumentParser::ArgumentParser(const std::initializer_list<Argument> &arguments)
 }
 
 ArgumentParser & ArgumentParser::parse(int argc, const char * const *argv) {
+    // ignore argv[0]
+    --argc;
+    ++argv;
+
     while (argc > 0) {
         if (! _args.contains(argv[0])) {
             throw DynamicMessageError("Unknown argument '", argv[0], "' encountered");

@@ -1,7 +1,7 @@
 #include <dtest.h>
-#include <argumentparser.h>
+#include <argument_parser.h>
 
-module("argumentparser")
+module("argument-parser")
 .dependsOn({
     "string-conversions",
     "hash-map"
@@ -9,7 +9,7 @@ module("argumentparser")
 
 using namespace spl;
 
-unit("argumentparser", "store-bool")
+unit("argument-parser", "store-bool")
 .body([] {
     ArgumentParser parser;
     bool val = false;
@@ -21,21 +21,23 @@ unit("argumentparser", "store-bool")
     );
 
     const char *args1[] = {
+        "",
         "--opt",
         "true"
     };
-    parser.parse(2, args1);
+    parser.parse(sizeof(args1) / sizeof(args1[0]), args1);
     assert(val == true);
 
     const char *args2[] = {
+        "",
         "--opt",
         "false"
     };
-    parser.parse(2, args2);
+    parser.parse(sizeof(args2) / sizeof(args2[0]), args2);
     assert(val == false);
 });
 
-unit("argumentparser", "store-bool-err")
+unit("argument-parser", "store-bool-err")
 .expect(Status::FAIL)
 .body([] {
     ArgumentParser parser;
@@ -48,13 +50,14 @@ unit("argumentparser", "store-bool-err")
     );
 
     const char *args1[] = {
+        "",
         "--opt",
         "whatever"
     };
-    parser.parse(2, args1);
+    parser.parse(sizeof(args1) / sizeof(args1[0]), args1);
 });
 
-unit("argumentparser", "set-bool")
+unit("argument-parser", "set-bool")
 .body([] {
     ArgumentParser parser;
     bool val = false;
@@ -65,13 +68,14 @@ unit("argumentparser", "set-bool")
     );
 
     const char *args1[] = {
+        "",
         "--opt"
     };
-    parser.parse(1, args1);
+    parser.parse(sizeof(args1) / sizeof(args1[0]), args1);
     assert(val == true);
 });
 
-unit("argumentparser", "store-string")
+unit("argument-parser", "store-string")
 .body([] {
     ArgumentParser parser;
     std::string val;
@@ -83,21 +87,23 @@ unit("argumentparser", "store-string")
     );
 
     const char *args1[] = {
+        "",
         "--opt",
         "mystr"
     };
-    parser.parse(2, args1);
+    parser.parse(sizeof(args1) / sizeof(args1[0]), args1);
     assert(val == "mystr");
 
     const char *args2[] = {
+        "",
         "--opt",
         "mystr2"
     };
-    parser.parse(2, args2);
+    parser.parse(sizeof(args2) / sizeof(args2[0]), args2);
     assert(val == "mystr2");
 });
 
-unit("argumentparser", "set-string")
+unit("argument-parser", "set-string")
 .body([] {
     ArgumentParser parser;
     std::string val;
@@ -108,13 +114,14 @@ unit("argumentparser", "set-string")
     );
 
     const char *args1[] = {
+        "",
         "--opt"
     };
-    parser.parse(1, args1);
+    parser.parse(sizeof(args1) / sizeof(args1[0]), args1);
     assert(val == "hello");
 });
 
-unit("argumentparser", "store-numeric")
+unit("argument-parser", "store-numeric")
 .body([] {
     ArgumentParser parser;
     int val = 0;
@@ -126,21 +133,23 @@ unit("argumentparser", "store-numeric")
     );
 
     const char *args1[] = {
+        "",
         "--opt",
         "123"
     };
-    parser.parse(2, args1);
+    parser.parse(sizeof(args1) / sizeof(args1[0]), args1);
     assert(val == 123);
 
     const char *args2[] = {
+        "",
         "--opt",
         "-15"
     };
-    parser.parse(2, args2);
+    parser.parse(sizeof(args2) / sizeof(args2[0]), args2);
     assert(val == -15);
 });
 
-unit("argumentparser", "set-numeric")
+unit("argument-parser", "set-numeric")
 .body([] {
     ArgumentParser parser;
     int val = 0;
@@ -151,13 +160,14 @@ unit("argumentparser", "set-numeric")
     );
 
     const char *args1[] = {
+        "",
         "--opt"
     };
-    parser.parse(1, args1);
+    parser.parse(sizeof(args1) / sizeof(args1[0]), args1);
     assert(val == 4);
 });
 
-unit("argumentparser", "store-char-ptr")
+unit("argument-parser", "store-char-ptr")
 .body([] {
     ArgumentParser parser;
     const char *val = nullptr;
@@ -169,16 +179,18 @@ unit("argumentparser", "store-char-ptr")
     );
 
     const char *args1[] = {
+        "",
         "--opt",
         "something"
     };
-    parser.parse(2, args1);
-    assert(val == args1[1]);
+    parser.parse(sizeof(args1) / sizeof(args1[0]), args1);
+    assert(val == args1[2]);
 
     const char *args2[] = {
+        "",
         "--opt",
         "something else"
     };
-    parser.parse(2, args2);
-    assert(val == args2[1]);
+    parser.parse(sizeof(args2) / sizeof(args2[0]), args2);
+    assert(val == args2[2]);
 });
