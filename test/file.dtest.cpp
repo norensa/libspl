@@ -372,7 +372,7 @@ unit("file", "lock")
     File f("./test-file");
     f.open(File::READ_WRITE | File::CREATE);
 
-    std::atomic_size_t count;
+    std::atomic_size_t count = 0;
     std::vector<std::thread> threads;
     for (int i = 0; i < 8; ++i) {
         threads.push_back(std::thread([&count] {
