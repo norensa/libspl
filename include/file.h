@@ -473,6 +473,22 @@ public:
 };
 
 /**
+ * @brief An exception thrown to indicate that the file is in "anonymous" mode.
+ */
+class FileAnonymous
+:   public Error
+{
+public:
+
+    /**
+     * @brief Construct a new FileAnonymous object.
+     */
+    FileAnonymous()
+    :   Error("Anonymous file")
+    { }
+};
+
+/**
  * @brief Memory mapped buffer.
  */
 class MemoryMapping {
@@ -876,23 +892,26 @@ private:
 
     PathInfo _info;
     int _fd = -1;
+    bool _anonymous = false;
 
     void _invalidate() {
         _fd = -1;
     }
 
     void _dispose() {
-        close();
+        if (! _anonymous) close();
     }
 
     void _copy(const File &rhs) {
         _info = rhs._info;
-        _fd = dup(rhs._fd);
+        _fd = rhs._anonymous ? rhs._fd : dup(rhs._fd);
+        _anonymous = rhs._anonymous;
     }
 
     void _move(File &rhs) {
         _info = std::move(rhs._info);
         _fd = rhs._fd;
+        _anonymous = rhs._anonymous;
     }
 
 public:
@@ -915,6 +934,18 @@ public:
     File(Path &&path)
     :   _info(std::move(path)),
         _fd(-1)
+    { }
+
+    /**
+     * @brief Construct a new File object in "anonymous" mode. A file in
+     * anonymous mode is considered to be unnamed and only allows interactions
+     * using the given file descriptor.
+     * 
+     * @param fd A file descriptor.
+     */
+    File(int fd)
+    :   _fd(fd),
+        _anonymous(true)
     { }
 
     File(const File &rhs) {
@@ -948,11 +979,20 @@ public:
     }
 
     /**
+     * @return True if the file is in "anonymous" mode, false otherwise.
+     */
+    bool anonymous() {
+        return _anonymous;
+    }
+
+    /**
      * @brief Closes the underlying file descriptor associated with this file.
      * 
      * @return A reference to this object for chaining.
      */
     File & close() {
+        if (_anonymous) throw FileAnonymous();
+
         if (_fd != -1) {
             ::close(_fd);
             _fd = -1;
@@ -965,6 +1005,8 @@ public:
      * file.
      */
     const PathInfo & info() const {
+        if (_anonymous) throw FileAnonymous();
+
         return _info;
     }
 
@@ -972,6 +1014,8 @@ public:
      * @return True if the file exists, false otherwise.
      */
     bool exists() const {
+        if (_anonymous) throw FileAnonymous();
+
         return exists(_info.path());
     }
 
@@ -981,6 +1025,8 @@ public:
      * @return A reference to this object for chaining.
      */
     File & mkdir() {
+        if (_anonymous) throw FileAnonymous();
+
         mkdir(_info.path());
         return *this;
     }
@@ -992,6 +1038,8 @@ public:
      * @return A reference to this object for chaining.
      */
     File & mkdirs() {
+        if (_anonymous) throw FileAnonymous();
+
         mkdirs(_info.path());
         return *this;
     }
@@ -1003,6 +1051,8 @@ public:
      * @return A reference to this object for chaining.
      */
     File & rmdirs() {
+        if (_anonymous) throw FileAnonymous();
+
         rmdirs(_info.path());
         return *this;
     }
@@ -1013,6 +1063,8 @@ public:
      * @return A reference to this object for chaining.
      */
     File & remove() {
+        if (_anonymous) throw FileAnonymous();
+
         close();
         remove(_info.path());
         _info.clear();
@@ -1027,6 +1079,8 @@ public:
      */
     template <typename P>
     File & rename(const P &newPath) {
+        if (_anonymous) throw FileAnonymous();
+
         close();
         rename(_info.path(), newPath);
         _info = PathInfo(newPath);
@@ -1040,6 +1094,8 @@ public:
      * @return A reference to this object for chaining.
      */
     File & chdir() {
+        if (_anonymous) throw FileAnonymous();
+
         chdir(_info.path());
         return *this;
     }
@@ -1056,6 +1112,8 @@ public:
      * @return A reference to this object for chaining.
      */
     File & open(int flags = DEFAULT_OPEN_FLAGS, mode_t mode = DEFAULT_NEW_FILE_MODE) {
+        if (_anonymous) throw FileAnonymous();
+
         if (_fd == -1) {
             _fd = ::open(_info.path().get(), flags, mode);
             if (_fd == -1) {
