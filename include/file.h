@@ -1086,7 +1086,7 @@ public:
      * @return The number of bytes actually read. If 0 is returned, this means
      * EOF has been reached.
      */
-    size_t read(size_t offset, void *buf, size_t len);
+    size_t read(off_t offset, void *buf, size_t len);
 
     /**
      * @brief Writes a block of data starting at the current file position.
@@ -1107,7 +1107,7 @@ public:
      * @param[in] len The number of bytes to write.
      * @return The number of bytes actually written.
      */
-    void write(size_t offset, const void *buf, size_t len);
+    void write(off_t offset, const void *buf, size_t len);
 
     /**
      * @return The current file position.
@@ -1148,7 +1148,7 @@ public:
      * @param len Length of the allocated area.
      * @return A reference to this object for chaining.
      */
-    File & allocate(size_t offset, size_t len);
+    File & allocate(off_t offset, off_t len);
 
     /**
      * @brief Deallocated disk space within a file, leaving a hole.
@@ -1157,7 +1157,7 @@ public:
      * @param len Length of the area to deallocate.
      * @return A reference to this object for chaining.
      */
-    File & deallocate(size_t offset, size_t len);
+    File & deallocate(off_t offset, off_t len);
 
     /**
      * @brief Inserts newly allocated disk space into a file.
@@ -1166,7 +1166,7 @@ public:
      * @param len Length of the allocated area.
      * @return A reference to this object for chaining.
      */
-    File & insert(size_t offset, size_t len);
+    File & insert(off_t offset, off_t len);
 
     /**
      * @brief Deallocates disk space within a file, collapsing the deallocated
@@ -1176,7 +1176,7 @@ public:
      * @param len Length of the area to deallocate.
      * @return A reference to this object for chaining.
      */
-    File & collapse(size_t offset, size_t len);
+    File & collapse(off_t offset, off_t len);
 
     /**
      * @brief Creates a memory mapping of a region in the file.
@@ -1188,7 +1188,7 @@ public:
      * write-protected.
      * @return The memory mapped buffer.
      */
-    MemoryMapping map(size_t offset, size_t len, bool writeable = true);
+    MemoryMapping map(off_t offset, size_t len, bool writeable = true);
 
     /**
      * @brief Creates a memory mapping of the entire file.
@@ -1199,7 +1199,7 @@ public:
      * @return The memory mapped buffer.
      */
     MemoryMapping map(bool writeable = true) {
-        return map(0, _info.clear().length(), writeable);
+        return map(0, (size_t) _info.clear().length(), writeable);
     }
 
     /**

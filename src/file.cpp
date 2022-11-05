@@ -98,11 +98,11 @@ size_t File::read(void *buf, size_t len) {
     return readBytes;
 }
 
-size_t File::read(size_t offset, void *buf, size_t len) {
+size_t File::read(off_t offset, void *buf, size_t len) {
     if (_fd == -1) open();
     size_t readBytes = 0;
     while (len > 0) {
-        ssize_t x = ::pread(_fd, (uint8_t *) buf + readBytes, len, offset + readBytes);
+        ssize_t x = ::pread(_fd, (uint8_t *) buf + readBytes, len, offset + (off_t) readBytes);
         if (x == -1) throw ErrnoRuntimeError();
         if (x == 0) break;
         readBytes += x;
@@ -123,11 +123,11 @@ void File::write(const void *buf, size_t len) {
     _info.clear();
 }
 
-void File::write(size_t offset, const void *buf, size_t len) {
+void File::write(off_t offset, const void *buf, size_t len) {
     if (_fd == -1) open();
     size_t writtenBytes = 0;
     while (len > 0) {
-        ssize_t x = ::pwrite(_fd, (uint8_t *) buf + writtenBytes, len, offset + writtenBytes);
+        ssize_t x = ::pwrite(_fd, (uint8_t *) buf + writtenBytes, len, offset + (off_t) writtenBytes);
         if (x == -1) throw ErrnoRuntimeError();
         writtenBytes += x;
         len -= x;
@@ -135,7 +135,7 @@ void File::write(size_t offset, const void *buf, size_t len) {
     _info.clear();
 }
 
-File & File::allocate(size_t offset, size_t len) {
+File & File::allocate(off_t offset, off_t len) {
     if (_fd == -1) open();
     if (fallocate(_fd, 0, offset, len) != 0) {
         throw ErrnoRuntimeError();
@@ -144,7 +144,7 @@ File & File::allocate(size_t offset, size_t len) {
     return *this;
 }
 
-File & File::deallocate(size_t offset, size_t len) {
+File & File::deallocate(off_t offset, off_t len) {
     if (_fd == -1) open();
     if (fallocate(_fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, offset, len) != 0) {
         throw ErrnoRuntimeError();
@@ -153,7 +153,7 @@ File & File::deallocate(size_t offset, size_t len) {
     return *this;
 }
 
-File & File::insert(size_t offset, size_t len) {
+File & File::insert(off_t offset, off_t len) {
     if (_fd == -1) open();
     if (fallocate(_fd, FALLOC_FL_INSERT_RANGE, offset, len) != 0) {
         throw ErrnoRuntimeError();
@@ -162,7 +162,7 @@ File & File::insert(size_t offset, size_t len) {
     return *this;
 }
 
-File & File::collapse(size_t offset, size_t len) {
+File & File::collapse(off_t offset, off_t len) {
     if (_fd == -1) open();
     if (fallocate(_fd, FALLOC_FL_COLLAPSE_RANGE, offset, len) != 0) {
         throw ErrnoRuntimeError();
@@ -171,7 +171,7 @@ File & File::collapse(size_t offset, size_t len) {
     return *this;
 }
 
-MemoryMapping File::map(size_t offset, size_t len, bool writeable) {
+MemoryMapping File::map(off_t offset, size_t len, bool writeable) {
     if (_fd == -1) open();
 
     int flags = MAP_NONBLOCK | MAP_NORESERVE;
