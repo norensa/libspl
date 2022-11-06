@@ -13,6 +13,8 @@
 
 namespace spl {
 
+namespace core {
+
 inline const char *__strerror(int err = errno) {
     return strerror(err);
 }
@@ -30,6 +32,8 @@ std::stringstream __exception_mkString(const T &t, const U &...u) {
     s << t;
     s << __exception_mkString(u...).rdbuf();
     return s;
+}
+
 }
 
 /**
@@ -89,7 +93,7 @@ public:
     DynamicMessageError(const Msg &...msg)
     :   Error(nullptr)
     {
-        _msgStr = __exception_mkString(msg...).str();
+        _msgStr = core::__exception_mkString(msg...).str();
         _msg = _msgStr.c_str();
     }
 };
@@ -406,10 +410,10 @@ public:
  * errno code. The error message is automatically generated based on the error
  * code.
 */
-#define ErrnoRuntimeError(...) TraceableError("Runtime error", spl::__strerror(__VA_ARGS__), __PRETTY_FUNCTION__, __FILE__, __LINE__)
+#define ErrnoRuntimeError(...) TraceableError("Runtime error", spl::core::__strerror(__VA_ARGS__), __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
-#define __CustomMessageErrnoRuntimeError_1(msg) TraceableError(msg, spl::__strerror(), __PRETTY_FUNCTION__, __FILE__, __LINE__)
-#define __CustomMessageErrnoRuntimeError_2(msg, err) TraceableError(msg, spl::__strerror(err), __PRETTY_FUNCTION__, __FILE__, __LINE__)
+#define __CustomMessageErrnoRuntimeError_1(msg) TraceableError(msg, spl::core::__strerror(), __PRETTY_FUNCTION__, __FILE__, __LINE__)
+#define __CustomMessageErrnoRuntimeError_2(msg, err) TraceableError(msg, spl::core::__strerror(err), __PRETTY_FUNCTION__, __FILE__, __LINE__)
 #define __CustomMessageErrnoRuntimeError(_1, _2, NAME, ...) NAME
 
 /**

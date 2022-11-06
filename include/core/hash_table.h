@@ -16,7 +16,7 @@
 
 namespace spl {
 
-namespace __HashTable {
+namespace core {
     template <
         typename K,
         typename node,
@@ -45,7 +45,7 @@ class MapNode {
         typename Controller,
         typename size_type
     >
-    friend class __HashTable::HashTable;
+    friend class core::HashTable;
 
 private:
 
@@ -123,7 +123,7 @@ struct SupportsCustomSerialization_t<MapNode<Key, Val>> {
         || (SupportsCustomSerialization<Key> && SupportsTrivialSerialization<Val>);
 };
 
-namespace __HashTable {
+namespace core {
 
 constexpr uint8_t UNOCCUPIED = 0;
 constexpr uint8_t TENTATIVELY_OCCUPIED = 1;
@@ -1046,6 +1046,6 @@ public:
     }
 };
 
-}   // __HashTable
+}   // core
 
 }   // namespace spl

@@ -31,12 +31,12 @@ template <
     typename KeyEqual = std::equal_to<Key>
 >
 class HashMap
-:   protected __HashTable::HashTable<
+:   protected core::HashTable<
         Key,
-        __HashTable::HashMapNode<Key, Val>,
+        core::HashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
-        __HashTable::HashTableController,
+        core::HashMapNodeKeyEqual<KeyEqual>,
+        core::HashTableController,
         size_t
     >,
     public ForwardIterableContainer<HashMap<Key, Val, KeyHash, KeyEqual>>,
@@ -47,12 +47,12 @@ class HashMap
 
 private:
 
-    using base = typename __HashTable::HashTable<
+    using base = typename core::HashTable<
         Key,
-        __HashTable::HashMapNode<Key, Val>,
+        core::HashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
-        __HashTable::HashTableController,
+        core::HashMapNodeKeyEqual<KeyEqual>,
+        core::HashTableController,
         size_t
     >;
 
@@ -722,12 +722,12 @@ template <
     typename KeyEqual = std::equal_to<Key>
 >
 class HashMap
-:   protected __HashTable::HashTable<
+:   protected core::HashTable<
         Key,
-        __HashTable::AtomicHashMapNode<Key, Val>,
+        core::AtomicHashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
-        __HashTable::ConcurrentHashTableController,
+        core::HashMapNodeKeyEqual<KeyEqual>,
+        core::ConcurrentHashTableController,
         std::atomic_size_t
     >,
     public ForwardIterableContainer<HashMap<Key, Val, KeyHash, KeyEqual>>,
@@ -738,12 +738,12 @@ class HashMap
 
 private:
 
-    using base = typename __HashTable::HashTable<
+    using base = typename core::HashTable<
         Key,
-        __HashTable::AtomicHashMapNode<Key, Val>,
+        core::AtomicHashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
-        __HashTable::ConcurrentHashTableController,
+        core::HashMapNodeKeyEqual<KeyEqual>,
+        core::ConcurrentHashTableController,
         std::atomic_size_t
     >;
 
@@ -1696,12 +1696,12 @@ template <
     typename KeyEqual = std::equal_to<Key>
 >
 class HashMultiMap
-:   protected __HashTable::HashTable<
+:   protected core::HashTable<
         Key,
-        __HashTable::HashMapNode<Key, Val>,
+        core::HashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
-        __HashTable::HashTableController,
+        core::HashMapNodeKeyEqual<KeyEqual>,
+        core::HashTableController,
         size_t
     >,
     public ForwardIterableContainer<HashMultiMap<Key, Val, KeyHash, KeyEqual>>,
@@ -1712,12 +1712,12 @@ class HashMultiMap
 
 private:
 
-    using base = typename __HashTable::HashTable<
+    using base = typename core::HashTable<
         Key,
-        __HashTable::HashMapNode<Key, Val>,
+        core::HashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
-        __HashTable::HashTableController,
+        core::HashMapNodeKeyEqual<KeyEqual>,
+        core::HashTableController,
         size_t
     >;
 
@@ -2377,12 +2377,12 @@ template <
     typename KeyEqual = std::equal_to<Key>
 >
 class HashMultiMap
-:   protected __HashTable::HashTable<
+:   protected core::HashTable<
         Key,
-        __HashTable::AtomicHashMapNode<Key, Val>,
+        core::AtomicHashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
-        __HashTable::ConcurrentHashTableController,
+        core::HashMapNodeKeyEqual<KeyEqual>,
+        core::ConcurrentHashTableController,
         std::atomic_size_t
     >,
     public ForwardIterableContainer<HashMultiMap<Key, Val, KeyHash, KeyEqual>>,
@@ -2393,12 +2393,12 @@ class HashMultiMap
 
 private:
 
-    using base = typename __HashTable::HashTable<
+    using base = typename core::HashTable<
         Key,
-        __HashTable::AtomicHashMapNode<Key, Val>,
+        core::AtomicHashMapNode<Key, Val>,
         KeyHash,
-        __HashTable::HashMapNodeKeyEqual<KeyEqual>,
-        __HashTable::ConcurrentHashTableController,
+        core::HashMapNodeKeyEqual<KeyEqual>,
+        core::ConcurrentHashTableController,
         std::atomic_size_t
     >;
 
