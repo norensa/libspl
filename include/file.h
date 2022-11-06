@@ -981,8 +981,16 @@ public:
     /**
      * @return True if the file is in "anonymous" mode, false otherwise.
      */
-    bool anonymous() {
+    bool anonymous() const {
         return _anonymous;
+    }
+
+    /**
+     * @return The file descriptor associated with this file object if this file
+     * has been open()ed, -1 otherwise.
+     */
+    int fd() const {
+        return _fd;
     }
 
     /**
