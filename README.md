@@ -1,7 +1,7 @@
 # libspl
 
 A C++ container and utility library for building distributed systems. Libspl
-is mainly focused on serialization and the efficient use of parallelism.
+is mainly focused on serialization and high-performance parallelism.
 
 ## Documentation
 
@@ -23,3 +23,9 @@ directory.
 To run unit tests:
 
     make test
+
+## Copyright
+
+Copyright (c) 2021-2022 Noah Orensa.
+
+Licensed under the MIT license. See **LICENSE** file in the project root for details.

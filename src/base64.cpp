@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Noah Orensa.
+ * Copyright (c) 2021-2022 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  * 
  * Contains refactored code from the following author(s):
