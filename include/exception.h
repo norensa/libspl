@@ -8,8 +8,8 @@
 #include <callstack.h>
 #include <string>
 #include <cstring>
-#include <sstream>
 #include <iostream>
+#include <util.h>
 
 namespace spl {
 
@@ -17,21 +17,6 @@ namespace core {
 
 inline const char *__strerror(int err = errno) {
     return strerror(err);
-}
-
-template <typename T>
-std::stringstream __exception_mkString(const T &t) {
-    std::stringstream s;
-    s << t;
-    return s;
-}
-
-template <typename T, typename ...U>
-std::stringstream __exception_mkString(const T &t, const U &...u) {
-    std::stringstream s;
-    s << t;
-    s << __exception_mkString(u...).rdbuf();
-    return s;
 }
 
 }
@@ -93,7 +78,7 @@ public:
     DynamicMessageError(const Msg &...msg)
     :   Error(nullptr)
     {
-        _msgStr = core::__exception_mkString(msg...).str();
+        _msgStr = make_str(msg...);
         _msg = _msgStr.c_str();
     }
 };
