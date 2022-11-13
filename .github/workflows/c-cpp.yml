@@ -3,9 +3,28 @@ name: C/C++ CI
 on: [ push, pull_request ]
 
 jobs:
-  build_and_test:
+  test-ubuntu-20:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build
+      run: make test-build-only
+
+    - name: Run tests
+      run: |
+        export LD_LIBRARY_PATH=$(realpath lib/*)
+        ./test/dtest/dtest-cxx17 test/build
+
+    - name: Dump results
+      if: ${{ always() }}
+      run: cat dtest.log.json
+
+  test-ubuntu-22:
+
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v2
