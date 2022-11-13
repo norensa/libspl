@@ -46,12 +46,16 @@ unit("util", "timepoint_to_str")
 
     struct tm tm;
 
+    setenv("TZ", "", 1);
+    tzset();
+
     memset(&tm, 0, sizeof(tm));
     tm.tm_year = 1970 - 1900;
     tm.tm_mday = 1;
-    std::cout << timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm) - timezone)) << '\n';
+    tm.tm_isdst = 0;
+    std::cout << timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm))) << '\n';
     assert(strcmp(
-        timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm) - timezone)),
+        timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm))),
         "1970-01-01 00:00:00.000 +0000"
     ) == 0);
 
@@ -62,18 +66,18 @@ unit("util", "timepoint_to_str")
     tm.tm_hour = 2;
     tm.tm_min = 3;
     tm.tm_sec = 4;
-    std::cout << timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm) - timezone)) << '\n';
+    std::cout << timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm))) << '\n';
     assert(strcmp(
-        timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm) - timezone)),
+        timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm))),
         "1970-02-01 02:03:04.000 +0000"
     ) == 0);
 
     memset(&tm, 0, sizeof(tm));
     tm.tm_year = 1970 - 1900;
     tm.tm_mday = 1;
-    std::cout << timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm) - timezone) + milliseconds(123)) << '\n';
+    std::cout << timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm)) + milliseconds(123)) << '\n';
     assert(strcmp(
-        timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm) - timezone) + milliseconds(123)),
+        timepoint_to_str_utc<3>(clock::from_time_t(mktime(&tm)) + milliseconds(123)),
         "1970-01-01 00:00:00.123 +0000"
     ) == 0);
 });

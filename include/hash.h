@@ -8,6 +8,7 @@
 #include <traits.h>
 #include <type_traits>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 
 namespace spl {
