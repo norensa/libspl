@@ -25,6 +25,8 @@ struct Copyable {
     virtual T * copy() const = 0;
 };
 
+#define default_copy(base, actual) base * copy() const override { return new actual(*this); }
+
 /**
  * @brief A trait for polymorphic movable objects supporting the virtual
  * function `move()`.
@@ -36,5 +38,7 @@ struct Movable {
 
     virtual T * move() = 0;
 };
+
+#define default_move(base, actual) base * move() override { return new actual(std::move(*this)); }
 
 }   // namespace spl
