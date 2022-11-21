@@ -98,6 +98,58 @@ public:
     }
 
     /**
+     * @brief Parses a numeric string into an unsigned int of type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+     * 
+     * @tparam T An unsigned int type
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return An unsigned integer containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base > 10), int> = 0
+    >
+    static T str_to_unsigned_int_unprotected(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        while (str < end) {
+            x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
+            ++str;
+        }
+        return x;
+    }
+
+    /**
+     * @brief Parses a numeric string into an unsigned int of type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+     * 
+     * @tparam T An unsigned int type
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return An unsigned integer containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base <= 10), int> = 0
+    >
+    static T str_to_unsigned_int_unprotected(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        while (str < end) {
+            x = (x * (T) base) + (T) (*str - '0');
+            ++str;
+        }
+        return x;
+    }
+
+    /**
      * @brief Parses a numeric string into an unsigned int of type T. Throws
      * StringNotNumeric if an unrecognized character is found in str.
      * 
@@ -140,6 +192,60 @@ public:
     static T str_to_unsigned_int(const char *str) {
         T x = 0;
         while (*str != '\0') {
+            if (*str < '0' || *str > '0' + base - 1) throw StringNotNumeric();
+            x = (x * (T) base) + (T) (*str - '0');
+            ++str;
+        }
+        return x;
+    }
+
+    /**
+     * @brief Parses a numeric string into an unsigned int of type T. Throws
+     * StringNotNumeric if an unrecognized character is found in str.
+     * 
+     * @tparam T An unsigned int type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
+     * @return An unsigned integer containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base > 10), int> = 0
+    >
+    static T str_to_unsigned_int(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        while (str < end) {
+            if (_digitToVal[(size_t) *str] == __NVAL || _digitToVal[(size_t) *str] >= base) throw StringNotNumeric();
+            x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
+            ++str;
+        }
+        return x;
+    }
+
+    /**
+     * @brief Parses a numeric string into an unsigned int of type T. Throws
+     * StringNotNumeric if an unrecognized character is found in str.
+     * 
+     * @tparam T An unsigned int type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
+     * @return An unsigned integer containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base <= 10), int> = 0
+    >
+    static T str_to_unsigned_int(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        while (str < end) {
             if (*str < '0' || *str > '0' + base - 1) throw StringNotNumeric();
             x = (x * (T) base) + (T) (*str - '0');
             ++str;
@@ -258,6 +364,70 @@ public:
     }
 
     /**
+     * @brief Parses a numeric string into a signed int of type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+     * 
+     * @tparam T A signed int type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A signed integer containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base > 10), int> = 0
+    >
+    static T str_to_int_unprotected(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        bool neg = false;
+        if (str < end && *str == '-') {
+            neg = true;
+            ++str;
+        }
+        while (str < end) {
+            x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
+            ++str;
+        }
+        if (neg) x = -x;
+        return x;
+    }
+
+    /**
+     * @brief Parses a numeric string into a signed int of type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+     * 
+     * @tparam T A signed int type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A signed integer containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base <= 10), int> = 0
+    >
+    static T str_to_int_unprotected(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        bool neg = false;
+        if (str < end && *str == '-') {
+            neg = true;
+            ++str;
+        }
+        while (str < end) {
+            x = (x * (T) base) + (T) (*str - '0');
+            ++str;
+        }
+        if (neg) x = -x;
+        return x;
+    }
+
+    /**
      * @brief Parses a numeric string into a signed int of type T. Throws
      * StringNotNumeric if an unrecognized character is found in str.
      * 
@@ -311,6 +481,71 @@ public:
             ++str;
         }
         while (*str != '\0') {
+            if (*str < '0' || *str > '0' + base - 1) throw StringNotNumeric();
+            x = (x * (T) base) + (T) (*str - '0');
+            ++str;
+        }
+        if (neg) x = -x;
+        return x;
+    }
+
+    /**
+     * @brief Parses a numeric string into a signed int of type T. Throws
+     * StringNotNumeric if an unrecognized character is found in str.
+     * 
+     * @tparam T A signed int type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
+     * @return A signed integer containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base > 10), int> = 0
+    >
+    static T str_to_int(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        bool neg = false;
+        if (str < end && *str == '-') {
+            neg = true;
+            ++str;
+        }
+        while (str < end) {
+            if (_digitToVal[(size_t) *str] == __NVAL || _digitToVal[(size_t) *str] >= base) throw StringNotNumeric();
+            x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
+            ++str;
+        }
+        if (neg) x = -x;
+        return x;
+    }
+
+    /**
+     * @brief Parses a numeric string into a signed int of type T. Throws
+     * StringNotNumeric if an unrecognized character is found in str.
+     * 
+     * @tparam T A signed int type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to null terminated string.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
+     * @return A signed integer containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base <= 10), int> = 0
+    >
+    static T str_to_int(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        bool neg = false;
+        if (str < end && *str == '-') {
+            neg = true;
+            ++str;
+        }
+        while (str < end) {
             if (*str < '0' || *str > '0' + base - 1) throw StringNotNumeric();
             x = (x * (T) base) + (T) (*str - '0');
             ++str;
@@ -469,6 +704,96 @@ public:
     }
 
     /**
+     * @brief Parses a numeric string into a floating point of type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+
+     * @tparam T A floating point type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A floating point number containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base > 10), int> = 0
+    >
+    static T str_to_float_unprotected(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        bool neg = false;
+        if (str < end && *str == '-') {
+            neg = true;
+            ++str;
+        }
+        while (str < end && _digitToVal[(size_t) *str] != __NVAL && _digitToVal[(size_t) *str] < base) {
+            x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
+            ++str;
+        }
+        if (str < end && *str == '.') {
+            ++str;
+            T f = (T) 1 / (T) base;
+            while (str < end && _digitToVal[(size_t) *str] != __NVAL && _digitToVal[(size_t) *str] < base) {
+                x += (T) _digitToVal[(size_t) *str] * f;
+                ++str;
+                f *= (T) 1 / (T) base;
+            }
+        }
+        if (str < end && *str == 'e' || *str == 'E') {
+            ++str;
+            x *= pow((T) base, str_to_int_unprotected<int, base>(str, end - str));
+        }
+        if (neg) x = -x;
+        return x;
+    }
+
+    /**
+     * @brief Parses a numeric string into a floating point of type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+
+     * @tparam T A floating point type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A floating point number containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base <= 10), int> = 0
+    >
+    static T str_to_float_unprotected(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        bool neg = false;
+        if (str < end && *str == '-') {
+            neg = true;
+            ++str;
+        }
+        while (str < end && *str >= '0' && *str <= '0' + base - 1) {
+            x = (x * (T) base) + (T) (*str - '0');
+            ++str;
+        }
+        if (str < end && *str == '.') {
+            ++str;
+            T f = (T) 1 / (T) base;
+            while (str < end && *str >= '0' && *str <= '0' + base - 1) {
+                x += (T) (*str - '0') * f;
+                ++str;
+                f *= (T) 1 / (T) base;
+            }
+        }
+        if (str < end && *str == 'e' || *str == 'E') {
+            ++str;
+            x *= pow((T) base, str_to_int_unprotected<int, base>(str, end - str));
+        }
+        if (neg) x = -x;
+        return x;
+    }
+
+    /**
      * @brief Parses a numeric string into a floating point of type T. Throws
      * StringNotNumeric if an unrecognized character is found in str.
 
@@ -554,6 +879,102 @@ public:
             x *= pow((T) base, str_to_int<int, base>(str));
         }
         else if (*str != '\0') {
+            throw StringParseError("Unexpected characters encountered");
+        }
+        if (neg) x = -x;
+        return x;
+    }
+
+    /**
+     * @brief Parses a numeric string into a floating point of type T. Throws
+     * StringNotNumeric if an unrecognized character is found in str.
+
+     * @tparam T A floating point type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
+     * @return A floating point number containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base > 10), int> = 0
+    >
+    static T str_to_float(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        bool neg = false;
+        if (str < end && *str == '-') {
+            neg = true;
+            ++str;
+        }
+        while (str < end && _digitToVal[(size_t) *str] != __NVAL && _digitToVal[(size_t) *str] < base) {
+            x = (x * (T) base) + (T) _digitToVal[(size_t) *str];
+            ++str;
+        }
+        if (str < end && *str == '.') {
+            ++str;
+            T f = (T) 1 / (T) base;
+            while (str < end && _digitToVal[(size_t) *str] != __NVAL && _digitToVal[(size_t) *str] < base) {
+                x += (T) _digitToVal[(size_t) *str] * f;
+                ++str;
+                f *= (T) 1 / (T) base;
+            }
+        }
+        if (str < end && *str == 'e' || *str == 'E') {
+            ++str;
+            x *= pow((T) base, str_to_int<int, base>(str, end - str));
+        }
+        else if (str != end) {
+            throw StringParseError("Unexpected characters encountered");
+        }
+        if (neg) x = -x;
+        return x;
+    }
+
+    /**
+     * @brief Parses a numeric string into a floating point of type T. Throws
+     * StringNotNumeric if an unrecognized character is found in str.
+
+     * @tparam T A floating point type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to null terminated string.
+     * @param len Number of characters to parse.
+     * @throws StringNotNumeric if an unrecognized character is found in str.
+     * @return A floating point number containing the value represented in str.
+     */
+    template <
+        typename T,
+        int base = 10,
+        std::enable_if_t<(base <= 10), int> = 0
+    >
+    static T str_to_float(const char *str, size_t len) {
+        auto end = str + len;
+        T x = 0;
+        bool neg = false;
+        if (str < end && *str == '-') {
+            neg = true;
+            ++str;
+        }
+        while (str < end && *str >= '0' && *str <= '0' + base - 1) {
+            x = (x * (T) base) + (T) (*str - '0');
+            ++str;
+        }
+        if (str < end && *str == '.') {
+            ++str;
+            T f = (T) 1 / (T) base;
+            while (str < end && *str >= '0' && *str <= '0' + base - 1) {
+                x += (T) (*str - '0') * f;
+                ++str;
+                f *= (T) 1 / (T) base;
+            }
+        }
+        if (str < end && *str == 'e' || *str == 'E') {
+            ++str;
+            x *= pow((T) base, str_to_int<int, base>(str, end - str));
+        }
+        else if (str != end) {
             throw StringParseError("Unexpected characters encountered");
         }
         if (neg) x = -x;
@@ -657,6 +1078,29 @@ public:
 
     /**
      * @brief Parses a string into a numeric type T.
+     * 
+     * @tparam T The desired numeric type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A number containing the value represented in str.
+     */
+    template <
+        typename T,
+        std::enable_if_t<
+            std::is_same_v<T, uint8>
+            || std::is_same_v<T, uint16>
+            || std::is_same_v<T, uint32>
+            || std::is_same_v<T, uint64>,
+            int
+        > base = 10
+    >
+    static T parse(const char *str, size_t len) {
+        return str_to_unsigned_int<T, base>(str, len);
+    }
+
+    /**
+     * @brief Parses a string into a numeric type T.
      * Note: this function is unprotected and does not perform any checks on the
      * input string.
      * 
@@ -681,6 +1125,31 @@ public:
 
     /**
      * @brief Parses a string into a numeric type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+     * 
+     * @tparam T The desired numeric type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A number containing the value represented in str.
+     */
+    template <
+        typename T,
+        std::enable_if_t<
+            std::is_same_v<T, uint8>
+            || std::is_same_v<T, uint16>
+            || std::is_same_v<T, uint32>
+            || std::is_same_v<T, uint64>,
+            int
+        > base = 10
+    >
+    static T parse_unprotected(const char *str, size_t len) {
+        return str_to_unsigned_int_unprotected<T, base>(str, len);
+    }
+
+    /**
+     * @brief Parses a string into a numeric type T.
      * 
      * @tparam T The desired numeric type.
      * @tparam base Numeric base (default = 10).
@@ -699,6 +1168,29 @@ public:
     >
     static T parse(const char *str) {
         return str_to_int<T, base>(str);
+    }
+
+    /**
+     * @brief Parses a string into a numeric type T.
+     * 
+     * @tparam T The desired numeric type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A number containing the value represented in str.
+     */
+    template <
+        typename T,
+        std::enable_if_t<
+            std::is_same_v<T, int8>
+            || std::is_same_v<T, int16>
+            || std::is_same_v<T, int32>
+            || std::is_same_v<T, int64>,
+            int
+        > base = 10
+    >
+    static T parse(const char *str, size_t len) {
+        return str_to_int<T, base>(str, len);
     }
 
     /**
@@ -727,6 +1219,31 @@ public:
 
     /**
      * @brief Parses a string into a numeric type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+     * 
+     * @tparam T The desired numeric type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A number containing the value represented in str.
+     */
+    template <
+        typename T,
+        std::enable_if_t<
+            std::is_same_v<T, int8>
+            || std::is_same_v<T, int16>
+            || std::is_same_v<T, int32>
+            || std::is_same_v<T, int64>,
+            int
+        > base = 10
+    >
+    static T parse_unprotected(const char *str, size_t len) {
+        return str_to_int_unprotected<T, base>(str, len);
+    }
+
+    /**
+     * @brief Parses a string into a numeric type T.
      * 
      * @tparam T The desired numeric type.
      * @tparam base Numeric base (default = 10).
@@ -744,6 +1261,28 @@ public:
     >
     static T parse(const char *str) {
         return str_to_float<T, base>(str);
+    }
+
+    /**
+     * @brief Parses a string into a numeric type T.
+     * 
+     * @tparam T The desired numeric type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A number containing the value represented in str.
+     */
+    template <
+        typename T,
+        std::enable_if_t<
+            std::is_same_v<T, float32>
+            || std::is_same_v<T, float64>
+            || std::is_same_v<T, float128>,
+            int
+        > base = 10
+    >
+    static T parse(const char *str, size_t len) {
+        return str_to_float<T, base>(str, len);
     }
 
     /**
@@ -767,6 +1306,30 @@ public:
     >
     static T parse_unprotected(const char *str) {
         return str_to_float_unprotected<T, base>(str);
+    }
+
+    /**
+     * @brief Parses a string into a numeric type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+     * 
+     * @tparam T The desired numeric type.
+     * @tparam base Numeric base (default = 10).
+     * @param str Pointer to string.
+     * @param len Number of characters to parse.
+     * @return A number containing the value represented in str.
+     */
+    template <
+        typename T,
+        std::enable_if_t<
+            std::is_same_v<T, float32>
+            || std::is_same_v<T, float64>
+            || std::is_same_v<T, float128>,
+            int
+        > base = 10
+    >
+    static T parse_unprotected(const char *str, size_t len) {
+        return str_to_float_unprotected<T, base>(str, len);
     }
 
     /**
@@ -799,6 +1362,36 @@ public:
     }
 
     /**
+     * @brief Parses a string into an numeric type T.
+     * 
+     * @tparam T The desired numeric type.
+     * @tparam base Numeric base (default = 10).
+     * @param str A string.
+     * @param len Number of characters to parse.
+     * @return A number containing the value represented in str.
+     */
+    template <
+        typename T,
+        std::enable_if_t<
+            std::is_same_v<T, uint8>
+            || std::is_same_v<T, uint16>
+            || std::is_same_v<T, uint32>
+            || std::is_same_v<T, uint64>
+            || std::is_same_v<T, int8>
+            || std::is_same_v<T, int16>
+            || std::is_same_v<T, int32>
+            || std::is_same_v<T, int64>
+            || std::is_same_v<T, float32>
+            || std::is_same_v<T, float64>
+            || std::is_same_v<T, float128>,
+            int
+        > base = 10
+    >
+    static T parse(const std::string &str, size_t len) {
+        return parse<T, base>(str.c_str(), len);
+    }
+
+    /**
      * @brief Parses a string into a numeric type T.
      * Note: this function is unprotected and does not perform any checks on the
      * input string.
@@ -827,6 +1420,38 @@ public:
     >
     static T parse_unprotected(const std::string &str) {
         return parse_unprotected<T, base>(str.c_str());
+    }
+
+    /**
+     * @brief Parses a string into a numeric type T.
+     * Note: this function is unprotected and does not perform any checks on the
+     * input string.
+     * 
+     * @tparam T The desired numeric type.
+     * @tparam base Numeric base (default = 10).
+     * @param str A string.
+     * @param len Number of characters to parse.
+     * @return A number containing the value represented in str.
+     */
+    template <
+        typename T,
+        std::enable_if_t<
+            std::is_same_v<T, uint8>
+            || std::is_same_v<T, uint16>
+            || std::is_same_v<T, uint32>
+            || std::is_same_v<T, uint64>
+            || std::is_same_v<T, int8>
+            || std::is_same_v<T, int16>
+            || std::is_same_v<T, int32>
+            || std::is_same_v<T, int64>
+            || std::is_same_v<T, float32>
+            || std::is_same_v<T, float64>
+            || std::is_same_v<T, float128>,
+            int
+        > base = 10
+    >
+    static T parse_unprotected(const std::string &str, size_t len) {
+        return parse_unprotected<T, base>(str.c_str(), len);
     }
 
     /**
