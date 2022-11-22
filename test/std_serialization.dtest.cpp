@@ -61,6 +61,31 @@ unit("std-serialization", "vector<Serializable>")
     }
 });
 
+unit("std-serialization", "vector<Serializable *>")
+.body([] {
+    std::vector<StreamSerializable *> v(TEST_SIZE);
+    for (auto i = 0; i < TEST_SIZE; ++i) v[i] = new StreamSerializable();
+    MemoryOutputStreamSerializer out;
+    out << v;
+    out.flush();
+
+    for (auto x : v) {
+        assert(x->serialized());
+        delete x;
+    }
+
+    std::vector<StreamSerializable *> v2;
+    auto in = out.toInput();
+    in >> v2;
+
+    assert(v.size() == v2.size());
+
+    for (auto x : v2) {
+        assert(x->deserialized());
+        delete x;
+    }
+});
+
 // std::string /////////////////////////////////////////////////////////////////
 
 unit("std-serialization", "string")
