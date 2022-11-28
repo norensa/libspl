@@ -62,7 +62,8 @@ public:
  * @brief Generic error class supporting run-time error messages.
 */
 class DynamicMessageError
-:   public Error {
+:   public Error
+{
 private:
 
     std::string _msgStr;
@@ -370,7 +371,8 @@ public:
  * arguments was given.
 */
 class InvalidArgument
-:   public DynamicMessageError {
+:   public DynamicMessageError
+{
 public:
 
     /**
@@ -381,8 +383,7 @@ public:
     template <typename ...Msg>
     InvalidArgument(const Msg &...msg)
     :   DynamicMessageError(msg...)
-    {
-    }
+    { }
 };
 
 /**
