@@ -1,5 +1,9 @@
-#include <dtest.h>
+/*
+ * Copyright (c) 2021-2022 Noah Orensa.
+ * Licensed under the MIT license. See LICENSE file in the project root for details.
+*/
 
+#include <dtest.h>
 #include <range.h>
 
 using namespace spl;
@@ -319,4 +323,299 @@ unit("range", "contains-interval")
     assert(! r.contains({ 5, 10 }));
     assert(! r.contains({ 8, 8 }));
     assert(! r.contains({ 8, 9 }));
+});
+
+unit("range", "union-1")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 2 });
+
+    Range<int> r2;
+    r2.insert({ 3, 4 });
+
+    auto r = r1 | r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 1);
+    assert(it->end == 2);
+    ++it;
+
+    assert(it != r.end());
+    assert(it->start == 3);
+    assert(it->end == 4);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "union-2")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 2 });
+    r1.insert({ 5, 6 });
+
+    Range<int> r2;
+    r2.insert({ 3, 4 });
+    r2.insert({ 7, 8 });
+
+    auto r = r1 | r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 1);
+    assert(it->end == 2);
+    ++it;
+
+    assert(it != r.end());
+    assert(it->start == 3);
+    assert(it->end == 4);
+    ++it;
+
+    assert(it != r.end());
+    assert(it->start == 5);
+    assert(it->end == 6);
+    ++it;
+
+    assert(it != r.end());
+    assert(it->start == 7);
+    assert(it->end == 8);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "union-3")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 3 });
+    r1.insert({ 5, 6 });
+
+    Range<int> r2;
+    r2.insert({ 3, 4 });
+    r2.insert({ 7, 8 });
+
+    auto r = r1 | r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 1);
+    assert(it->end == 4);
+    ++it;
+
+    assert(it != r.end());
+    assert(it->start == 5);
+    assert(it->end == 6);
+    ++it;
+
+    assert(it != r.end());
+    assert(it->start == 7);
+    assert(it->end == 8);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "union-4")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 3 });
+    r1.insert({ 5, 6 });
+    r1.insert({ 6, 7 });
+
+    Range<int> r2;
+    r2.insert({ 1, 8 });
+
+    auto r = r1 | r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 1);
+    assert(it->end == 8);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "union-5")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 3 });
+    r1.insert({ 5, 6 });
+    r1.insert({ 6, 7 });
+
+    Range<int> r2;
+    r2.insert({ 1, 8 });
+
+    auto r = r2 | r1;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 1);
+    assert(it->end == 8);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "union-6")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 3 });
+    r1.insert({ 5, 6 });
+    r1.insert({ 7, 8 });
+
+    Range<int> r2;
+    r2.insert({ 1, 9 });
+
+    auto r = r1 | r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 1);
+    assert(it->end == 9);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "difference-1")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 5 });
+
+    Range<int> r2;
+    r2.insert({ 3, 7 });
+
+    auto r = r1 - r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 1);
+    assert(it->end == 3);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "difference-2")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 3, 7 });
+
+    Range<int> r2;
+    r2.insert({ 1, 5 });
+
+    auto r = r1 - r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 5);
+    assert(it->end == 7);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "difference-3")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 5 });
+    r1.insert({ 7, 9 });
+
+    Range<int> r2;
+    r2.insert({ 3, 8 });
+
+    auto r = r1 - r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 1);
+    assert(it->end == 3);
+    ++it;
+
+    assert(it != r.end());
+    assert(it->start == 8);
+    assert(it->end == 9);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "difference-4")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 3, 8 });
+
+    Range<int> r2;
+    r2.insert({ 1, 5 });
+    r2.insert({ 7, 9 });
+
+    auto r = r1 - r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 5);
+    assert(it->end == 7);
+    ++it;
+
+    assert(it == r.end());
+});
+
+unit("range", "difference-5")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 5 });
+
+    Range<int> r2;
+    r2.insert({ 1, 5 });
+
+    auto r = r1 - r2;
+
+    auto it = r.begin();
+
+    assert(it == r.end());
+});
+
+unit("range", "difference-6")
+.body([] {
+
+    Range<int> r1;
+    r1.insert({ 1, 5 });
+    r1.insert({ 9, 12 });
+
+    Range<int> r2;
+    r2.insert({ 8, 12 });
+
+    auto r = r1 - r2;
+
+    auto it = r.begin();
+
+    assert(it != r.end());
+    assert(it->start == 1);
+    assert(it->end == 5);
+    ++it;
+
+    assert(it == r.end());
 });
