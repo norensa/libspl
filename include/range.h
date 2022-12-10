@@ -169,7 +169,7 @@ public:
         auto it = _intervals.lower_bound(i.start);
         if (
             (it == _intervals.end() && it != _intervals.begin())
-            || i.start < it->second.start
+            || (it != _intervals.end() && i.start < it->second.start)
         ) --it;
         if (
             it != _intervals.end()

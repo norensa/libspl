@@ -13,12 +13,12 @@ unit("range", "insert")
 
     Range<int> r;
 
-    r.insert({ 1, 2 });
+    r.insert({ 0, 2 });
 
     auto it = r.begin();
 
     assert(it != r.end());
-    assert(it->start == 1);
+    assert(it->start == 0);
     assert(it->end == 2);
     ++it;
 
