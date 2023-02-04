@@ -15,22 +15,22 @@ struct StreamSerializable
 {
     int data = 0;
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputStreamSerializer &serializer) const override {
         const_cast<StreamSerializable *>(this)->data = -1;
         serializer << data;
     }
 
-    void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputRandomAccessSerializer &serializer) const override {
         assert(false);
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+    void readObject(InputStreamSerializer &serializer) override {
         serializer >> data;
         assert(data == -1);
         data = 1;
     }
 
-    void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) override {
+    void readObject(InputRandomAccessSerializer &serializer) override {
         assert(false);
     }
 
@@ -63,21 +63,21 @@ struct ComparableStreamSerializable
     :   x(x)
     { }
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
-        StreamSerializable::writeObject(serializer, level);
+    void writeObject(OutputStreamSerializer &serializer) const override {
+        StreamSerializable::writeObject(serializer);
         serializer << x;
     }
 
-    void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputRandomAccessSerializer &serializer) const override {
         assert(false);
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
-        StreamSerializable::readObject(serializer, level);
+    void readObject(InputStreamSerializer &serializer) override {
+        StreamSerializable::readObject(serializer);
         serializer >> x;
     }
 
-    void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) override {
+    void readObject(InputRandomAccessSerializer &serializer) override {
         assert(false);
     }
 
@@ -92,20 +92,20 @@ struct RandomAccessSerializable
 {
     int data = 0;
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputStreamSerializer &serializer) const override {
         assert(false);
     }
 
-    void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputRandomAccessSerializer &serializer) const override {
         const_cast<RandomAccessSerializable *>(this)->data = -1;
         serializer << data;
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+    void readObject(InputStreamSerializer &serializer) override {
         assert(false);
     }
 
-    void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) override {
+    void readObject(InputRandomAccessSerializer &serializer) override {
         serializer >> data;
         assert(data == -1);
         data = 1;

@@ -83,9 +83,8 @@ public:
      * @brief Writes this object to a stream serializer.
      * 
      * @param[in] serializer Reference to a stream serializer instance.
-     * @param[in] level The requested serialization level.
      */
-    virtual void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const = 0;
+    virtual void writeObject(OutputStreamSerializer &serializer) const = 0;
 
     /**
      * @brief Writes this object to a random access serializer. The default
@@ -93,19 +92,17 @@ public:
      * serialization.
      * 
      * @param[in] serializer Reference to a random access serializer instance.
-     * @param[in] level The requested serialization level.
      */
-    virtual void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const {
-        writeObject((OutputStreamSerializer &) serializer, level);
+    virtual void writeObject(OutputRandomAccessSerializer &serializer) const {
+        writeObject((OutputStreamSerializer &) serializer);
     }
 
     /**
      * @brief Reads this object from a stream serializer.
      * 
      * @param[in] serializer Reference to a stream serializer instance.
-     * @param[in] level The requested serialization level.
      */
-    virtual void readObject(InputStreamSerializer &serializer, SerializationLevel level) = 0;
+    virtual void readObject(InputStreamSerializer &serializer) = 0;
 
     /**
      * @brief Reads this object from a random access serializer. The default
@@ -113,10 +110,9 @@ public:
      * serialization.
      * 
      * @param[in] serializer Reference to a random access serializer instance.
-     * @param[in] level The requested serialization level.
      */
-    virtual void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) {
-        readObject((InputStreamSerializer &) serializer, level);
+    virtual void readObject(InputRandomAccessSerializer &serializer) {
+        readObject((InputStreamSerializer &) serializer);
     }
 };
 
@@ -338,6 +334,13 @@ public:
     }
 
     /**
+     * @return The serialization level of this serializer.
+     */
+    SerializationLevel level() const {
+        return _level;
+    }
+
+    /**
      * @brief Writes a block of data.
      * 
      * @param[in] data Const pointer to the data block.
@@ -392,7 +395,7 @@ public:
      */
     OutputStreamSerializer & operator<<(const Serializable &object) {
         *this << object.objectCode();
-        object.writeObject(*this, _level);
+        object.writeObject(*this);
         return *this;
     }
 
@@ -408,7 +411,7 @@ public:
         }
         else {
             *this << object->objectCode();
-            object->writeObject(*this, _level);
+            object->writeObject(*this);
         }
         return *this;
     }
@@ -641,7 +644,7 @@ public:
      */
     OutputRandomAccessSerializer & operator<<(const Serializable &object) {
         *this << object.objectCode();
-        object.writeObject(*this, _level);
+        object.writeObject(*this);
         return *this;
     }
 
@@ -657,7 +660,7 @@ public:
         }
         else {
             *this << object->objectCode();
-            object->writeObject(*this, _level);
+            object->writeObject(*this);
         }
         return *this;
     }
@@ -788,6 +791,13 @@ public:
     }
 
     /**
+     * @return The serialization level of this serializer.
+     */
+    SerializationLevel level() const {
+        return _level;
+    }
+
+    /**
      * @brief Reads a block of data.
      * 
      * @param[in] data Pointer to a data block.
@@ -840,7 +850,7 @@ public:
     InputStreamSerializer & operator>>(Serializable &object) {
         size_t code;
         *this >> code;
-        object.readObject(*this, _level);
+        object.readObject(*this);
         return *this;
     }
 
@@ -874,7 +884,7 @@ public:
             if (object == nullptr) {
                 object = Factory::createObject<T>(code);
             }
-            object->readObject(*this, _level);
+            object->readObject(*this);
         }
         return *this;
     }
@@ -1081,7 +1091,7 @@ public:
     InputRandomAccessSerializer & operator>>(Serializable &object) {
         size_t code;
         *this >> code;
-        object.readObject(*this, _level);
+        object.readObject(*this);
         return *this;
     }
 
@@ -1115,7 +1125,7 @@ public:
             if (object == nullptr) {
                 object = Factory::createObject<T>(code);
             }
-            object->readObject(*this, _level);
+            object->readObject(*this);
         }
         return *this;
     }

@@ -149,11 +149,11 @@ public:
         return *this;
     }
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputStreamSerializer &serializer) const override {
         base::_serialize(serializer);
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+    void readObject(InputStreamSerializer &serializer) override {
         base::_deserialize(serializer);
     }
 
@@ -606,11 +606,11 @@ public:
         return *this;
     }
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputStreamSerializer &serializer) const override {
         base::_serialize(serializer);
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+    void readObject(InputStreamSerializer &serializer) override {
         base::_deserialize(serializer);
     }
 

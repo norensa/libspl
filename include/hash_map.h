@@ -227,12 +227,12 @@ public:
         return *this;
     }
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
-        base::_serialize(serializer, level);
+    void writeObject(OutputStreamSerializer &serializer) const override {
+        base::_serialize(serializer);
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
-        base::_deserialize(serializer, level);
+    void readObject(InputStreamSerializer &serializer) override {
+        base::_deserialize(serializer);
     }
 
     /**
@@ -919,12 +919,12 @@ public:
         return *this;
     }
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
-        base::_serialize(serializer, level);
+    void writeObject(OutputStreamSerializer &serializer) const override {
+        base::_serialize(serializer);
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
-        base::_deserialize(serializer, level);
+    void readObject(InputStreamSerializer &serializer) override {
+        base::_deserialize(serializer);
     }
 
     /**
@@ -1892,12 +1892,12 @@ public:
         return *this;
     }
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
-        base::_serialize(serializer, level);
+    void writeObject(OutputStreamSerializer &serializer) const override {
+        base::_serialize(serializer);
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
-        base::_deserialize(serializer, level);
+    void readObject(InputStreamSerializer &serializer) override {
+        base::_deserialize(serializer);
     }
 
     /**
@@ -2574,12 +2574,12 @@ public:
         return *this;
     }
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
-        base::_serialize(serializer, level);
+    void writeObject(OutputStreamSerializer &serializer) const override {
+        base::_serialize(serializer);
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
-        base::_deserialize(serializer, level);
+    void readObject(InputStreamSerializer &serializer) override {
+        base::_deserialize(serializer);
     }
 
     /**

@@ -80,12 +80,12 @@ struct HashableSerializableObj : HashableObj, Serializable {
     :   HashableObj(v)
     { }
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputStreamSerializer &serializer) const override {
         serializer << v;
         const_cast<HashableSerializableObj *>(this)->serialized = true;
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) {
+    void readObject(InputStreamSerializer &serializer) {
         serializer >> v;
         if (buf != nullptr) free(buf);
         buf = malloc(1);

@@ -49,11 +49,11 @@ class MapNode {
 
 private:
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const {
+    void writeObject(OutputStreamSerializer &serializer) const {
         serializer << k << v;
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) {
+    void readObject(InputStreamSerializer &serializer) {
         serializer >> *const_cast<Key *>(&k) >> v;
     }
 
@@ -826,14 +826,14 @@ protected:
             SupportsTrivialSerialization<X> && ! SupportsCustomSerialization<X>
         , int> = 0
     >
-    void _serialize(OutputStreamSerializer &serializer, SerializationLevel level) const {
+    void _serialize(OutputStreamSerializer &serializer) const {
         _controller.enter();
 
         size_t sz = static_cast<size_t>(_size);
 
         serializer << _controller << sz;
 
-        if (level == SerializationLevel::PLAIN) {
+        if (serializer.level() == SerializationLevel::PLAIN) {
             serializer.put(_table, sizeof(node) * _controller.tableSize);
         }
         else {
@@ -856,7 +856,7 @@ protected:
             && std::is_constructible_v<X>
         , int> = 0
     >
-    void _deserialize(InputStreamSerializer &serializer, SerializationLevel level) {
+    void _deserialize(InputStreamSerializer &serializer) {
         _freeNodes();
         _dispose();
 
@@ -867,7 +867,7 @@ protected:
         _table = new node[_controller.tableSize];
         _size = sz;
 
-        if (level == SerializationLevel::PLAIN) {
+        if (serializer.level() == SerializationLevel::PLAIN) {
             serializer.get(_table, sizeof(node) * _controller.tableSize);
         }
         else {
@@ -888,7 +888,7 @@ protected:
             SupportsCustomSerialization<X>
         , int> = 0
     >
-    void _serialize(OutputStreamSerializer &serializer, SerializationLevel level) const {
+    void _serialize(OutputStreamSerializer &serializer) const {
         _controller.enter();
 
         size_t sz = static_cast<size_t>(_size);
@@ -898,7 +898,7 @@ protected:
         for (size_t i = 0; i < _controller.tableSize && sz > 0; ++i) {
             if (_table[i].occupied()) {
                 serializer << _table[i].h;
-                _table[i].storage.n.writeObject(serializer, level);
+                _table[i].storage.n.writeObject(serializer);
                 --sz;
             }
         }
@@ -912,7 +912,7 @@ protected:
             SupportsCustomSerialization<X> && std::is_constructible_v<X>
         , int> = 0
     >
-    void _deserialize(InputStreamSerializer &serializer, SerializationLevel level) {
+    void _deserialize(InputStreamSerializer &serializer) {
         _freeNodes();
         _dispose();
 
@@ -927,7 +927,7 @@ protected:
             size_t h;
             storage_node n;
             serializer >> h;
-            n.readObject(serializer, level);
+            n.readObject(serializer);
             size_t j = _getFreeIndex_noResize(h);
             _table[j].set(h, std::move(n));
         }
@@ -937,7 +937,7 @@ protected:
         typename X = storage_node,
         std::enable_if_t<! SupportsSerialization<X>, int> = 0
     >
-    void _serialize(OutputStreamSerializer &serializer, SerializationLevel level) const {
+    void _serialize(OutputStreamSerializer &serializer) const {
         throw DynamicMessageError(
             "Type '", typeid(storage_node).name(), "' cannot be serialized."
         );
@@ -947,7 +947,7 @@ protected:
         typename X = storage_node,
         std::enable_if_t<! SupportsSerialization<X> || ! std::is_constructible_v<X>, int> = 0
     >
-    void _deserialize(InputStreamSerializer &serializer, SerializationLevel level) {
+    void _deserialize(InputStreamSerializer &serializer) {
         throw DynamicMessageError(
             "Type '", typeid(storage_node).name(), "' cannot be deserialized."
         );

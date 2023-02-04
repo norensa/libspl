@@ -34,11 +34,11 @@ private:
         :   defaultValue(defaultValue)
         { }
 
-        void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputStreamSerializer &serializer) const override {
             serializer << defaultValue << value;
         }
 
-        void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        void readObject(InputStreamSerializer &serializer) override {
             serializer >> defaultValue >> value;
         }
     };
@@ -59,11 +59,11 @@ public:
 
     NamedParameters & operator=(NamedParameters &&) = default;
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputStreamSerializer &serializer) const override {
         serializer << _param;
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+    void readObject(InputStreamSerializer &serializer) override {
         serializer >> _param;
     }
 

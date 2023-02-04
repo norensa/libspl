@@ -356,7 +356,7 @@ public:
     }
 
     /**
-     * @brief Construct a new Deque object.
+     * @brief Construct a new Heap object.
      * 
      * @tparam It A beginning iterator type that defines the typename
      * `value_type` which will determine the resulting type.
@@ -364,7 +364,7 @@ public:
      * @param begin The beginning iterator.
      * @param end The end iterator.
      * @param size The number of elements between begin and end.
-     * @return A new Deque object of type It::value_type objects.
+     * @return A new Heap object of type It::value_type objects.
      */
     template <typename It, typename EndIt>
     static Heap<typename It::value_type> create(const It &begin, const EndIt &end, size_t size) {
@@ -392,11 +392,11 @@ public:
         return *this;
     }
 
-    void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+    void writeObject(OutputStreamSerializer &serializer) const override {
         _serialize(serializer);
     }
 
-    void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+    void readObject(InputStreamSerializer &serializer) override {
         _deserialize(serializer);
     }
 

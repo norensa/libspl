@@ -64,21 +64,21 @@ unit("stream-serializer", "serializable-type")
     {
         int data = 5;
 
-        void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputStreamSerializer &serializer) const override {
             serializer << data;
         }
 
-        void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputRandomAccessSerializer &serializer) const override {
             assert(false);
         }
 
-        void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        void readObject(InputStreamSerializer &serializer) override {
             int x;
             serializer >> x;
             assert(x == 5);
         }
 
-        void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) override {
+        void readObject(InputRandomAccessSerializer &serializer) override {
             assert(false);
         }
     };
@@ -102,21 +102,21 @@ unit("stream-serializer", "serializable-type-ptr")
     {
         int data = 5;
 
-        void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputStreamSerializer &serializer) const override {
             serializer << data;
         }
 
-        void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputRandomAccessSerializer &serializer) const override {
             assert(false);
         }
 
-        void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        void readObject(InputStreamSerializer &serializer) override {
             int x;
             serializer >> x;
             assert(x == 5);
         }
 
-        void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) override {
+        void readObject(InputRandomAccessSerializer &serializer) override {
             assert(false);
         }
     };
@@ -143,21 +143,21 @@ unit("stream-serializer", "serializable-type-ptr-creation")
     {
         int data = 5;
 
-        void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputStreamSerializer &serializer) const override {
             serializer << data;
         }
 
-        void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputRandomAccessSerializer &serializer) const override {
             assert(false);
         }
 
-        void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        void readObject(InputStreamSerializer &serializer) override {
             int x;
             serializer >> x;
             assert(x == 5);
         }
 
-        void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) override {
+        void readObject(InputRandomAccessSerializer &serializer) override {
             assert(false);
         }
     };
@@ -187,21 +187,21 @@ unit("stream-serializer", "serializable-type-nullptr")
     {
         int data = 5;
 
-        void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputStreamSerializer &serializer) const override {
             serializer << data;
         }
 
-        void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputRandomAccessSerializer &serializer) const override {
             assert(false);
         }
 
-        void readObject(InputStreamSerializer &serializer, SerializationLevel level) override {
+        void readObject(InputStreamSerializer &serializer) override {
             int x;
             serializer >> x;
             assert(x == 5);
         }
 
-        void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) override {
+        void readObject(InputRandomAccessSerializer &serializer) override {
             assert(false);
         }
     };
@@ -324,19 +324,19 @@ unit("random-access-serializer", "serializable-type")
     {
         int data = 5;
 
-        void writeObject(OutputStreamSerializer &serializer, SerializationLevel level) const override {
+        void writeObject(OutputStreamSerializer &serializer) const override {
             assert(false);
         }
 
-        virtual void writeObject(OutputRandomAccessSerializer &serializer, SerializationLevel level) const {
+        virtual void writeObject(OutputRandomAccessSerializer &serializer) const {
             serializer << data;
         }
 
-        virtual void readObject(InputStreamSerializer &serializer, SerializationLevel level) {
+        virtual void readObject(InputStreamSerializer &serializer) {
             assert(false);
         }
 
-        virtual void readObject(InputRandomAccessSerializer &serializer, SerializationLevel level) {
+        virtual void readObject(InputRandomAccessSerializer &serializer) {
             int x;
             serializer >> x;
             assert(x == 5);
