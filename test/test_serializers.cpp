@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -61,8 +61,8 @@ public:
         delete[] _mem;
     }
 
-    MemoryInputStreamSerializer toInput() {
-        return MemoryInputStreamSerializer(_mem, _pos);
+    MemoryInputStreamSerializer * toInput() {
+        return new MemoryInputStreamSerializer(_mem, _pos);
     }
 };
 
@@ -119,7 +119,7 @@ public:
         delete[] _mem;
     }
 
-    MemoryInputRandomAccessSerializer toInput() {
-        return MemoryInputRandomAccessSerializer(_mem, 1024 * 1024);
+    MemoryInputRandomAccessSerializer * toInput() {
+        return new MemoryInputRandomAccessSerializer(_mem, 1024 * 1024);
     }
 };

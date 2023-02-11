@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -120,7 +120,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMap, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMap, Sequence>::value, int>::type = 0
     >
     HashMap(const Sequence &seq)
     :   base(seq.size())
@@ -135,7 +135,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMap, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMap, Sequence>::value, int>::type = 0
     >
     HashMap(Sequence &&seq)
     :   base(seq.size())
@@ -812,7 +812,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMap, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMap, Sequence>::value, int>::type = 0
     >
     HashMap(const Sequence &seq)
     :   base(seq.size())
@@ -827,7 +827,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMap, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMap, Sequence>::value, int>::type = 0
     >
     HashMap(Sequence &&seq)
     :   base(seq.size())
@@ -1785,7 +1785,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMultiMap, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMultiMap, Sequence>::value, int>::type = 0
     >
     HashMultiMap(const Sequence &seq)
     :   base(seq.size())
@@ -1800,7 +1800,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMultiMap, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMultiMap, Sequence>::value, int>::type = 0
     >
     HashMultiMap(Sequence &&seq)
     :   base(seq.size())
@@ -2467,7 +2467,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMultiMap, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMultiMap, Sequence>::value, int>::type = 0
     >
     HashMultiMap(const Sequence &seq)
     :   base(seq.size())
@@ -2482,7 +2482,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMultiMap, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMultiMap, Sequence>::value, int>::type = 0
     >
     HashMultiMap(Sequence &&seq)
     :   base(seq.size())

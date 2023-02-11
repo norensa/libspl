@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -134,28 +134,28 @@ public:
     /**
      * @return A const iterator to the first interval of this range.
      */
-    auto begin() const {
+    RangeForwardIterator begin() const {
         return RangeForwardIterator(_intervals, _intervals.begin());
     }
 
     /**
      * @return A past-the-end iterator of the intervals of this range.
      */
-    auto end() const {
+    RangeForwardIterator end() const {
         return RangeForwardIterator(_intervals, _intervals.end());
     }
 
     /**
      * @return A const iterator to the first interval of this range.
      */
-    auto cbegin() const {
+    RangeForwardIterator cbegin() const {
         return RangeForwardIterator(_intervals, _intervals.begin());
     }
 
     /**
      * @return A past-the-end iterator of the intervals of this range.
      */
-    auto cend() const {
+    RangeForwardIterator cend() const {
         return RangeForwardIterator(_intervals, _intervals.end());
     }
 

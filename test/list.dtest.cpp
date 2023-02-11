@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -66,7 +66,7 @@ using namespace spl;
 #define TEST_SIZE (1024)
 #define PARALLEL_TEST_SIZE (10 * 1024)
 #define PERFORMANCE_TEST_SIZE (400 * 1024)
-#define PERFORMANCE_MARGIN_MILLIS 10
+#define PERFORMANCE_MARGIN (0.99)
 
 unit("list", "initializer-list")
 .body([] {
@@ -180,7 +180,7 @@ unit("parallel::list", "prepend")
 });
 
 perf("list", "prepend(p)")
-.performanceMarginMillis(PERFORMANCE_MARGIN_MILLIS)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     auto l = List<int>();
     for (int i = 0; i < PERFORMANCE_TEST_SIZE; ++i) {
@@ -238,7 +238,7 @@ unit("parallel::list", "append")
 });
 
 perf("list", "append(p)")
-.performanceMarginMillis(PERFORMANCE_MARGIN_MILLIS)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     auto l = List<int>();
     for (int i = 0; i < PERFORMANCE_TEST_SIZE; ++i) {
@@ -762,7 +762,7 @@ unit("list", "map")
     auto l2 = l.map([] (int x) { return x * 2; });
 
     int i = TEST_SIZE - 1;
-    l2.foreach([&i] (auto &x) { assert(x == (i-- * 2)); });
+    l2.foreach([&i] (int &x) { assert(x == (i-- * 2)); });
     assert(i == -1);
 });
 
@@ -774,12 +774,12 @@ unit("list", "reduce")
         i >> l;
     }
 
-    auto sum = l.reduce([] (int x, int y) { return (long) x + y; });
+    auto sum = l.reduce<long>([] (int x, int y) { return (long) x + y; });
 
     assert(typeid(sum) == typeid(long));
     assert(sum == (long)(TEST_SIZE * (TEST_SIZE - 1) / 2));
 
-    auto sum2 = l.reduce(
+    auto sum2 = l.reduce<long>(
         [] (int x) { return (long) x; },
         [] (int x, int y) { return (long) x + y; }
     );

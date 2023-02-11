@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -417,7 +417,7 @@ public:
     /**
      * @return The time of the last access of file data.
      */
-    auto accessTime() const {
+    std::chrono::high_resolution_clock::time_point accessTime() const {
         _fetchStat();
         return std::chrono::high_resolution_clock::time_point(
             std::chrono::nanoseconds(
@@ -430,7 +430,7 @@ public:
     /**
      * @return The time of last modification of file data.
      */
-    auto modifyTime() const {
+    std::chrono::high_resolution_clock::time_point modifyTime() const {
         _fetchStat();
         return std::chrono::high_resolution_clock::time_point(
             std::chrono::nanoseconds(
@@ -444,7 +444,7 @@ public:
      * @return The file's last status change timestamp (time of last change to
      * the inode).
      */
-    auto statusChangeTime() const {
+    std::chrono::high_resolution_clock::time_point statusChangeTime() const {
         _fetchStat();
         return std::chrono::high_resolution_clock::time_point(
             std::chrono::nanoseconds(

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -110,6 +110,7 @@ unit("factory", "createObject(size_t)")
 });
 
 unit("factory", "static-default-factory")
+.inProcess()
 .body([] {
     struct A : WithFactory<A> {
         virtual ~A() = default;

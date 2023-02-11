@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -35,8 +35,9 @@ unit("container-serialization", "list<int>")
     out.flush();
 
     List<int> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
+    delete &in;
 
     assert(l.size() == l2.size());
 
@@ -63,8 +64,9 @@ unit("container-serialization", "list<serializable>")
     }
 
     List<StreamSerializable> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
+    delete &in;
 
     assert(l.size() == l2.size());
 
@@ -103,8 +105,9 @@ unit("container-serialization", "list<non-deserializable>")
     out.flush();
 
     List<StreamSerializable_NotConstructible> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
+    delete &in;
     err("Object should not be deserialized");
 });
 
@@ -123,8 +126,9 @@ unit("container-serialization", "parallel::list<int>")
     out.flush();
 
     parallel::List<int> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
+    delete &in;
 
     assert(l.size() == l2.size());
 
@@ -152,8 +156,9 @@ unit("container-serialization", "parallel::list<serializable>")
     }
 
     parallel::List<StreamSerializable> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
+    delete &in;
 
     assert(l.size() == l2.size());
 
@@ -180,8 +185,9 @@ unit("container-serialization", "deque<int>")
     out.flush();
 
     Deque<int> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
+    delete &in;
 
     assert(l.size() == l2.size());
 
@@ -208,8 +214,9 @@ unit("container-serialization", "deque<serializable>")
     }
 
     Deque<StreamSerializable> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
+    delete &in;
 
     assert(l.size() == l2.size());
 
@@ -248,7 +255,7 @@ unit("container-serialization", "deque<non-deserializable>")
     out.flush();
 
     Deque<StreamSerializable_NotConstructible> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
     err("Object should not be deserialized");
 });
@@ -268,8 +275,9 @@ unit("container-serialization", "parallel::deque<int>")
     out.flush();
 
     parallel::Deque<int> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
+    delete &in;
 
     assert(l.size() == l2.size());
 
@@ -297,8 +305,9 @@ unit("container-serialization", "parallel::deque<serializable>")
     }
 
     parallel::Deque<StreamSerializable> l2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> l2;
+    delete &in;
 
     assert(l.size() == l2.size());
 
@@ -326,8 +335,9 @@ unit("container-serialization", "hashmap<int,int>")
     out.flush();
 
     HashMap<int, int> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -355,8 +365,9 @@ unit("container-serialization", "hashmap<int,serializable>")
     }
 
     HashMap<int, StreamSerializable> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -385,8 +396,9 @@ unit("container-serialization", "hashmap<hashableserializable,serializable>")
     }
 
     HashMap<HashableSerializableObj, StreamSerializable> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -411,8 +423,9 @@ unit("container-serialization", "parallel::hashmap<int,int>")
     out.flush();
 
     parallel::HashMap<int, int> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -441,8 +454,9 @@ unit("container-serialization", "parallel::hashmap<int,serializable>")
     }
 
     parallel::HashMap<int, StreamSerializable> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -472,8 +486,9 @@ unit("container-serialization", "parallel::hashmap<hashableserializable,serializ
     }
 
     parallel::HashMap<HashableSerializableObj, StreamSerializable> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -497,8 +512,9 @@ unit("container-serialization", "hashmultimap<int,int>")
     out.flush();
 
     HashMultiMap<int, int> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -526,8 +542,9 @@ unit("container-serialization", "hashmultimap<int,serializable>")
     }
 
     HashMultiMap<int, StreamSerializable> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -556,8 +573,9 @@ unit("container-serialization", "hashmultimap<hashableserializable,serializable>
     }
 
     HashMultiMap<HashableSerializableObj, StreamSerializable> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -582,8 +600,9 @@ unit("container-serialization", "parallel::hashmultimap<int,int>")
     out.flush();
 
     parallel::HashMultiMap<int, int> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -612,8 +631,9 @@ unit("container-serialization", "parallel::hashmultimap<int,serializable>")
     }
 
     parallel::HashMultiMap<int, StreamSerializable> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -643,8 +663,9 @@ unit("container-serialization", "parallel::hashmultimap<hashableserializable,ser
     }
 
     parallel::HashMultiMap<HashableSerializableObj, StreamSerializable> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -672,8 +693,9 @@ unit("container-serialization", "hashset<int>")
     out.flush();
 
     HashSet<int> s2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> s2;
+    delete &in;
 
     assert(s.size() == s2.size());
 
@@ -700,8 +722,9 @@ unit("container-serialization", "hashset<hashableserializable>")
     }
 
     HashSet<HashableSerializableObj> s2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> s2;
+    delete &in;
 
     assert(s.size() == s2.size());
 
@@ -726,8 +749,9 @@ unit("container-serialization", "parallel::hashset<int>")
     out.flush();
 
     parallel::HashSet<int> s2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> s2;
+    delete &in;
 
     assert(s.size() == s2.size());
 
@@ -754,8 +778,9 @@ unit("container-serialization", "parallel::hashset<hashableserializable>")
     }
 
     parallel::HashSet<HashableSerializableObj> s2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> s2;
+    delete &in;
 
     assert(s.size() == s2.size());
 
@@ -779,8 +804,9 @@ unit("container-serialization", "hashmultiset<int>")
     out.flush();
 
     HashMultiSet<int> s2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> s2;
+    delete &in;
 
     assert(s.size() == s2.size());
 
@@ -807,8 +833,9 @@ unit("container-serialization", "hashmultiset<hashableserializable>")
     }
 
     HashMultiSet<HashableSerializableObj> s2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> s2;
+    delete &in;
 
     assert(s.size() == s2.size());
 
@@ -833,8 +860,9 @@ unit("container-serialization", "parallel::hashmultiset<int>")
     out.flush();
 
     parallel::HashMultiSet<int> s2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> s2;
+    delete &in;
 
     assert(s.size() == s2.size());
 
@@ -861,8 +889,9 @@ unit("container-serialization", "parallel::hashmultiset<hashableserializable>")
     }
 
     parallel::HashMultiSet<HashableSerializableObj> s2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> s2;
+    delete &in;
 
     assert(s.size() == s2.size());
 
@@ -890,8 +919,9 @@ unit("container-serialization", "heap<int>")
     out.flush();
 
     Heap<int> h2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> h2;
+    delete &in;
 
     assert(h.size() == h2.size());
 
@@ -918,8 +948,9 @@ unit("container-serialization", "heap<serializable>")
     }
 
     Heap<ComparableStreamSerializable> h2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> h2;
+    delete &in;
 
     assert(h.size() == h2.size());
 
@@ -950,8 +981,9 @@ unit("container-serialization", "range")
     out.flush();
 
     Range<int> r2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> r2;
+    delete &in;
 
     auto it1 = r.begin();
     auto it2 = r2.begin();

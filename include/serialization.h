@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -122,10 +122,10 @@ public:
  * @tparam T The type to check.
  */
 template <typename T>
-struct SupportsTrivialSerialization_t {
+struct SupportsTrivialSerialization {
     static constexpr bool value = 
-        std::is_copy_assignable_v<T>
-        && ! std::is_pointer_v<T>
+        std::is_copy_assignable<T>::value
+        && ! std::is_pointer<T>::value
     ;
 };
 
@@ -135,39 +135,21 @@ struct SupportsTrivialSerialization_t {
  * @tparam T The type to check.
  */
 template <typename T>
-struct SupportsCustomSerialization_t {
+struct SupportsCustomSerialization {
     static constexpr bool value =
-        std::is_base_of_v<Serializable, std::remove_pointer_t<T>>;
+        std::is_base_of<Serializable, typename std::remove_pointer<T>::type>::value;
 };
 
 /**
- * @brief Evaluates to true if T is trivially serializable. 
+ * @brief A type trait to check if T supports serialization (custom or trivial).
  * 
  * @tparam T The type to check.
  */
 template <typename T>
-inline constexpr bool SupportsTrivialSerialization =
-    SupportsTrivialSerialization_t<T>::value;
-
-/**
- * @brief Evaluates to true if T implements custom serialization. 
- * 
- * @tparam T The type to check.
- */
-template <typename T>
-inline constexpr bool SupportsCustomSerialization =
-    SupportsCustomSerialization_t<T>::value;
-
-/**
- * @brief Evaluates to true if T is serializable. 
- * 
- * @tparam T The type to check.
- */
-template <typename T>
-inline constexpr bool SupportsSerialization = (
-    SupportsTrivialSerialization<T>
-    || SupportsCustomSerialization<T>
-);
+struct SupportsSerialization {
+    static constexpr bool value =
+        SupportsTrivialSerialization<T>::value || SupportsCustomSerialization<T>::value;
+};
 
 /**
  * @brief A serializer used for writing objects to some underlying byte stream.
@@ -257,7 +239,7 @@ public:
 
     OutputStreamSerializer(OutputStreamSerializer &&) = delete;
 
-    ~OutputStreamSerializer() {
+    virtual ~OutputStreamSerializer() {
         if (_allocated) delete[] _buf;
     }
 
@@ -369,10 +351,10 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            SupportsTrivialSerialization<T> && ! SupportsCustomSerialization<T>,
+        typename std::enable_if<
+            SupportsTrivialSerialization<T>::value && ! SupportsCustomSerialization<T>::value,
             int
-        > = 0
+        >::type = 0
     >
     OutputStreamSerializer & operator<<(const T &x) {
         if (_fit(sizeof(T))) {
@@ -626,10 +608,10 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            SupportsTrivialSerialization<T> && ! SupportsCustomSerialization<T>,
+        typename std::enable_if<
+            SupportsTrivialSerialization<T>::value && ! SupportsCustomSerialization<T>::value,
             int
-        > = 0
+        >::type = 0
     >
     OutputRandomAccessSerializer & operator<<(const T &x) {
         OutputStreamSerializer::operator<<<T>(x);
@@ -756,7 +738,7 @@ public:
 
     InputStreamSerializer(InputStreamSerializer &&) = delete;
 
-    ~InputStreamSerializer() {
+    virtual ~InputStreamSerializer() {
         if (_allocated) delete[] _buf;
     }
 
@@ -824,10 +806,10 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            SupportsTrivialSerialization<T> && ! SupportsCustomSerialization<T>,
+        typename std::enable_if<
+            SupportsTrivialSerialization<T>::value && ! SupportsCustomSerialization<T>::value,
             int
-        > = 0
+        >::type = 0
     >
     InputStreamSerializer & operator>>(T &x) {
         if (sizeof(T) <= _available) {
@@ -866,10 +848,10 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_base_of_v<Serializable, T>,
+        typename std::enable_if<
+            std::is_base_of<Serializable, T>::value,
             int
-        > = 0
+        >::type = 0
     >
     InputStreamSerializer & operator>>(T *&object) {
         size_t code;
@@ -1072,10 +1054,10 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            SupportsTrivialSerialization<T> && ! SupportsCustomSerialization<T>,
+        typename std::enable_if<
+            SupportsTrivialSerialization<T>::value && ! SupportsCustomSerialization<T>::value,
             int
-        > = 0
+        >::type = 0
     >
     InputRandomAccessSerializer & operator>>(T &x) {
         InputStreamSerializer::operator>><T>(x);
@@ -1107,10 +1089,10 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_base_of_v<Serializable, T>,
+        typename std::enable_if<
+            std::is_base_of<Serializable, T>::value,
             int
-        > = 0
+        >::type = 0
     >
     InputRandomAccessSerializer & operator>>(T *&object) {
         size_t code;

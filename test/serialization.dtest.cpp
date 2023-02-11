@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
 #include <dtest.h>
 #include <serialization.h>
 #include "test_serializers.cpp"
+#include <algorithm>
 
 module("stream-serializer")
 .dependsOn({
@@ -45,8 +46,9 @@ unit("stream-serializer", "primitive-types")
     short c;
     A d;
 
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> a >> b >> c >> d;
+    delete &in;
 
     assert(a == x);
     assert(b == y);
@@ -89,8 +91,9 @@ unit("stream-serializer", "serializable-type")
     out << a;
     out.flush();
 
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> b;
+    delete &in;
 });
 
 unit("stream-serializer", "serializable-type-ptr")
@@ -127,8 +130,9 @@ unit("stream-serializer", "serializable-type-ptr")
     out << a;
     out.flush();
 
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> b;
+    delete &in;
 
     delete a;
     delete b;
@@ -168,8 +172,9 @@ unit("stream-serializer", "serializable-type-ptr-creation")
     out << a;
     out.flush();
 
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> b;
+    delete &in;
 
     assert(b != nullptr);
     assert(a->objectCode() == b->objectCode());
@@ -212,8 +217,9 @@ unit("stream-serializer", "serializable-type-nullptr")
     out << a;
     out.flush();
 
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> b;
+    delete &in;
 
     assert(b == nullptr);
 });
@@ -230,10 +236,11 @@ unit("stream-serializer", "large-serialization")
     out.flush();
 
     int *b = new int[TEST_SIZE];
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     for (auto i = 0; i < TEST_SIZE; ++i) {
         in >> b[i];
     }
+    delete &in;
 
     assert(memcmp(a, b, TEST_SIZE * sizeof(int)) == 0);
 
@@ -253,8 +260,9 @@ unit("stream-serializer", "bulk-serialization")
     out.flush();
 
     int *b = new int[TEST_SIZE];
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in.get(b, TEST_SIZE * sizeof(int));
+    delete &in;
 
     assert(memcmp(a, b, TEST_SIZE * sizeof(int)) == 0);
 
@@ -270,16 +278,19 @@ unit("stream-serializer", "lock")
     out << 2;
     out.flush();
 
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     int x;
     in >> x;
     assert(x == 1);
 
     try {
         in >> x;
+        delete &in;
         fail("got data beyond lock position");
     }
     catch (const OutOfRangeError &) { }
+
+    delete &in;
 });
 
 unit("random-access-serializer", "primitive-types")
@@ -305,8 +316,9 @@ unit("random-access-serializer", "primitive-types")
     short c;
     A d;
 
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> a >> b >> c >> d;
+    delete &in;
 
     assert(a == x);
     assert(b == y);
@@ -349,8 +361,9 @@ unit("random-access-serializer", "serializable-type")
     out << a;
     out.flush();
 
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> b;
+    delete &in;
 });
 
 unit("random-access-serializer", "large-serialization")
@@ -377,11 +390,12 @@ unit("random-access-serializer", "large-serialization")
     out.flush();
 
     int *b = new int[TEST_SIZE];
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     for (auto i = 0; i < TEST_SIZE; ++i) {
         in.seekTo(idx_read[i] * sizeof(int));
         in >> b[idx_read[i]];
     }
+    delete &in;
 
     assert(memcmp(a, b, TEST_SIZE * sizeof(int)) == 0);
 
@@ -406,11 +420,12 @@ unit("random-access-serializer", "tell")
     out.flush();
     assert(out.tell() == sizeof(int) * 3);
 
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     assert(in.tell() == 0);
     for (auto i = 0; i < 3; ++i) {
         int x;
         in >> x;
     }
     assert(in.tell() == sizeof(int) * 3);
+    delete &in;
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -38,8 +38,8 @@ class JSON {
 
 private:
 
-    static constexpr char _WHITE_SPACE[] = " \n\t";
-    static constexpr char _NUM_STOP[] = " \n\t,";
+    static const char *_WHITE_SPACE;
+    static const char *_NUM_STOP;
 
     static std::string _indent(const std::string &str, int spaces = 2);
 
@@ -111,20 +111,20 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>
-            || std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>
-            || std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value
+            || std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value
+            || std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > = 0
+        >::type = 0
     >
     static std::string encode(const T &val) {
         return StringConversions::toStr(val);
@@ -215,20 +215,20 @@ private:
 
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>
-            || std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>
-            || std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value
+            || std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value
+            || std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > = 0
+        >::type = 0
     >
     static bool _decode(char const * &str, T &val) {
         try {

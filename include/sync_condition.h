@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -51,7 +51,7 @@ public:
      * @param x The amount to increase.
      */
     void increase(size_t x = 1) {
-        std::unique_lock lk(_mtx);
+        std::unique_lock<std::mutex> lk(_mtx);
         _count += x;
     }
 
@@ -63,7 +63,7 @@ public:
      * @param x The amount to increase.
      */
     void decrease(size_t x = 1) {
-        std::unique_lock lk(_mtx);
+        std::unique_lock<std::mutex> lk(_mtx);
         if (x > _count) throw RuntimeError("Attempt to decrease counter beyond 0");
         _count -= x;
         if (_count <= _wakeup) {
@@ -95,7 +95,7 @@ public:
      * wakeup threshold.
      */
     void wait() {
-        std::unique_lock lk(_mtx);
+        std::unique_lock<std::mutex> lk(_mtx);
         _cv.wait(lk, [this] { return _count <= _wakeup; });
     }
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -87,7 +87,7 @@ inline spl::InputStreamSerializer & operator>>(
     size_t size;
     serializer >> size;
     string.resize(size);
-    serializer.get(string.data(), size);
+    serializer.get(&string[0], size);
     return serializer;
 }
 

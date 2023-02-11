@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -40,11 +40,11 @@ class ForwardIterator
 {
 private:
 
-    constexpr const IteratorType & iterator() const {
+    const IteratorType & iterator() const {
         return *static_cast<const IteratorType *>(this);
     }
 
-    constexpr IteratorType & iterator() {
+    IteratorType & iterator() {
         return *static_cast<IteratorType *>(this);
     }
 
@@ -99,11 +99,11 @@ class BidirectionalIterator
 {
 private:
 
-    constexpr const IteratorType & iterator() const {
+    const IteratorType & iterator() const {
         return *static_cast<const IteratorType *>(this);
     }
 
-    constexpr IteratorType & iterator() {
+    IteratorType & iterator() {
         return *static_cast<IteratorType *>(this);
     }
 

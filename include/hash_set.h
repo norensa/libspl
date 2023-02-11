@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -119,7 +119,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashSet, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashSet, Sequence>::value, int>::type = 0
     >
     HashSet(const Sequence &seq)
     :   base(seq.size())
@@ -134,7 +134,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashSet, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashSet, Sequence>::value, int>::type = 0
     >
     HashSet(Sequence &&seq)
     :   base(seq.size())
@@ -640,7 +640,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashSet, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashSet, Sequence>::value, int>::type = 0
     >
     HashSet(const Sequence &seq)
     :   base(seq.size())
@@ -655,7 +655,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashSet, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashSet, Sequence>::value, int>::type = 0
     >
     HashSet(Sequence &&seq)
     :   base(seq.size())
@@ -1349,7 +1349,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMultiSet, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMultiSet, Sequence>::value, int>::type = 0
     >
     HashMultiSet(const Sequence &seq)
     :   base(seq.size())
@@ -1364,7 +1364,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMultiSet, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMultiSet, Sequence>::value, int>::type = 0
     >
     HashMultiSet(Sequence &&seq)
     :   base(seq.size())
@@ -1921,7 +1921,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMultiSet, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMultiSet, Sequence>::value, int>::type = 0
     >
     HashMultiSet(const Sequence &seq)
     :   base(seq.size())
@@ -1936,7 +1936,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_same_v<HashMultiSet, Sequence>, int> = 0
+        typename std::enable_if<! std::is_same<HashMultiSet, Sequence>::value, int>::type = 0
     >
     HashMultiSet(Sequence &&seq)
     :   base(seq.size())

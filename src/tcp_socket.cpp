@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -197,8 +197,8 @@ TCPServerSocket::TCPServerSocket(in_port_t port, int maxWaitingQueueLength, Sock
 void TCPServerSocket::close() {
     TCPSocket::close();
 
-    for (auto &[_, conn] : _connections) {
-        if (conn != nullptr) delete conn;
+    for (auto &conn : _connections) {
+        if (conn.v != nullptr) delete conn.v;
     }
     _connections.clear();
     _pollfds.clear();

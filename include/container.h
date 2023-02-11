@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -18,11 +18,11 @@ template <typename ContainerType>
 class ForwardIterableContainer {
 private:
 
-    constexpr const ContainerType & container() const {
+    const ContainerType & container() const {
         return *static_cast<const ContainerType *>(this);
     }
 
-    constexpr ContainerType & container() {
+    ContainerType & container() {
         return *static_cast<ContainerType *>(this);
     }
 
@@ -60,7 +60,7 @@ public:
      * @return A new container with the mapped elements.
      */
     template <typename MappedType = ContainerType, typename F>
-    auto map(F mapper) const {
+    MappedType map(F mapper) const {
         return MappedType::create(
             container().begin().map(mapper),
             container().end(),
@@ -76,7 +76,7 @@ public:
      * @return A new container with the copied elements.
      */
     template <typename T>
-    auto to() const {
+    T to() const {
         return T(
             container().begin(),
             container().end(),
@@ -95,14 +95,11 @@ public:
      * @return A single value after applying the reducing function to all
      * elements.
      */
-    template <typename F>
-    auto reduce(F reducer) const {
-        using ref = decltype(*container().begin());
-        using reduce_type = typename std::invoke_result_t<F, ref, ref>;
-
+    template <typename T, typename F>
+    T reduce(F reducer) const {
         auto it = container().begin();
         auto end = container().end();
-        reduce_type res;
+        T res;
         if (it != end) {
             res = *it;
             while (++it != end) {
@@ -125,14 +122,11 @@ public:
      * @return A single value after applying the reducing function to all
      * elements.
      */
-    template <typename Init, typename F>
-    auto reduce(Init initialMapper, F reducer) const {
-        using ref = decltype(*container().begin());
-        using reduce_type = typename std::invoke_result_t<Init, ref>;
-
+    template <typename T, typename Init, typename F>
+    T reduce(Init initialMapper, F reducer) const {
         auto it = container().begin();
         auto end = container().end();
-        reduce_type res;
+        T res;
         if (it != end) {
             res = initialMapper(*it);
             while (++it != end) {

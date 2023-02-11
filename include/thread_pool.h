@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -97,7 +97,7 @@ public:
 
     /**
      * @brief Reschedules this task. This restarts the execution of the task from
-     * the begining.
+     * the beginning.
      * 
      * @param insert Indicates whether to re-insert the task to the back of the
      * ready queue. If the task is not inserted, then it must be re-run using
@@ -112,7 +112,7 @@ public:
     /**
      * @brief Pauses this task until a timeout duration has passed. The actual
      * wait duration is arbitrarily long but guaranteed to be at least the
-     * specified amount. This wil restart the task from the beginning.
+     * specified amount. This will restart the task from the beginning.
      * 
      * @param duration The desired wait duration.
      */
@@ -126,40 +126,40 @@ public:
     /**
      * @brief Pauses this task until a timeout duration has passed. The actual
      * wait duration is arbitrarily long but guaranteed to be at least the
-     * specified amount. This wil restart the task from the beginning.
+     * specified amount. This will restart the task from the beginning.
      * 
      * @param nanos The desired wait duration in nanoseconds.
      */
     void setTimeoutNanos(uint64_t nanos) {
-        wait(std::chrono::nanoseconds(nanos));
+        setTimeout(std::chrono::nanoseconds(nanos));
     }
 
     /**
      * @brief Pauses this task until a timeout duration has passed. The actual
      * wait duration is arbitrarily long but guaranteed to be at least the
-     * specified amount. This wil restart the task from the beginning.
+     * specified amount. This will restart the task from the beginning.
      * 
      * @param micros The desired wait duration in microseconds.
      */
     void setTimeoutMicros(uint64_t micros) {
-        wait(std::chrono::microseconds(micros));
+        setTimeout(std::chrono::microseconds(micros));
     }
 
     /**
      * @brief Pauses this task until a timeout duration has passed. The actual
      * wait duration is arbitrarily long but guaranteed to be at least the
-     * specified amount. This wil restart the task from the beginning.
+     * specified amount. This will restart the task from the beginning.
      * 
      * @param millis The desired wait duration in milliseconds.
      */
     void setTimeoutMillis(uint64_t millis) {
-        wait(std::chrono::milliseconds(millis));
+        setTimeout(std::chrono::milliseconds(millis));
     }
 
     /**
      * @brief Pauses this task until a timeout duration has passed. The actual
      * wait duration is arbitrarily long but guaranteed to be at least the
-     * specified amount. This wil restart the task from the beginning.
+     * specified amount. This will restart the task from the beginning.
      * 
      * @param seconds The desired wait duration in seconds.
      */
@@ -427,14 +427,14 @@ private:
                 break;
 
                 case Context::Status::RESCHED:
-                    // no longer needed, execution will start from the begining
+                    // no longer needed, execution will start from the beginning
                     qt.freeContext();
                     // re-enqueue to the back of the ready queue
                     _tasks.enqueue(qt.task);
                 break;
 
                 case Context::Status::RESCHED_LATER:
-                    // no longer needed, execution will start from the begining
+                    // no longer needed, execution will start from the beginning
                     qt.freeContext();
                 break;
 

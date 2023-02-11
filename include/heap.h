@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -177,9 +177,9 @@ private:
 
     template <
         typename X = T,
-        std::enable_if_t<
-            SupportsTrivialSerialization<X> && ! SupportsCustomSerialization<X>
-        , int> = 0
+        typename std::enable_if<
+            SupportsTrivialSerialization<X>::value && ! SupportsCustomSerialization<X>::value
+        , int>::type = 0
     >
     void _serialize(OutputStreamSerializer &serializer) const {
         serializer << _maxSize << _size;
@@ -188,9 +188,9 @@ private:
 
     template <
         typename X = T,
-        std::enable_if_t<
-            SupportsTrivialSerialization<X> && ! SupportsCustomSerialization<X>
-        , int> = 0
+        typename std::enable_if<
+            SupportsTrivialSerialization<X>::value && ! SupportsCustomSerialization<X>::value
+        , int>::type = 0
     >
     void _deserialize(InputStreamSerializer &serializer) {
         _free();
@@ -203,9 +203,9 @@ private:
 
     template <
         typename X = T,
-        std::enable_if_t<
-            SupportsCustomSerialization<X>
-        , int> = 0
+        typename std::enable_if<
+            SupportsCustomSerialization<X>::value
+        , int>::type = 0
     >
     void _serialize(OutputStreamSerializer &serializer) const {
         serializer << _maxSize << _size;
@@ -216,9 +216,9 @@ private:
 
     template <
         typename X = T,
-        std::enable_if_t<
-            SupportsCustomSerialization<X> && std::is_constructible_v<X>
-        , int> = 0
+        typename std::enable_if<
+            SupportsCustomSerialization<X>::value && std::is_constructible<X>::value
+        , int>::type = 0
     >
     void _deserialize(InputStreamSerializer &serializer) {
         _free();
@@ -234,7 +234,7 @@ private:
 
     template <
         typename X = T,
-        std::enable_if_t<! SupportsSerialization<X>, int> = 0
+        typename std::enable_if<! SupportsSerialization<X>::value, int>::type = 0
     >
     void _serialize(OutputStreamSerializer &serializer) const {
         throw DynamicMessageError(
@@ -244,7 +244,7 @@ private:
 
     template <
         typename X = T,
-        std::enable_if_t<! SupportsSerialization<X> || ! std::is_constructible_v<X>, int> = 0
+        typename std::enable_if<! SupportsSerialization<X>::value || ! std::is_constructible<X>::value, int>::type = 0
     >
     void _deserialize(InputStreamSerializer &serializer) {
         throw DynamicMessageError(
@@ -294,7 +294,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_base_of_v<Heap<T, comp>, Sequence>, int> = 0
+        typename std::enable_if<! std::is_base_of<Heap<T, comp>, Sequence>::value, int>::type = 0
     >
     Heap(const Sequence &seq) {
         _allocate(seq.size());
@@ -308,7 +308,7 @@ public:
      */
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_base_of_v<Heap<T, comp>, Sequence>, int> = 0
+        typename std::enable_if<! std::is_base_of<Heap<T, comp>, Sequence>::value, int>::type = 0
     >
     Heap(Sequence &&seq) {
         _allocate(seq.size());

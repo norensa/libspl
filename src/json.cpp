@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Noah Orensa.
+ * Copyright (c) 2021-2023 Noah Orensa.
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
@@ -76,6 +76,10 @@ static constexpr const char * _ESCAPED[] = {
     nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
     nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
 };
+
+const char *JSON::_WHITE_SPACE = " \n\t";
+
+const char *JSON::_NUM_STOP = " \n\t,";
 
 std::string JSON::_indent(const std::string &str, int spaces) {
     std::string in = "";
