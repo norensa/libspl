@@ -1,5 +1,9 @@
 # libspl
 
+[![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+[![build](https://github.com/noahorensa/libspl/workflows/test/badge.svg)](https://github.com/noahorensa/pwdman/actions?query=workflow%3Atest)
+
 A C++ container and utility library for building distributed systems. Libspl
 is mainly focused on serialization and high-performance parallelism.
 
@@ -15,8 +19,8 @@ To build, simply run:
 
     make
 
-This will generate the current architecture's `libspl.so` under the **lib/**
-directory.
+This will generate the current architecture's `libspl.so` and `libspl.a` under
+the **lib/** directory.
 
 ## Test
 
