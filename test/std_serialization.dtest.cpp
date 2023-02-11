@@ -29,8 +29,9 @@ unit("std-serialization", "vector<int>")
     out.flush();
 
     std::vector<int> v2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> v2;
+    delete &in;
 
     assert(v.size() == v2.size());
 
@@ -51,8 +52,9 @@ unit("std-serialization", "vector<Serializable>")
     }
 
     std::vector<StreamSerializable> v2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> v2;
+    delete &in;
 
     assert(v.size() == v2.size());
 
@@ -75,8 +77,9 @@ unit("std-serialization", "vector<Serializable *>")
     }
 
     std::vector<StreamSerializable *> v2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> v2;
+    delete &in;
 
     assert(v.size() == v2.size());
 
@@ -96,8 +99,9 @@ unit("std-serialization", "string")
     out.flush();
 
     std::string s2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> s2;
+    delete &in;
 
     assert(s1.size() == s2.size());
     assert(s1 == s2);
@@ -113,8 +117,9 @@ unit("std-serialization", "pair<int,int>")
     out.flush();
 
     std::pair<int, int> p2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> p2;
+    delete &in;
 
     assert(p.first == p2.first);
     assert(p.second == p2.second);
@@ -130,8 +135,9 @@ unit("std-serialization", "pair<int,Serializable>")
     assert(p.second.serialized());
 
     std::pair<int, StreamSerializable> p2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> p2;
+    delete &in;
 
     assert(p.first == p2.first);
     assert(p2.second.deserialized());
@@ -150,8 +156,9 @@ unit("std-serialization", "map<int,int>")
     out.flush();
 
     std::map<int, int> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 
@@ -175,8 +182,9 @@ unit("std-serialization", "map<int,Serializable>")
     }
 
     std::map<int, StreamSerializable> m2;
-    auto in = out.toInput();
+    auto &in = *out.toInput();
     in >> m2;
+    delete &in;
 
     assert(m.size() == m2.size());
 

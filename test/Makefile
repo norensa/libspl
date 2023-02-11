@@ -7,7 +7,7 @@
 MODULE = libspl
 
 # dtest executable to build
-DTEST = dtest-cxx17
+DTEST = dtest-cxx11
 
 # add any include directories
 INCLUDES = -I../include
@@ -19,7 +19,7 @@ LIB_DEPEND = ../lib/$(shell uname -s)-$(shell uname -m)/libspl.so
 
 CXX = g++
 CPPFLAGS = -Werror -Wall -Winline -Wpedantic
-CXXFLAGS = -std=c++17 -march=native -fPIC -fopenmp -pthread
+CXXFLAGS = -std=c++11 -march=native -fPIC -fopenmp -pthread
 
 ################################################################################
 

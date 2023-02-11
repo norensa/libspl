@@ -77,6 +77,10 @@ static constexpr const char * _ESCAPED[] = {
     nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
 };
 
+const char *JSON::_WHITE_SPACE = " \n\t";
+
+const char *JSON::_NUM_STOP = " \n\t,";
+
 std::string JSON::_indent(const std::string &str, int spaces) {
     std::string in = "";
     in.resize(spaces, ' ');

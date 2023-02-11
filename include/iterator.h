@@ -40,11 +40,11 @@ class ForwardIterator
 {
 private:
 
-    constexpr const IteratorType & iterator() const {
+    const IteratorType & iterator() const {
         return *static_cast<const IteratorType *>(this);
     }
 
-    constexpr IteratorType & iterator() {
+    IteratorType & iterator() {
         return *static_cast<IteratorType *>(this);
     }
 
@@ -99,11 +99,11 @@ class BidirectionalIterator
 {
 private:
 
-    constexpr const IteratorType & iterator() const {
+    const IteratorType & iterator() const {
         return *static_cast<const IteratorType *>(this);
     }
 
-    constexpr IteratorType & iterator() {
+    IteratorType & iterator() {
         return *static_cast<IteratorType *>(this);
     }
 

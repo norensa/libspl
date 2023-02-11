@@ -23,17 +23,17 @@ using namespace spl;
 unit("thread-pool", "run")
 .body([] {
     volatile bool ran = false;
-    ThreadPool pool(2);
-    pool.run([&ran] (auto) { ran = true; });
+    ThreadPool<> pool(2);
+    pool.run([&ran] (ExecutionContext &) { ran = true; });
     pool.terminate();
     assert(ran);
 });
 
 perf("thread-pool", "many-tasks")
 .body([] {
-    ThreadPool pool(Thread::availableCPUs());
+    ThreadPool<> pool(Thread::availableCPUs());
     for (size_t i = 0; i < MANY_TASKS; ++i) {
-        pool.run([] (auto) { });
+        pool.run([] (ExecutionContext &) { });
     }
     pool.terminate();
 })
@@ -50,7 +50,7 @@ perf("thread-pool", "many-tasks")
 unit("thread-pool", "ExecutionContext::wait-1")
 .body([] {
     volatile int count = 0;
-    ThreadPool pool(2);
+    ThreadPool<> pool(2);
 
     pool.run([&count] (ExecutionContext &ctx) {
         ctx.waitMillis(1);
@@ -63,7 +63,7 @@ unit("thread-pool", "ExecutionContext::wait-1")
 unit("thread-pool", "ExecutionContext::wait-2")
 .body([] {
     volatile int count = 0;
-    ThreadPool pool(2);
+    ThreadPool<> pool(2);
 
     pool.run([&count] (ExecutionContext &ctx) {
         ctx.waitMillis(20);
@@ -80,7 +80,7 @@ unit("thread-pool", "ExecutionContext::wait-2")
 unit("thread-pool", "ExecutionContext::wait-3")
 .body([] {
     volatile int count = 0;
-    ThreadPool pool(1);
+    ThreadPool<> pool(1);
     pool.run([&count] (ExecutionContext &ctx) {
         ctx.waitMillis(1);
         ++count;
@@ -94,7 +94,7 @@ unit("thread-pool", "ExecutionContext::wait-3")
 unit("thread-pool", "ExecutionContext::wait-4")
 .body([] {
     volatile int count1 = 0, count2 = 0;
-    ThreadPool pool(1);
+    ThreadPool<> pool(1);
     pool.run([&count1] (ExecutionContext &ctx) {
         ctx.waitMillis(1);
         ++count1;
@@ -113,9 +113,9 @@ unit("thread-pool", "ExecutionContext::wait-4")
 unit("thread-pool", "ExecutionContext::suspend")
 .body([] {
     volatile int count = 0;
-    ThreadPool pool(1);
+    ThreadPool<> pool(1);
 
-    auto f = new std::function([&count] (ExecutionContext &ctx) {
+    auto f = new std::function<void(ExecutionContext &)>([&count] (ExecutionContext &ctx) {
         ++count;
         ctx.suspend();
         ++count;
@@ -143,7 +143,7 @@ unit("thread-pool", "ExecutionContext::suspend")
 unit("thread-pool", "ExecutionContext::resched-1")
 .body([] {
     volatile int count = 0;
-    ThreadPool pool(1);
+    ThreadPool<> pool(1);
     pool.run([&count] (ExecutionContext &ctx) {
         ++count;
         if (count == 1) ctx.resched();
@@ -155,9 +155,9 @@ unit("thread-pool", "ExecutionContext::resched-1")
 unit("thread-pool", "ExecutionContext::resched-2")
 .body([] {
     volatile int count = 0;
-    ThreadPool pool(1);
+    ThreadPool<> pool(1);
 
-    auto f = new std::function([&count] (ExecutionContext &ctx) {
+    auto f = new std::function<void(ExecutionContext &)>([&count] (ExecutionContext &ctx) {
         ++count;
         if (count == 1) ctx.resched(false);
     });
@@ -171,7 +171,7 @@ unit("thread-pool", "ExecutionContext::resched-2")
 
 unit("thread-pool", "randomized-single-thread")
 .body([] {
-    ThreadPool pool(1);
+    ThreadPool<> pool(1);
     for (auto i = 0; i < 1000; ++i) {
         pool.run([] (ExecutionContext &ctx) {
             auto rnd = dtest_random();
@@ -197,7 +197,7 @@ unit("thread-pool", "randomized-single-thread")
 
 unit("thread-pool", "randomized-multi-thread")
 .body([] {
-    ThreadPool pool(4);
+    ThreadPool<> pool(4);
     for (auto i = 0; i < 1000; ++i) {
         pool.run([] (ExecutionContext &ctx) {
             auto rnd = dtest_random();

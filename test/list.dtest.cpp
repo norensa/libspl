@@ -762,7 +762,7 @@ unit("list", "map")
     auto l2 = l.map([] (int x) { return x * 2; });
 
     int i = TEST_SIZE - 1;
-    l2.foreach([&i] (auto &x) { assert(x == (i-- * 2)); });
+    l2.foreach([&i] (int &x) { assert(x == (i-- * 2)); });
     assert(i == -1);
 });
 
@@ -774,12 +774,12 @@ unit("list", "reduce")
         i >> l;
     }
 
-    auto sum = l.reduce([] (int x, int y) { return (long) x + y; });
+    auto sum = l.reduce<long>([] (int x, int y) { return (long) x + y; });
 
     assert(typeid(sum) == typeid(long));
     assert(sum == (long)(TEST_SIZE * (TEST_SIZE - 1) / 2));
 
-    auto sum2 = l.reduce(
+    auto sum2 = l.reduce<long>(
         [] (int x) { return (long) x; },
         [] (int x, int y) { return (long) x + y; }
     );

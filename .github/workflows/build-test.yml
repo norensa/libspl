@@ -3,9 +3,10 @@ name: libspl build and test
 on: [ push, pull_request ]
 
 jobs:
-  test-ubuntu-20:
 
-    runs-on: ubuntu-20.04
+  test-ubuntu-latest:
+
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -16,11 +17,12 @@ jobs:
     - name: Run tests
       run: |
         export LD_LIBRARY_PATH=$(realpath lib/*)
-        ./test/dtest/dtest-cxx17 test/build
+        ./test/dtest/dtest-cxx11 test/build
 
     - name: Dump results
       if: ${{ always() }}
       run: cat dtest.log.json
+
 
   test-ubuntu-22:
 
@@ -35,7 +37,47 @@ jobs:
     - name: Run tests
       run: |
         export LD_LIBRARY_PATH=$(realpath lib/*)
-        ./test/dtest/dtest-cxx17 test/build
+        ./test/dtest/dtest-cxx11 test/build
+
+    - name: Dump results
+      if: ${{ always() }}
+      run: cat dtest.log.json
+  
+  
+  test-ubuntu-20:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: make test-build-only
+
+    - name: Run tests
+      run: |
+        export LD_LIBRARY_PATH=$(realpath lib/*)
+        ./test/dtest/dtest-cxx11 test/build
+
+    - name: Dump results
+      if: ${{ always() }}
+      run: cat dtest.log.json
+
+
+  test-ubuntu-18:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: make test-build-only
+
+    - name: Run tests
+      run: |
+        export LD_LIBRARY_PATH=$(realpath lib/*)
+        ./test/dtest/dtest-cxx11 test/build
 
     - name: Dump results
       if: ${{ always() }}

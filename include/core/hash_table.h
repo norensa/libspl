@@ -110,17 +110,17 @@ public:
 };
 
 template <typename Key, typename Val>
-struct SupportsTrivialSerialization_t<MapNode<Key, Val>> {
+struct SupportsTrivialSerialization<MapNode<Key, Val>> {
     static constexpr bool value =
-        SupportsTrivialSerialization<Key> && SupportsTrivialSerialization<Val>;
+        SupportsTrivialSerialization<Key>::value && SupportsTrivialSerialization<Val>::value;
 };
 
 template <typename Key, typename Val>
-struct SupportsCustomSerialization_t<MapNode<Key, Val>> {
+struct SupportsCustomSerialization<MapNode<Key, Val>> {
     static constexpr bool value =
-        (SupportsCustomSerialization<Key> && SupportsCustomSerialization<Val>)
-        || (SupportsTrivialSerialization<Key> && SupportsCustomSerialization<Val>)
-        || (SupportsCustomSerialization<Key> && SupportsTrivialSerialization<Val>);
+        (SupportsCustomSerialization<Key>::value && SupportsCustomSerialization<Val>::value)
+        || (SupportsTrivialSerialization<Key>::value && SupportsCustomSerialization<Val>::value)
+        || (SupportsCustomSerialization<Key>::value && SupportsTrivialSerialization<Val>::value);
 };
 
 namespace core {
@@ -162,23 +162,11 @@ struct HashTableNode {
         return calloc(count, 1);
     }
 
-    void * operator new[](std::size_t count, std::align_val_t al) {
-        return calloc(count, 1);
-    }
-
     void operator delete[](void* ptr) {
         free(ptr);
     }
 
-    void operator delete[](void* ptr, std::align_val_t al) {
-        free(ptr);
-    }
-
     void operator delete[](void* ptr, std::size_t sz) {
-        free(ptr);
-    }
-
-    void operator delete[](void* ptr, std::size_t sz, std::align_val_t al) {
         free(ptr);
     }
 
@@ -249,23 +237,11 @@ struct AtomicHashTableNode {
         return calloc(count, 1);
     }
 
-    void * operator new[](std::size_t count, std::align_val_t al) {
-        return calloc(count, 1);
-    }
-
     void operator delete[](void* ptr) {
         free(ptr);
     }
 
-    void operator delete[](void* ptr, std::align_val_t al) {
-        free(ptr);
-    }
-
     void operator delete[](void* ptr, std::size_t sz) {
-        free(ptr);
-    }
-
-    void operator delete[](void* ptr, std::size_t sz, std::align_val_t al) {
         free(ptr);
     }
 
@@ -429,18 +405,27 @@ struct ConcurrentHashTableController
 :   HashTableController
 {
     std::mutex _mtx;
-    std::atomic_bool _hold = false;
-    std::atomic_size_t _resident = 0;
+    std::atomic_bool _hold;
+    std::atomic_size_t _resident;
 
-    ConcurrentHashTableController() = default;
+    ConcurrentHashTableController() {
+        _hold = false;
+        _resident = 0;
+    }
 
     ConcurrentHashTableController(const ConcurrentHashTableController &rhs)
     :   HashTableController(rhs)
-    { }
+    {
+        _hold = false;
+        _resident = 0;
+    }
 
     ConcurrentHashTableController(ConcurrentHashTableController &&rhs)
     :   HashTableController(std::move(rhs))
-    { }
+    {
+        _hold = false;
+        _resident = 0;
+    }
 
     ConcurrentHashTableController & operator=(const ConcurrentHashTableController &rhs) {
         HashTableController::operator=(rhs);
@@ -822,9 +807,9 @@ protected:
 
     template <
         typename X = storage_node,
-        std::enable_if_t<
-            SupportsTrivialSerialization<X> && ! SupportsCustomSerialization<X>
-        , int> = 0
+        typename std::enable_if<
+            SupportsTrivialSerialization<X>::value && ! SupportsCustomSerialization<X>::value
+        , int>::type = 0
     >
     void _serialize(OutputStreamSerializer &serializer) const {
         _controller.enter();
@@ -851,10 +836,10 @@ protected:
 
     template <
         typename X = storage_node,
-        std::enable_if_t<
-            SupportsTrivialSerialization<X> && ! SupportsCustomSerialization<X>
-            && std::is_constructible_v<X>
-        , int> = 0
+        typename std::enable_if<
+            SupportsTrivialSerialization<X>::value && ! SupportsCustomSerialization<X>::value
+            && std::is_constructible<X>::value
+        , int>::type = 0
     >
     void _deserialize(InputStreamSerializer &serializer) {
         _freeNodes();
@@ -884,9 +869,9 @@ protected:
 
     template <
         typename X = storage_node,
-        std::enable_if_t<
-            SupportsCustomSerialization<X>
-        , int> = 0
+        typename std::enable_if<
+            SupportsCustomSerialization<X>::value
+        , int>::type = 0
     >
     void _serialize(OutputStreamSerializer &serializer) const {
         _controller.enter();
@@ -908,9 +893,9 @@ protected:
 
     template <
         typename X = storage_node,
-        std::enable_if_t<
-            SupportsCustomSerialization<X> && std::is_constructible_v<X>
-        , int> = 0
+        typename std::enable_if<
+            SupportsCustomSerialization<X>::value && std::is_constructible<X>::value
+        , int>::type = 0
     >
     void _deserialize(InputStreamSerializer &serializer) {
         _freeNodes();
@@ -935,7 +920,7 @@ protected:
 
     template <
         typename X = storage_node,
-        std::enable_if_t<! SupportsSerialization<X>, int> = 0
+        typename std::enable_if<! SupportsSerialization<X>::value, int>::type = 0
     >
     void _serialize(OutputStreamSerializer &serializer) const {
         throw DynamicMessageError(
@@ -945,7 +930,7 @@ protected:
 
     template <
         typename X = storage_node,
-        std::enable_if_t<! SupportsSerialization<X> || ! std::is_constructible_v<X>, int> = 0
+        typename std::enable_if<! SupportsSerialization<X>::value || ! std::is_constructible<X>::value, int>::type = 0
     >
     void _deserialize(InputStreamSerializer &serializer) {
         throw DynamicMessageError(
@@ -1013,23 +998,23 @@ public:
         return _size == 0;
     }
 
-    auto cbegin() const {
+    HashTableIterator<const storage_node> cbegin() const {
         return HashTableIterator<const storage_node>(0, this);
     }
-    auto begin() {
+    HashTableIterator<storage_node> begin() {
         return HashTableIterator<storage_node>(0, this);
     }
-    auto begin() const {
+    HashTableIterator<const storage_node> begin() const {
         return cbegin();
     }
 
-    auto cend() const {
+    HashTableIterator<const storage_node> cend() const {
         return HashTableIterator<const storage_node>(_controller.tableSize, this);
     }
-    auto end() {
+    HashTableIterator<storage_node> end() {
         return HashTableIterator<storage_node>(_controller.tableSize, this);
     }
-    auto end() const {
+    HashTableIterator<const storage_node> end() const {
         return cend();
     }
 

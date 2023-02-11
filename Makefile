@@ -15,7 +15,7 @@ INCLUDES = -Iinclude
 
 CXX = g++
 CPPFLAGS = -Werror -Wall -Winline -Wpedantic
-CXXFLAGS = -std=c++17 -march=native -fopenmp -pthread -fPIC
+CXXFLAGS = -std=c++11 -march=native -fopenmp -pthread -fPIC
 
 AR = ar
 ARFLAGS = rc
@@ -32,7 +32,7 @@ all : libspl
 
 test : libspl
 	@$(MAKE) -C test --no-print-directory EXTRACXXFLAGS="$(EXTRACXXFLAGS)" nodep="$(nodep)"
-	@./test/dtest/dtest-cxx17
+	@./test/dtest/dtest-cxx11
 
 test-build-only : libspl
 	@$(MAKE) -C test --no-print-directory EXTRACXXFLAGS="$(EXTRACXXFLAGS)" nodep="$(nodep)"

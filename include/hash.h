@@ -101,7 +101,7 @@ namespace spl {
     struct Hash {
         template <
             typename X = T,
-            std::enable_if_t<std::is_base_of_v<Hashable, X>, int> = 0
+            typename std::enable_if<std::is_base_of<Hashable, X>::value, int>::type = 0
         >
         size_t operator()(const T &t) const {
             return t.hash();
@@ -109,7 +109,7 @@ namespace spl {
 
         template <
             typename X = T,
-            std::enable_if_t<(! std::is_base_of_v<Hashable, X>), int> = 0
+            typename std::enable_if<! std::is_base_of<Hashable, X>::value, int>::type = 0
         >
         size_t operator()(const T &t) const {
             return std::hash<T>{}(t);

@@ -482,7 +482,7 @@ unit("deque", "map")
     auto l2 = q.map([] (int x) { return x * 2; });
 
     int i = TEST_SIZE - 1;
-    l2.foreach([&i] (auto &x) { assert(x == (i-- * 2)); });
+    l2.foreach([&i] (int &x) { assert(x == (i-- * 2)); });
     assert(i == -1);
 });
 
@@ -494,12 +494,12 @@ unit("deque", "reduce")
         q.enqueueFront(i);
     }
 
-    auto sum = q.reduce([] (int x, int y) { return (long) x + y; });
+    auto sum = q.reduce<long>([] (int x, int y) { return (long) x + y; });
 
     assert(typeid(sum) == typeid(long));
     assert(sum == (long)(TEST_SIZE * (TEST_SIZE - 1) / 2));
 
-    auto sum2 = q.reduce(
+    auto sum2 = q.reduce<long>(
         [] (int x) { return (long) x; },
         [] (int x, int y) { return (long) x + y; }
     );
@@ -547,7 +547,7 @@ static void producer_consumer(int numProducers, int numConsumers) {
     assert(q.size() == 0);
     assert(values.size() == PARALLEL_TEST_SIZE);
 
-    auto sum = values.reduce([] (long x, long y) { return x + y; });
+    auto sum = values.reduce<long>([] (long x, long y) { return x + y; });
     assert(sum == (PARALLEL_TEST_SIZE * (PARALLEL_TEST_SIZE - 1) / 2));
 }
 

@@ -372,7 +372,7 @@ unit("file", "lock")
     File f("./test-file");
     f.open(File::READ_WRITE | File::CREATE);
 
-    std::atomic_size_t count = 0;
+    std::atomic_size_t count(0);
     std::vector<std::thread> threads;
     for (int i = 0; i < 8; ++i) {
         threads.push_back(std::thread([&count] {
@@ -423,7 +423,7 @@ unit("file-serializer", "primitive-types")
     long y = 2;
     short z = 3;
 
-    auto out = OutputFileSerializer(f);
+    OutputFileSerializer out(f);
     out << x << y << z;
     out.flush();
 
@@ -431,7 +431,7 @@ unit("file-serializer", "primitive-types")
     long y1;
     short z1;
 
-    auto in = InputFileSerializer(f);
+    InputFileSerializer in(f);
     in >> x1 >> y1 >> z1;
 
     assert(x == x1);
@@ -450,14 +450,14 @@ unit("file-serializer", "serializable-type")
 
     auto elem = RandomAccessSerializable();
 
-    auto out = OutputFileSerializer(f);
+    OutputFileSerializer out(f);
     out << elem;
     out.flush();
     assert(elem.serialized());
 
     auto elem1 = RandomAccessSerializable();
 
-    auto in = InputFileSerializer(f);
+    InputFileSerializer in(f);
     in >> elem1;
 
     assert(elem1.deserialized());
@@ -472,13 +472,13 @@ unit("file-serializer", "large-serialization")
     f.open(File::READ_WRITE | File::CREATE);
     f.close();
 
-    auto out = OutputFileSerializer(f);
+    OutputFileSerializer out(f);
     for (auto i = 0; i < TEST_SIZE; ++i) {
         out << i;
     }
     out.flush();
 
-    auto in = InputFileSerializer(f);
+    InputFileSerializer in(f);
     for (auto i = 0; i < TEST_SIZE; ++i) {
         int x;
         in >> x;
@@ -500,12 +500,12 @@ unit("file-serializer", "bulk-serialization")
         a[i] = dtest_random() * TEST_SIZE;
     }
 
-    auto out = OutputFileSerializer(f);
+    OutputFileSerializer out(f);
     out.put(a, TEST_SIZE * sizeof(int));
     out.flush();
 
     int *b = new int[TEST_SIZE];
-    auto in = InputFileSerializer(f);
+    InputFileSerializer in(f);
     in.get(b, TEST_SIZE * sizeof(int));
 
     assert(memcmp(a, b, TEST_SIZE * sizeof(int)) == 0);

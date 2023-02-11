@@ -110,6 +110,7 @@ unit("factory", "createObject(size_t)")
 });
 
 unit("factory", "static-default-factory")
+.inProcess()
 .body([] {
     struct A : WithFactory<A> {
         virtual ~A() = default;

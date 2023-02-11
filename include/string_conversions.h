@@ -62,7 +62,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_unsigned_int_unprotected(const char *str) {
         T x = 0;
@@ -86,7 +86,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_unsigned_int_unprotected(const char *str) {
         T x = 0;
@@ -111,7 +111,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_unsigned_int_unprotected(const char *str, size_t len) {
         auto end = str + len;
@@ -137,7 +137,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_unsigned_int_unprotected(const char *str, size_t len) {
         auto end = str + len;
@@ -162,7 +162,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_unsigned_int(const char *str) {
         T x = 0;
@@ -187,7 +187,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_unsigned_int(const char *str) {
         T x = 0;
@@ -213,7 +213,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_unsigned_int(const char *str, size_t len) {
         auto end = str + len;
@@ -240,7 +240,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_unsigned_int(const char *str, size_t len) {
         auto end = str + len;
@@ -265,7 +265,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static const char * unsigned_int_to_str(T val) {
         char *str = _numBuf + __INTEGER_START;
@@ -290,7 +290,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static const char * unsigned_int_to_str(T val) {
         char *str = _numBuf + __INTEGER_START;
@@ -316,7 +316,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_int_unprotected(const char *str) {
         T x = 0;
@@ -346,7 +346,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_int_unprotected(const char *str) {
         T x = 0;
@@ -377,7 +377,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_int_unprotected(const char *str, size_t len) {
         auto end = str + len;
@@ -409,7 +409,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_int_unprotected(const char *str, size_t len) {
         auto end = str + len;
@@ -440,7 +440,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_int(const char *str) {
         T x = 0;
@@ -471,7 +471,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_int(const char *str) {
         T x = 0;
@@ -503,7 +503,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_int(const char *str, size_t len) {
         auto end = str + len;
@@ -535,7 +535,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_int(const char *str, size_t len) {
         auto end = str + len;
@@ -566,7 +566,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static const char * int_to_str(T val) {
         bool neg = false;
@@ -593,7 +593,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static const char * int_to_str(T val) {
         bool neg = false;
@@ -630,7 +630,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_float_unprotected(const char *str) {
         T x = 0;
@@ -673,7 +673,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_float_unprotected(const char *str) {
         T x = 0;
@@ -717,7 +717,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_float_unprotected(const char *str, size_t len) {
         auto end = str + len;
@@ -762,7 +762,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_float_unprotected(const char *str, size_t len) {
         auto end = str + len;
@@ -806,7 +806,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_float(const char *str) {
         T x = 0;
@@ -852,7 +852,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_float(const char *str) {
         T x = 0;
@@ -899,7 +899,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base > 10), int> = 0
+        typename std::enable_if<(base > 10), int>::type = 0
     >
     static T str_to_float(const char *str, size_t len) {
         auto end = str + len;
@@ -947,7 +947,7 @@ public:
     template <
         typename T,
         int base = 10,
-        std::enable_if_t<(base <= 10), int> = 0
+        typename std::enable_if<(base <= 10), int>::type = 0
     >
     static T str_to_float(const char *str, size_t len) {
         auto end = str + len;
@@ -1064,13 +1064,13 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse(const char *str) {
         return str_to_unsigned_int<T, base>(str);
@@ -1087,13 +1087,13 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse(const char *str, size_t len) {
         return str_to_unsigned_int<T, base>(str, len);
@@ -1111,13 +1111,13 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse_unprotected(const char *str) {
         return str_to_unsigned_int_unprotected<T, base>(str);
@@ -1136,13 +1136,13 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse_unprotected(const char *str, size_t len) {
         return str_to_unsigned_int_unprotected<T, base>(str, len);
@@ -1158,13 +1158,13 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>,
+        typename std::enable_if<
+            std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse(const char *str) {
         return str_to_int<T, base>(str);
@@ -1181,13 +1181,13 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>,
+        typename std::enable_if<
+            std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse(const char *str, size_t len) {
         return str_to_int<T, base>(str, len);
@@ -1205,13 +1205,13 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>,
+        typename std::enable_if<
+            std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse_unprotected(const char *str) {
         return str_to_int_unprotected<T, base>(str);
@@ -1230,13 +1230,13 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>,
+        typename std::enable_if<
+            std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse_unprotected(const char *str, size_t len) {
         return str_to_int_unprotected<T, base>(str, len);
@@ -1252,12 +1252,12 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse(const char *str) {
         return str_to_float<T, base>(str);
@@ -1274,12 +1274,12 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse(const char *str, size_t len) {
         return str_to_float<T, base>(str, len);
@@ -1297,12 +1297,12 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse_unprotected(const char *str) {
         return str_to_float_unprotected<T, base>(str);
@@ -1321,12 +1321,12 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse_unprotected(const char *str, size_t len) {
         return str_to_float_unprotected<T, base>(str, len);
@@ -1342,20 +1342,20 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>
-            || std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>
-            || std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value
+            || std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value
+            || std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse(const std::string &str) {
         return parse<T, base>(str.c_str());
@@ -1372,20 +1372,20 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>
-            || std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>
-            || std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value
+            || std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value
+            || std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse(const std::string &str, size_t len) {
         return parse<T, base>(str.c_str(), len);
@@ -1403,20 +1403,20 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>
-            || std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>
-            || std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value
+            || std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value
+            || std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse_unprotected(const std::string &str) {
         return parse_unprotected<T, base>(str.c_str());
@@ -1435,20 +1435,20 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>
-            || std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>
-            || std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value
+            || std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value
+            || std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > base = 10
+        >::type base = 10
     >
     static T parse_unprotected(const std::string &str, size_t len) {
         return parse_unprotected<T, base>(str.c_str(), len);

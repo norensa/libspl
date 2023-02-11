@@ -20,10 +20,10 @@ template <typename IteratorType, typename ViewFunction>
 class ForwardIteratorView
 :   public std::iterator<
         std::forward_iterator_tag,
-        typename std::invoke_result_t<ViewFunction, typename IteratorType::reference>,
+        typename std::result_of<ViewFunction(typename IteratorType::reference)>::type,
         typename IteratorType::difference_type,
         void,
-        typename std::invoke_result_t<ViewFunction, typename IteratorType::reference>
+        typename std::result_of<ViewFunction(typename IteratorType::reference)>::type
     >
 {
 private:
@@ -32,7 +32,7 @@ private:
 
 public:
 
-    using value_type = typename std::invoke_result_t<ViewFunction, typename IteratorType::reference>;
+    using value_type = typename std::result_of<ViewFunction(typename IteratorType::reference)>::type;
     using difference_type = typename IteratorType::difference_type;
     using reference = value_type;
 
@@ -115,10 +115,10 @@ template <typename IteratorType, typename ViewFunction>
 class BidirectionalIteratorView
 :   public std::iterator<
         std::bidirectional_iterator_tag,
-        typename std::invoke_result_t<ViewFunction, typename IteratorType::reference>,
+        typename std::result_of<ViewFunction(typename IteratorType::reference)>::type,
         typename IteratorType::difference_type,
         void,
-        typename std::invoke_result_t<ViewFunction, typename IteratorType::reference>
+        typename std::result_of<ViewFunction(typename IteratorType::reference)>::type
     >
 {
 private:
@@ -127,7 +127,7 @@ private:
 
 public:
 
-    using value_type = typename std::invoke_result_t<ViewFunction, typename IteratorType::reference>;
+    using value_type = typename std::result_of<ViewFunction(typename IteratorType::reference)>::type;
     using difference_type = typename IteratorType::difference_type;
     using reference = value_type;
 

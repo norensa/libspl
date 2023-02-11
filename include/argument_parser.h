@@ -103,24 +103,24 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            ! (std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>
-            || std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>
-            || std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>
+        typename std::enable_if<
+            ! (std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value
+            || std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value
+            || std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value
             ),
             int
-        > = 0
+        >::type = 0
     >
     static std::function<bool(const char * const *)> store(T &dest) {
-        return std::function([&dest] (const char * const *args)->bool {
+        return std::function<bool(const char * const *)>([&dest] (const char * const *args)->bool {
             try {
                 dest = args[0];
             }
@@ -142,23 +142,23 @@ public:
      */
     template <
         typename T,
-        std::enable_if_t<
-            std::is_same_v<T, uint8>
-            || std::is_same_v<T, uint16>
-            || std::is_same_v<T, uint32>
-            || std::is_same_v<T, uint64>
-            || std::is_same_v<T, int8>
-            || std::is_same_v<T, int16>
-            || std::is_same_v<T, int32>
-            || std::is_same_v<T, int64>
-            || std::is_same_v<T, float32>
-            || std::is_same_v<T, float64>
-            || std::is_same_v<T, float128>,
+        typename std::enable_if<
+            std::is_same<T, uint8>::value
+            || std::is_same<T, uint16>::value
+            || std::is_same<T, uint32>::value
+            || std::is_same<T, uint64>::value
+            || std::is_same<T, int8>::value
+            || std::is_same<T, int16>::value
+            || std::is_same<T, int32>::value
+            || std::is_same<T, int64>::value
+            || std::is_same<T, float32>::value
+            || std::is_same<T, float64>::value
+            || std::is_same<T, float128>::value,
             int
-        > = 0
+        >::type = 0
     >
     static std::function<bool(const char * const *)> store(T &dest) {
-        return std::function([&dest] (const char * const *args)->bool {
+        return std::function<bool(const char * const *)>([&dest] (const char * const *args)->bool {
             try {
                 dest = StringConversions::parse<T>(args[0]);
             }
@@ -178,7 +178,7 @@ public:
      */
     template <typename T, typename U>
     static std::function<bool(const char * const *)> set(T &dest, U val) {
-        return std::function([&dest, val] (const char * const *args)->bool {
+        return std::function<bool(const char * const *)>([&dest, val] (const char * const *args)->bool {
             dest = val;
             return true;
         });
@@ -187,7 +187,7 @@ public:
 
 template <>
 std::function<bool(const char * const *)> Argument::store<bool, 0>(bool &val) {
-    return std::function([&val] (const char * const *args)->bool {
+    return std::function<bool(const char * const *)>([&val] (const char * const *args)->bool {
         if (strcasecmp(args[0], "true") == 0) val = true;
         else if (strcasecmp(args[0], "false") == 0) val = false;
         else return false;

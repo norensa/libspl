@@ -342,7 +342,7 @@ dunit("tcp-socket-serializer", "primitive-types")
     long y;
     short z;
 
-    auto serializer = InputTCPSocketSerializer(s.accept());
+    InputTCPSocketSerializer serializer(s.accept());
     serializer >> x >> y >> z;
     assert(x == 1);
     assert(y == 2);
@@ -356,7 +356,7 @@ dunit("tcp-socket-serializer", "primitive-types")
     long y = 2;
     short z = 3;
 
-    auto serializer = OutputTCPSocketSerializer(TCPSocket(addr));
+    OutputTCPSocketSerializer serializer{TCPSocket(addr)};
     serializer << x << y << z;
     serializer.flush();
 });
@@ -369,7 +369,7 @@ dunit("tcp-socket-serializer", "serializable-type")
 
     auto elem = StreamSerializable();
 
-    auto serializer = InputTCPSocketSerializer(s.accept());
+    InputTCPSocketSerializer serializer(s.accept());
     serializer >> elem;
     assert(elem.deserialized());
 })
@@ -379,7 +379,7 @@ dunit("tcp-socket-serializer", "serializable-type")
 
     auto elem = StreamSerializable();
 
-    auto serializer = OutputTCPSocketSerializer(TCPSocket(addr));
+    OutputTCPSocketSerializer serializer{TCPSocket(addr)};
     serializer << elem;
     serializer.flush();
     assert(elem.serialized());
@@ -391,7 +391,7 @@ dunit("tcp-socket-serializer", "large-serialization")
     TCPServerSocket s(0, 128);
     dtest_send_msg(s.address());
 
-    auto serializer = InputTCPSocketSerializer(s.accept());
+    InputTCPSocketSerializer serializer(s.accept());
     for (auto i = 0; i < TEST_SIZE; ++i) {
         int x;
         serializer >> x;
@@ -402,7 +402,7 @@ dunit("tcp-socket-serializer", "large-serialization")
     SocketAddress addr;
     dtest_recv_msg(addr);
 
-    auto serializer = OutputTCPSocketSerializer(TCPSocket(addr));
+    OutputTCPSocketSerializer serializer{TCPSocket(addr)};
 
     for (auto i = 0; i < TEST_SIZE; ++i) {
         serializer << i;
@@ -417,7 +417,7 @@ dunit("tcp-socket-serializer", "bulk-serialization")
     dtest_send_msg(s.address());
 
     int *b = new int[TEST_SIZE];
-    auto serializer = InputTCPSocketSerializer(s.accept());
+    InputTCPSocketSerializer serializer(s.accept());
     serializer.get(b, TEST_SIZE * sizeof(int));
     delete b;
 })
@@ -430,7 +430,7 @@ dunit("tcp-socket-serializer", "bulk-serialization")
         a[i] = dtest_random() * TEST_SIZE;
     }
 
-    auto serializer = OutputTCPSocketSerializer(TCPSocket(addr));
+    OutputTCPSocketSerializer serializer{TCPSocket(addr)};
     serializer.put(a, TEST_SIZE * sizeof(int));
     serializer.flush();
 

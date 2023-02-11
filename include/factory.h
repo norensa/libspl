@@ -57,7 +57,7 @@ public:
         const std::type_info &type,
         const std::function<void *()> &factory
     ) {
-        _put(_hash(type), new std::function(factory));
+        _put(_hash(type), new std::function<void *()>(factory));
     }
 
     /**
@@ -73,7 +73,7 @@ public:
         const std::type_info &type,
         const std::function<void *(Args...)> &factory
     ) {
-        _put(_hash<Args...>(type), new std::function(factory));
+        _put(_hash<Args...>(type), new std::function<void *(Args...)>(factory));
     }
 
     /**
@@ -144,11 +144,8 @@ public:
 template <typename T, typename ...Args>
 class WithFactory {
 private:
-
-    static inline class _Init {
-        friend class WithFactory;
-
-        // to prevent the compiler from optimizing-out this entire class
+    static struct _Init {    
+        // to prevent the compiler from optimizing-out this entire struct
         bool initialized = false;
         _Init() {
             Factory::registerFactory<Args...>(
@@ -161,10 +158,12 @@ private:
     } __init;
 
 public:
-
     WithFactory() {
         __init.initialized = true;
     }
 };
+
+template <typename T, typename ...Args>
+typename WithFactory<T, Args...>::_Init WithFactory<T, Args...>::__init;
 
 }   // namespace spl

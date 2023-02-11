@@ -87,7 +87,7 @@ inline spl::InputStreamSerializer & operator>>(
     size_t size;
     serializer >> size;
     string.resize(size);
-    serializer.get(string.data(), size);
+    serializer.get(&string[0], size);
     return serializer;
 }
 

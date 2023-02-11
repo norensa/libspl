@@ -331,7 +331,7 @@ protected:
     void _move(ListBase &rhs) {
         _head = (node *) rhs._head;
         _tail = (node *) rhs._tail;
-        _size = rhs._size;
+        _size = static_cast<size_t>(rhs._size);
     }
 
     void _invalidate() {
@@ -342,7 +342,7 @@ protected:
 
     template <
         typename X = T,
-        std::enable_if_t<SupportsSerialization<X>, int> = 0
+        typename std::enable_if<SupportsSerialization<X>::value, int>::type = 0
     >
     void _serialize(OutputStreamSerializer &serializer) const {
         serializer << static_cast<size_t>(_size);
@@ -353,7 +353,7 @@ protected:
 
     template <
         typename X = T,
-        std::enable_if_t<! SupportsSerialization<X>, int> = 0
+        typename std::enable_if<! SupportsSerialization<X>::value, int>::type = 0
     >
     void _serialize(OutputStreamSerializer &serializer) const {
         throw DynamicMessageError(
@@ -363,7 +363,7 @@ protected:
 
     template <
         typename X = T,
-        std::enable_if_t<SupportsSerialization<X> && std::is_constructible_v<X>, int> = 0
+        typename std::enable_if<SupportsSerialization<X>::value && std::is_constructible<X>::value, int>::type = 0
     >
     void _deserialize(InputStreamSerializer &serializer) {
         size_t sz;
@@ -377,7 +377,7 @@ protected:
 
     template <
         typename X = T,
-        std::enable_if_t<! SupportsSerialization<X> || ! std::is_constructible_v<X>, int> = 0
+        typename std::enable_if<! SupportsSerialization<X>::value || ! std::is_constructible<X>::value, int>::type = 0
     >
     void _deserialize(InputStreamSerializer &serializer) {
         throw DynamicMessageError(
@@ -404,7 +404,7 @@ public:
 
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_base_of_v<ListBase<T, node, size_type>, Sequence>, int> = 0
+        typename std::enable_if<! std::is_base_of<ListBase<T, node, size_type>, Sequence>::value, int>::type = 0
     >
     ListBase(const Sequence &seq) {
         _copy(seq.begin(), seq.end());
@@ -412,7 +412,7 @@ public:
 
     template <
         typename Sequence,
-        std::enable_if_t<! std::is_base_of_v<ListBase<T, node, size_type>, Sequence>, int> = 0
+        typename std::enable_if<! std::is_base_of<ListBase<T, node, size_type>, Sequence>::value, int>::type = 0
     >
     ListBase(Sequence &&seq) {
         _move(seq.begin(), seq.end());
@@ -452,23 +452,23 @@ public:
         return _head == nullptr;
     }
 
-    auto cbegin() const {
+    ListForwardIterator<const T> cbegin() const {
         return ListForwardIterator<const T>(_head);
     }
-    auto begin() {
+    ListForwardIterator<T> begin() {
         return ListForwardIterator<T>(_head);
     }
-    auto begin() const {
+    ListForwardIterator<const T> begin() const {
         return cbegin();
     }
 
-    auto cend() const {
+    ListForwardIterator<const T> cend() const {
         return ListForwardIterator<const T>(nullptr, _tail);
     }
-    auto end() {
+    ListForwardIterator<T> end() {
         return ListForwardIterator<T>(nullptr, _tail);
     }
-    auto end() const {
+    ListForwardIterator<const T> end() const {
         return cend();
     }
 
