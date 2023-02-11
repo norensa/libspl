@@ -2,7 +2,7 @@
 
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-[![build](https://github.com/noahorensa/libspl/workflows/test/badge.svg)](https://github.com/noahorensa/pwdman/actions?query=workflow%3Atest)
+[![build](https://github.com/noahorensa/libspl/workflows/test/badge.svg)](https://github.com/noahorensa/libspl/actions?query=workflow%3Atest)
 
 A C++ container and utility library for building distributed systems. Libspl
 is mainly focused on serialization and high-performance parallelism.
