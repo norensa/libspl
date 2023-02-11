@@ -1,4 +1,4 @@
-name: libspl build and test
+name: test
 
 on: [ push, pull_request ]
 
