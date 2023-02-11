@@ -66,7 +66,7 @@ using namespace spl;
 #define TEST_SIZE (1024)
 #define PARALLEL_TEST_SIZE (10 * 1024)
 #define PERFORMANCE_TEST_SIZE (400 * 1024)
-#define PERFORMANCE_MARGIN_MILLIS 10
+#define PERFORMANCE_MARGIN (0.99)
 
 unit("list", "initializer-list")
 .body([] {
@@ -180,7 +180,7 @@ unit("parallel::list", "prepend")
 });
 
 perf("list", "prepend(p)")
-.performanceMarginMillis(PERFORMANCE_MARGIN_MILLIS)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     auto l = List<int>();
     for (int i = 0; i < PERFORMANCE_TEST_SIZE; ++i) {
@@ -238,7 +238,7 @@ unit("parallel::list", "append")
 });
 
 perf("list", "append(p)")
-.performanceMarginMillis(PERFORMANCE_MARGIN_MILLIS)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     auto l = List<int>();
     for (int i = 0; i < PERFORMANCE_TEST_SIZE; ++i) {

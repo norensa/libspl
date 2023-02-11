@@ -13,8 +13,7 @@ module("string-conversions")
 });
 
 #define PERFORMANCE_ITERATIONS 1000000
-#define PERFORMANCE_MARGIN_PARSE (1)
-#define PERFORMANCE_MARGIN_TOSTR (1/1.5)
+#define PERFORMANCE_MARGIN (0.99)
 
 using namespace spl;
 
@@ -82,7 +81,7 @@ unit("string-conversions", "parse<float64>")
 });
 
 perf("string-conversions", "parse<int64>(p)")
-.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN_PARSE)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     int64 l;
     for (uint64 i = 0; i < PERFORMANCE_ITERATIONS; ++i) {
@@ -99,7 +98,7 @@ perf("string-conversions", "parse<int64>(p)")
 });
 
 perf("string-conversions", "parse<uint64>(p)")
-.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN_PARSE)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     uint64 l;
     for (uint64 i = 0; i < PERFORMANCE_ITERATIONS; ++i) {
@@ -116,7 +115,7 @@ perf("string-conversions", "parse<uint64>(p)")
 });
 
 perf("string-conversions", "parse<float64>(p)")
-.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN_PARSE)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     float64 l;
     for (uint64 i = 0; i < PERFORMANCE_ITERATIONS; ++i) {
@@ -194,7 +193,7 @@ unit("string-conversions", "toStr<float64>")
 });
 
 perf("string-conversions", "toStr<int64>(p)")
-.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN_TOSTR)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     for (int64 i = 0; i < PERFORMANCE_ITERATIONS; ++i) {
         StringConversions::toStr(i);
@@ -208,7 +207,7 @@ perf("string-conversions", "toStr<int64>(p)")
 });
 
 perf("string-conversions", "toStr<uint64>(p)")
-.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN_TOSTR)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     for (uint64 i = 0; i < PERFORMANCE_ITERATIONS; ++i) {
         StringConversions::toStr(i);
@@ -222,7 +221,7 @@ perf("string-conversions", "toStr<uint64>(p)")
 });
 
 perf("string-conversions", "toStr<float64>(p)")
-.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN_TOSTR)
+.performanceMarginAsBaselineRatio(PERFORMANCE_MARGIN)
 .body([] {
     for (uint64 i = 0; i < PERFORMANCE_ITERATIONS; ++i) {
         StringConversions::toStr((float64) i);
