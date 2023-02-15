@@ -799,6 +799,25 @@ public:
     }
 
     /**
+     * @brief Attempts to read a block of data without moving the internal
+     * buffer pointer.
+     * 
+     * @param[in] data Pointer to a data block.
+     * @param[in] len Length of the data block.
+     * @return A boolean indicating whether the peek was successful to retrieve
+     * the requested len.
+     */
+    bool peek(void *data, size_t len) {
+        if (len <= _available) {
+            memcpy(data, _cursor, len);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * @brief Reads the bits of some object.
      * 
      * @param[out] x Reference to an object.
