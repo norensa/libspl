@@ -19,10 +19,10 @@ unit("exception", "Error")
         assert(strcmp(e.what(), m) == 0);
     }
     catch (std::exception &e) {
-        assert(false);
+        fail("Unexpected exception type");
     }
     catch (...) {
-        assert(false);
+        fail("Unknown object thrown");
     }
 });
 
@@ -34,10 +34,10 @@ unit("exception", "RuntimeError")
     }
     catch (Error &e) { }
     catch (std::exception &e) {
-        assert(false);
+        fail("Unexpected exception type");
     }
     catch (...) {
-        assert(false);
+        fail("Unknown object thrown");
     }
 });
 
@@ -48,10 +48,10 @@ unit("exception", "ErrnoRuntimeError")
     }
     catch (Error &e) { }
     catch (std::exception &e) {
-        assert(false);
+        fail("Unexpected exception type");
     }
     catch (...) {
-        assert(false);
+        fail("Unknown object thrown");
     }
 
     try {
@@ -60,10 +60,10 @@ unit("exception", "ErrnoRuntimeError")
     }
     catch (Error &e) { }
     catch (std::exception &e) {
-        assert(false);
+        fail("Unexpected exception type");
     }
     catch (...) {
-        assert(false);
+        fail("Unknown object thrown");
     }
 });
 
@@ -76,12 +76,34 @@ unit("exception", "InvalidArgument")
         assert(strcmp(e.what(), "This is an error 5") == 0);
     }
     catch (Error &e) {
-        assert(false);
+        fail("Unexpected exception type");
     }
     catch (std::exception &e) {
-        assert(false);
+        fail("Unexpected exception type");
     }
     catch (...) {
-        assert(false);
+        fail("Unknown object thrown");
+    }
+});
+
+static void unsuppoted_function() {
+    throw FunctionUnsupportedError();
+}
+unit("exception", "FunctionUnsupportedError")
+.body([] {
+    try {
+        unsuppoted_function();
+    }
+    catch (UnsupportedError &e) {
+        std::cout << e.what();
+    }
+    catch (Error &e) {
+        fail("Unexpected exception type");
+    }
+    catch (std::exception &e) {
+        fail("Unexpected exception type");
+    }
+    catch (...) {
+        fail("Unknown object thrown");
     }
 });

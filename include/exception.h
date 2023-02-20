@@ -318,7 +318,7 @@ public:
  * @brief An error to indicate that an operation is unsupported.
 */
 class UnsupportedError
-:   public Error
+:   public DynamicMessageError
 {
 
 public:
@@ -327,7 +327,7 @@ public:
      * @brief Construct a new UnsupportedError object.
      */
     UnsupportedError()
-    :   Error("Unsupported operation")
+    :   DynamicMessageError("Unsupported operation")
     { }
 
     /**
@@ -336,7 +336,11 @@ public:
      * @param msg The error message.
      */
     UnsupportedError(const char *msg)
-    :   Error(msg)
+    :   DynamicMessageError(msg)
+    { }
+
+    UnsupportedError(const char *functionName, int)
+    :   DynamicMessageError(functionName, " not supported")
     { }
 };
 
@@ -408,5 +412,7 @@ public:
  * and an automatically generated message based on the error code.
 */
 #define CustomMessageErrnoRuntimeError(...) __CustomMessageErrnoRuntimeError(__VA_ARGS__, __CustomMessageErrnoRuntimeError_2, __CustomMessageErrnoRuntimeError_1, UNUSED)(__VA_ARGS__)
+
+#define FunctionUnsupportedError() UnsupportedError(__PRETTY_FUNCTION__, 0)
 
 }
