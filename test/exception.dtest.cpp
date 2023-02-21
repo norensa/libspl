@@ -86,16 +86,89 @@ unit("exception", "InvalidArgument")
     }
 });
 
-static void unsuppoted_function() {
+static void unsupported_function() {
     throw FunctionUnsupportedError();
 }
-unit("exception", "FunctionUnsupportedError")
+template <typename T>
+static void unsupported_function_template() {
+    throw FunctionUnsupportedError();
+}
+class unsupported_class_function {
+public:
+
+    static void function() {
+        throw FunctionUnsupportedError();
+    }
+
+    template <typename T>
+    static void function_template() {
+        throw FunctionUnsupportedError();
+    }
+};
+unit("exception", "FunctionUnsupportedError-1")
 .body([] {
     try {
-        unsuppoted_function();
+        unsupported_function();
     }
     catch (UnsupportedError &e) {
-        std::cout << e.what();
+        std::cout << e.what() << std::endl;
+    }
+    catch (Error &e) {
+        fail("Unexpected exception type");
+    }
+    catch (std::exception &e) {
+        fail("Unexpected exception type");
+    }
+    catch (...) {
+        fail("Unknown object thrown");
+    }
+});
+
+unit("exception", "FunctionUnsupportedError-2")
+.body([] {
+    try {
+        unsupported_function_template<int>();
+    }
+    catch (UnsupportedError &e) {
+        std::cout << e.what() << std::endl;
+    }
+    catch (Error &e) {
+        fail("Unexpected exception type");
+    }
+    catch (std::exception &e) {
+        fail("Unexpected exception type");
+    }
+    catch (...) {
+        fail("Unknown object thrown");
+    }
+});
+
+unit("exception", "FunctionUnsupportedError-3")
+.body([] {
+    try {
+        unsupported_class_function().function();
+    }
+    catch (UnsupportedError &e) {
+        std::cout << e.what() << std::endl;
+    }
+    catch (Error &e) {
+        fail("Unexpected exception type");
+    }
+    catch (std::exception &e) {
+        fail("Unexpected exception type");
+    }
+    catch (...) {
+        fail("Unknown object thrown");
+    }
+});
+
+unit("exception", "FunctionUnsupportedError-4")
+.body([] {
+    try {
+        unsupported_class_function().function_template<int>();
+    }
+    catch (UnsupportedError &e) {
+        std::cout << e.what() << std::endl;
     }
     catch (Error &e) {
         fail("Unexpected exception type");
