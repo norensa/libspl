@@ -533,6 +533,8 @@ public:
     }
 };
 
+#ifndef LIBSPL_PARALLEL_DISABLE
+
 namespace parallel {
 
 /**
@@ -1244,6 +1246,8 @@ public:
 
 }   // namespace parallel
 
+#endif  // LIBSPL_PARALLEL_DISABLE
+
 /**
  * @brief A hash multi-set supporting O(1) lookup, insert, and delete.
  * 
@@ -1812,6 +1816,8 @@ public:
         return *this;
     }
 };
+
+#ifndef LIBSPL_PARALLEL_DISABLE
 
 namespace parallel {
 
@@ -2647,5 +2653,7 @@ public:
 };
 
 }   // namespace parallel
+
+#endif  // LIBSPL_PARALLEL_DISABLE
 
 }

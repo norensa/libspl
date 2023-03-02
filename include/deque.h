@@ -6,13 +6,17 @@
 #pragma once
 
 #include <initializer_list>
-
 #include <core/linked_list.h>
 #include <container.h>
-#include <thread.h>
-#include <mutex>
 #include <exception.h>
 #include <serialization.h>
+
+#ifndef LIBSPL_PARALLEL_DISABLE
+
+#include <thread.h>
+#include <mutex>
+
+#endif  // LIBSPL_PARALLEL_DISABLE
 
 namespace spl {
 
@@ -456,6 +460,8 @@ public:
         return base::remove(pos);
     }
 };
+
+#ifndef LIBSPL_PARALLEL_DISABLE
 
 namespace parallel
 {
@@ -1031,5 +1037,7 @@ public:
 };
 
 }   // namespace parallel
+
+#endif // LIBSPL_PARALLEL_DISABLE
 
 }   // namespace spl

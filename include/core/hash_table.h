@@ -5,14 +5,19 @@
 
 #pragma once
 
-#include <atomic>
-#include <mutex>
 #include <cstring>
 #include <cstdlib>
 #include <iterator.h>
 #include <serialization.h>
 #include <type_traits>
 #include <exception.h>
+
+#ifndef LIBSPL_PARALLEL_DISABLE
+
+#include <atomic>
+#include <mutex>
+
+#endif  // LIBSPL_PARALLEL_DISABLE
 
 namespace spl {
 
@@ -203,6 +208,14 @@ struct HashTableNode {
     }
 };
 
+template <typename Key, typename Val>
+using HashMapNode = HashTableNode<MapNode<Key, Val>>;
+
+template <typename Key>
+using HashSetNode = HashTableNode<Key>;
+
+#ifndef LIBSPL_PARALLEL_DISABLE
+
 template <typename Node>
 struct AtomicHashTableNode {
 
@@ -279,16 +292,12 @@ struct AtomicHashTableNode {
 };
 
 template <typename Key, typename Val>
-using HashMapNode = HashTableNode<MapNode<Key, Val>>;
-
-template <typename Key, typename Val>
 using AtomicHashMapNode = AtomicHashTableNode<MapNode<Key, Val>>;
 
 template <typename Key>
-using HashSetNode = HashTableNode<Key>;
-
-template <typename Key>
 using AtomicHashSetNode = AtomicHashTableNode<Key>;
+
+#endif  // LIBSPL_PARALLEL_DISABLE
 
 template <typename KeyEqual> 
 struct HashMapNodeKeyEqual {
@@ -326,7 +335,11 @@ struct HashRange {
 
 struct HashTableController {
 
+    #ifndef LIBSPL_EMBEDDED
     static constexpr size_t LINEAR_INCREMENT_THRESHOLD = 100000000lu;
+    #else
+    static constexpr size_t LINEAR_INCREMENT_THRESHOLD = 10000lu;
+    #endif
     static constexpr size_t BUCKET_SEARCH = 16;               // max number of buckets to search in for a key
     static constexpr size_t INITIAL_BUCKET_SIZE = 1;          // initial size of a bucket with matching hash values
 
@@ -401,6 +414,8 @@ struct HashTableController {
     }
 };
 
+#ifndef LIBSPL_PARALLEL_DISABLE
+
 struct ConcurrentHashTableController
 :   HashTableController
 {
@@ -460,6 +475,8 @@ struct ConcurrentHashTableController
     }
 };
 
+#endif  // LIBSPL_PARALLEL_DISABLE
+
 template <
     typename Key,
     typename node,
@@ -473,7 +490,11 @@ protected:
 
     using storage_node = typename node::storage_type;
 
+    #ifndef LIBSPL_EMBEDDED
     static constexpr size_t __INITIAL_TABLE_SIZE = 128;
+    #else
+    static constexpr size_t __INITIAL_TABLE_SIZE = 16;
+    #endif
     static constexpr size_t __MINIMUM_TABLE_SIZE = 8;
     static constexpr size_t __NPOS = (size_t) -1;
 

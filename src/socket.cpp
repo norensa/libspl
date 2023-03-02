@@ -3,6 +3,8 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#ifndef LIBSPL_EMBEDDED
+
 #include <socket.h>
 #include <arpa/inet.h>
 #include <ifaddrs.h>
@@ -127,3 +129,5 @@ SocketAddress spl::addr_self(in_port_t port, SocketFamily family) {
         throw Error("Failed to find own interface");
     }
 }
+
+#endif  // LIBSPL_EMBEDDED

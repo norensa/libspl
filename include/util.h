@@ -46,6 +46,8 @@ std::string make_str(const T &...t) {
     return core::__make_str(t...).str();
 }
 
+#ifndef LIBSPL_EMBEDDED
+
 template <
     unsigned int precision = 3,
     typename T
@@ -76,5 +78,7 @@ const char * timepoint_to_str_utc(const T &timepoint) {
     );
 
 }
+
+#endif  // LIBSPL_EMBEDDED
 
 }

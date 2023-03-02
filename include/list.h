@@ -467,6 +467,8 @@ public:
     }
 };
 
+#ifndef LIBSPL_PARALLEL_DISABLE
+
 namespace parallel
 {
 
@@ -928,5 +930,7 @@ public:
     }};
 
 }   // namespace parallel
+
+#endif  // LIBSPL_PARALLEL_DISABLE
 
 }   // namespace spl

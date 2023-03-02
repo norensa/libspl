@@ -5,6 +5,8 @@
 
 #pragma once
 
+#ifndef LIBSPL_EMBEDDED
+
 #include <string>
 #include <cstring>
 
@@ -119,5 +121,7 @@ public:
         return _len - _skip;
     }
 };
+
+#endif  // LIBSPL_EMBEDDED
 
 }

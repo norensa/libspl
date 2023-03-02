@@ -50,12 +50,14 @@ public:
         return _msg;
     }
 
+    #ifndef LIBSPL_EMBEDDED
     /**
      * @brief Prints the error message to cerr.
      */
     void print() const noexcept {
         std::cerr << what();
     }
+    #endif
 };
 
 /**
@@ -83,6 +85,8 @@ public:
         _msg = _msgStr.c_str();
     }
 };
+
+#ifndef LIBSPL_EMBEDDED
 
 /**
  * @brief Base class of all callstack-traceable errors.
@@ -232,6 +236,7 @@ public:
     }
 };
 
+#endif  // LIBSPL_EMBEDDED
 
 // Derived types ///////////////////////////////////////////////////////////////
 
@@ -390,6 +395,7 @@ public:
     { }
 };
 
+#ifndef LIBSPL_EMBEDDED
 /**
  * @brief A run-time error as a TraceableError.
 */
@@ -412,6 +418,8 @@ public:
  * and an automatically generated message based on the error code.
 */
 #define CustomMessageErrnoRuntimeError(...) __CustomMessageErrnoRuntimeError(__VA_ARGS__, __CustomMessageErrnoRuntimeError_2, __CustomMessageErrnoRuntimeError_1, UNUSED)(__VA_ARGS__)
+
+#endif  // LIBSPL_EMBEDDED
 
 #define FunctionUnsupportedError() UnsupportedError(__PRETTY_FUNCTION__, 0)
 

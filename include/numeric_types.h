@@ -5,9 +5,6 @@
 
 #pragma once
 
-#include <limits.h>
-#include <float.h>
-
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned int uint32;
@@ -20,6 +17,12 @@ typedef long int64;
 
 typedef float float32;
 typedef double float64;
+
+#ifndef LIBSPL_EMBEDDED
+
+#include <limits.h>
+#include <float.h>
+
 typedef long double float128;
 
 template <typename T>
@@ -129,3 +132,5 @@ struct numeric_type_info<float128> {
     static constexpr bool isIntegral = false;
     static constexpr bool isFloating = true;
 };
+
+#endif  // LIBSPL_EMBEDDED

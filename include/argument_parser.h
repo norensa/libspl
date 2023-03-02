@@ -5,12 +5,15 @@
 
 #pragma once
 
+#ifndef LIBSPL_EMBEDDED
+
 #include <string>
 #include <functional>
 #include <hash_map.h>
 #include <string_conversions.h>
 
 namespace spl {
+
 
 /**
  * @brief Describes a command-line argument for use with ArgumentParser.
@@ -260,5 +263,7 @@ public:
      */
     ArgumentParser & parse(int argc, const char * const * argv);
 };
+
+#endif  // LIBSPL_EMBEDDED
 
 }

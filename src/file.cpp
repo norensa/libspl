@@ -3,6 +3,8 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#ifndef LIBSPL_EMBEDDED
+
 #include <file.h>
 
 using namespace spl;
@@ -254,3 +256,5 @@ bool File::lock_test(short mode, off_t offset, off_t len) {
     if (fcntl(_fd, F_OFD_GETLK, &l) == -1) throw ErrnoRuntimeError();
     return l.l_type == F_UNLCK;
 }
+
+#endif  // LIBSPL_EMBEDDED

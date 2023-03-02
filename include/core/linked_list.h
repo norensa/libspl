@@ -6,11 +6,16 @@
 #pragma once
 
 #include <cstddef>
-#include <atomic>
 #include <exception.h>
 #include <iterator.h>
 #include <serialization.h>
 #include <type_traits>
+
+#ifndef LIBSPL_PARALLEL_DISABLE
+
+#include <atomic>
+
+#endif  // LIBSPL_PARALLEL_DISABLE
 
 namespace spl {
 
@@ -77,6 +82,8 @@ struct SinglyLinkedNode {
         return h;
     }
 };
+
+#ifndef LIBSPL_PARALLEL_DISABLE
 
 template <typename T>
 struct AtomicSinglyLinkedNode {
@@ -185,6 +192,7 @@ struct AtomicSinglyLinkedNode {
     }
 };
 
+#endif  // LIBSPL_PARALLEL_DISABLE
 
 template <typename T, typename node_type, typename size_type>
 class ListBase {

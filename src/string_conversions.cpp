@@ -50,5 +50,10 @@ const char StringConversions::_valToDigit[] = {
     'W', 'X', 'Y', 'Z'
 };
 
+#ifndef LIBSPL_PARALLEL_DISABLE
 thread_local char StringConversions::_numBuf[__NUMBER_BUFFER_SIZE];
 thread_local char StringConversions::_expBuf[__NUMBER_BUFFER_SIZE];
+#else
+char StringConversions::_numBuf[__NUMBER_BUFFER_SIZE];
+char StringConversions::_expBuf[__NUMBER_BUFFER_SIZE];
+#endif

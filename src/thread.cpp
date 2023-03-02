@@ -3,8 +3,12 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#ifndef LIBSPL_PARALLEL_DISABLE
+
 #include <thread.h>
 
 using namespace spl;
 
 thread_local Thread::Context *Thread::__ctx = nullptr;
+
+#endif // LIBSPL_PARALLEL_DISABLE

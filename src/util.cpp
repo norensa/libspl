@@ -10,6 +10,8 @@
 
 using namespace spl;
 
+#ifndef LIBSPL_EMBEDDED
+
 const char * spl::core::__timepoint_to_str(
     uint64_t timepoint,
     uint64_t periodDenom,
@@ -55,5 +57,6 @@ const char * spl::core::__timepoint_to_str(
     }
 
     return str;
-
 }
+
+#endif  // LIBSPL_EMBEDDED

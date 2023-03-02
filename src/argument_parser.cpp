@@ -7,6 +7,8 @@
 
 using namespace spl;
 
+#ifndef LIBSPL_EMBEDDED
+
 ArgumentParser::ArgumentParser(const std::initializer_list<Argument> &arguments)
 :   _args(arguments.size())
 {
@@ -42,3 +44,5 @@ ArgumentParser & ArgumentParser::parse(int argc, const char * const *argv) {
 
     return *this;
 }
+
+#endif

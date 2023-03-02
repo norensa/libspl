@@ -5,6 +5,8 @@
 
 #pragma once
 
+#ifndef LIBSPL_EMBEDDED
+
 #include <sys/socket.h>
 #include <netinet/ip.h>
 #include <string>
@@ -295,5 +297,7 @@ public:
     :   Error("Connection terminated")
     { }
 };
+
+#endif  // LIBSPL_EMBEDDED
 
 }

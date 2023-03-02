@@ -5,6 +5,8 @@
 
 #pragma once
 
+#ifndef LIBSPL_EMBEDDED
+
 #include <socket.h>
 #include <hash_map.h>
 #include <hash_set.h>
@@ -625,3 +627,5 @@ public:
 };
 
 }   // namespace spl
+
+#endif  // LIBSPL_EMBEDDED

@@ -158,7 +158,11 @@ class OutputStreamSerializer {
 
 protected:
 
+    #ifndef LIBSPL_EMBEDDED
     static constexpr size_t _DEFAULT_BUFFER_SIZE = 1024;
+    #else
+    static constexpr size_t _DEFAULT_BUFFER_SIZE = 64;
+    #endif  // LIBSPL_EMBEDDED
 
     /**
      * @brief Writes a block of data to the underlying stream. The
@@ -656,7 +660,11 @@ class InputStreamSerializer {
 
 protected:
 
+    #ifndef LIBSPL_EMBEDDED
     static constexpr size_t _DEFAULT_BUFFER_SIZE = 1024;
+    #else
+    static constexpr size_t _DEFAULT_BUFFER_SIZE = 64;
+    #endif  // LIBSPL_EMBEDDED
 
     /**
      * @brief Reads a block of data from the underlying stream. The

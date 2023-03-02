@@ -5,6 +5,8 @@
 
 #pragma once
 
+#ifndef LIBSPL_PARALLEL_DISABLE
+
 #include <condition_variable>
 #include <mutex>
 #include <exception.h>
@@ -101,3 +103,5 @@ public:
 };
 
 }   // namespace spl
+
+#endif  // LIBSPL_PARALLEL_DISABLE

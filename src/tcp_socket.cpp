@@ -3,6 +3,8 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#ifndef LIBSPL_EMBEDDED
+
 #include <tcp_socket.h>
 #include <unistd.h>
 
@@ -238,3 +240,5 @@ TCPSocket * TCPServerSocket::pollOrAccept() {
     }
     return ptr;
 }
+
+#endif  // LIBSPL_EMBEDDED

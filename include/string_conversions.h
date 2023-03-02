@@ -44,8 +44,13 @@ private:
     static const uint8 _digitToVal[];
     static const char _valToDigit[];
 
+    #ifndef LIBSPL_PARALLEL_DISABLE
     static thread_local char _numBuf[__NUMBER_BUFFER_SIZE];
     static thread_local char _expBuf[__NUMBER_BUFFER_SIZE];
+    #else
+    static char _numBuf[__NUMBER_BUFFER_SIZE];
+    static char _expBuf[__NUMBER_BUFFER_SIZE];
+    #endif  // LIBSPL_PARALLEL_DISABLE
 
 public:
 
@@ -1255,7 +1260,9 @@ public:
         typename std::enable_if<
             std::is_same<T, float32>::value
             || std::is_same<T, float64>::value
+            #ifndef LIBSPL_EMBEDDED
             || std::is_same<T, float128>::value,
+            #endif  // LIBSPL_EMBEDDED
             int
         >::type base = 10
     >
@@ -1277,7 +1284,9 @@ public:
         typename std::enable_if<
             std::is_same<T, float32>::value
             || std::is_same<T, float64>::value
+            #ifndef LIBSPL_EMBEDDED
             || std::is_same<T, float128>::value,
+            #endif  // LIBSPL_EMBEDDED
             int
         >::type base = 10
     >
@@ -1300,7 +1309,9 @@ public:
         typename std::enable_if<
             std::is_same<T, float32>::value
             || std::is_same<T, float64>::value
+            #ifndef LIBSPL_EMBEDDED
             || std::is_same<T, float128>::value,
+            #endif  // LIBSPL_EMBEDDED
             int
         >::type base = 10
     >
@@ -1324,7 +1335,9 @@ public:
         typename std::enable_if<
             std::is_same<T, float32>::value
             || std::is_same<T, float64>::value
+            #ifndef LIBSPL_EMBEDDED
             || std::is_same<T, float128>::value,
+            #endif  // LIBSPL_EMBEDDED
             int
         >::type base = 10
     >
@@ -1353,7 +1366,9 @@ public:
             || std::is_same<T, int64>::value
             || std::is_same<T, float32>::value
             || std::is_same<T, float64>::value
+            #ifndef LIBSPL_EMBEDDED
             || std::is_same<T, float128>::value,
+            #endif  // LIBSPL_EMBEDDED
             int
         >::type base = 10
     >
@@ -1383,7 +1398,9 @@ public:
             || std::is_same<T, int64>::value
             || std::is_same<T, float32>::value
             || std::is_same<T, float64>::value
+            #ifndef LIBSPL_EMBEDDED
             || std::is_same<T, float128>::value,
+            #endif  // LIBSPL_EMBEDDED
             int
         >::type base = 10
     >
@@ -1414,7 +1431,9 @@ public:
             || std::is_same<T, int64>::value
             || std::is_same<T, float32>::value
             || std::is_same<T, float64>::value
+            #ifndef LIBSPL_EMBEDDED
             || std::is_same<T, float128>::value,
+            #endif  // LIBSPL_EMBEDDED
             int
         >::type base = 10
     >
@@ -1446,7 +1465,9 @@ public:
             || std::is_same<T, int64>::value
             || std::is_same<T, float32>::value
             || std::is_same<T, float64>::value
+            #ifndef LIBSPL_EMBEDDED
             || std::is_same<T, float128>::value,
+            #endif  // LIBSPL_EMBEDDED
             int
         >::type base = 10
     >
@@ -1592,6 +1613,8 @@ public:
         return float_to_str<float64, precision, fractionPrecision, base>(num);
     }
 
+    #ifndef LIBSPL_EMBEDDED
+
     /**
      * @brief Produces a string representation for the given number.
      * 
@@ -1608,6 +1631,8 @@ public:
     static const char * toStr(float128 num) {
         return float_to_str<float128, precision, fractionPrecision, base>(num);
     }
+
+    #endif  // LIBSPL_EMBEDDED
 };
 
 }   // namespace spl

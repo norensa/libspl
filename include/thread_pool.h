@@ -5,6 +5,8 @@
 
 #pragma once
 
+#ifndef LIBSPL_PARALLEL_DISABLE
+
 #include <thread.h>
 #include <deque.h>
 #include <list.h>
@@ -603,3 +605,5 @@ public:
 };
 
 }   // namespace spl
+
+#endif  // LIBSPL_PARALLEL_DISABLE

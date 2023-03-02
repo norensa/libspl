@@ -3,6 +3,8 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#ifndef LIBSPL_EMBEDDED
+
 #include <callstack.h>
 #include <execinfo.h>
 #include <dlfcn.h>
@@ -55,3 +57,5 @@ std::string CallStack::toString() const noexcept {
 
     return s.str();
 }
+
+#endif  // LIBSPL_EMBEDDED

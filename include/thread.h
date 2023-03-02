@@ -5,6 +5,8 @@
 
 #pragma once
 
+#ifndef LIBSPL_PARALLEL_DISABLE
+
 #include <functional>
 #include <pthread.h>
 #include <semaphore.h>
@@ -467,3 +469,5 @@ public:
 };
 
 }
+
+#endif  // LIBSPL_PARALLEL_DISABLE

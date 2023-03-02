@@ -5,6 +5,8 @@
 
 #pragma once
 
+#ifndef LIBSPL_EMBEDDED
+
 #include <exception.h>
 #include <cstdlib>
 #include <stdint.h>
@@ -1466,5 +1468,7 @@ public:
         _f(std::move(f))
     { }
 };
+
+#endif  // LIBSPL_EMBEDDED
 
 }
