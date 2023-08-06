@@ -181,6 +181,25 @@ public:
     }
 
     /**
+     * @brief Gets the direct string value of a named parameter . If the
+     * parameter value is not set, the default value is returned. If the named
+     * parameter does not exist, an ElementNotFoundError is thrown. Throws
+     * InvalidArgument if the parameter cannot be extracted as type T.
+     * 
+     * @param key Parameter name.
+     * @throws ElementNotFoundError if the named parameter does not exist.
+     * @throws InvalidArgument if the parameter is not compatible with type T.
+     * @return The parameter value.
+     */
+    std::string get_direct(const std::string &key) const {
+        if (! _param.contains(key)) throw ElementNotFoundError();
+
+        auto &p = _param[key];
+
+        return p.value.empty() ? p.defaultValue : p.value;
+    }
+
+    /**
      * @param key Parameter name.
      * @throws ElementNotFoundError if the named parameter does not exist.
      * @return True if the parameter has a value other than the default value,
