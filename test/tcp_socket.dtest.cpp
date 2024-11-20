@@ -419,7 +419,7 @@ dunit("tcp-socket-serializer", "bulk-serialization")
     int *b = new int[TEST_SIZE];
     InputTCPSocketSerializer serializer(s.accept());
     serializer.get(b, TEST_SIZE * sizeof(int));
-    delete b;
+    delete[] b;
 })
 .worker([] {
     SocketAddress addr;
@@ -434,5 +434,5 @@ dunit("tcp-socket-serializer", "bulk-serialization")
     serializer.put(a, TEST_SIZE * sizeof(int));
     serializer.flush();
 
-    delete a;
+    delete[] a;
 });

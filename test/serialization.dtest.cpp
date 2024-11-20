@@ -244,8 +244,8 @@ unit("stream-serializer", "large-serialization")
 
     assert(memcmp(a, b, TEST_SIZE * sizeof(int)) == 0);
 
-    delete a;
-    delete b;
+    delete[] a;
+    delete[] b;
 });
 
 unit("stream-serializer", "bulk-serialization")
@@ -266,8 +266,8 @@ unit("stream-serializer", "bulk-serialization")
 
     assert(memcmp(a, b, TEST_SIZE * sizeof(int)) == 0);
 
-    delete a;
-    delete b;
+    delete[] a;
+    delete[] b;
 });
 
 unit("stream-serializer", "lock")
@@ -399,10 +399,10 @@ unit("random-access-serializer", "large-serialization")
 
     assert(memcmp(a, b, TEST_SIZE * sizeof(int)) == 0);
 
-    delete a;
-    delete b;
-    delete idx_write;
-    delete idx_read;
+    delete[] a;
+    delete[] b;
+    delete[] idx_write;
+    delete[] idx_read;
 });
 
 unit("random-access-serializer", "tell")

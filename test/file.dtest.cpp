@@ -169,8 +169,8 @@ unit("file", "write/read")
 
     assert(memcmp(a, b, sizeof(int) * TEST_SIZE) == 0);
 
-    delete a;
-    delete b;
+    delete[] a;
+    delete[] b;
 
     remove("./test-file");
 });
@@ -258,8 +258,8 @@ unit("file", "insert")
     assert(memcmp((char *) a + blk, (char *) b + 2 * blk, blk) == 0);
     assert(memcmp(a, b, blk * 2) != 0);
 
-    delete a;
-    delete b;
+    delete[] a;
+    delete[] b;
 
     remove("./test-file");
 });
@@ -295,8 +295,8 @@ unit("file", "collapse")
 
     assert(memcmp((char *) a + blk, b, blk) == 0);
 
-    delete a;
-    delete b;
+    delete[] a;
+    delete[] b;
 
     remove("./test-file");
 });
@@ -320,7 +320,7 @@ unit("file", "map")
 
     assert(memcmp(a, m.ptr(), sizeof(int) * TEST_SIZE) == 0);
 
-    delete a;
+    delete[] a;
 
     remove("./test-file");
 });
@@ -362,7 +362,7 @@ unit("file", "map-sync")
         assert(memcmp(a, m.ptr(), sizeof(int) * TEST_SIZE) == 0);
     }
 
-    delete a;
+    delete[] a;
 
     remove("./test-file");
 });
@@ -510,8 +510,8 @@ unit("file-serializer", "bulk-serialization")
 
     assert(memcmp(a, b, TEST_SIZE * sizeof(int)) == 0);
 
-    delete a;
-    delete b;
+    delete[] a;
+    delete[] b;
 
     remove("./test-file");
 });
